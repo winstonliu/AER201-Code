@@ -1,19 +1,18 @@
 #include <LiquidCrystal.h>
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+#include "PhotoLineDetection.h"
 
-int sensor_value = 0;
-const int sensorPin = A0;
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+PhotoLineDetection lineDet(A0);
 
 void setup()
 {
-  // Initialize LCD
-  lcd.begin(16,2);
+	// Initialize LCD
+	lcd.begin(16,2);
 }
 
 void loop()
 {
-  sensor_value = analogRead(sensorPin);
-  lcd.print(sensor_value);
-  delay(500);
-  lcd.clear();
+	lcd.print(lineDet.checkSensor());
+	delay(500);
+	lcd.clear();
 }
