@@ -34,12 +34,16 @@ void PhotoLineDetection::calibrate(int calibrate_color)
 
 int PhotoLineDetection::detect()
 {
-	if (pow(sensor_value - thresh.white, 2) <= pow(sensor_thresh, 2))
-		return WHITE;
-	else if (pow(sensor_value - thresh.red, 2) <= pow(sensor_thresh, 2))
+	int wdiff = pow(sensor_value - thresh.white, 2);
+	int rdiff = pow(sensor_value - thresh.red, 2);
+	int bdiff = pow(sensor_value - thresh.black, 2);
+
+	if (rdiff < wdiff && rdiff < bdiff)
 		return RED;
-	else if (pow(sensor_value - thresh.black, 2) <= pow(sensor_thresh, 2))
+	else if (bdiff < wdiff && bdiff < rdiff)
 		return BLACK;
-	else 
+	else if (wdiff < rdiff && wdiff < bdiff)
+		return WHITE;
+	else
 		return CALIBRATED;
 }
