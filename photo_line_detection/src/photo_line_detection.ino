@@ -1,8 +1,18 @@
 #include <LiquidCrystal.h>
 #include "PhotoLineDetection.h"
 
-// XXX Change pins!!
-//LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+// Wiring
+//
+// A0: photoresistor + 220 
+//  2: btnCal + 10k pulldown
+//  3: btnToggle + 10k pulldown
+//  4: LCD 14
+//  5: LCD 13 
+//  6: LCD 12 
+//  7: LCD 11 
+// 11: LCD 6
+// 12: LCD 4
+
 LiquidCrystal lcd(12, 11, 7, 6, 5, 4);
 PhotoLineDetection lineDet(A0);
 
@@ -20,7 +30,7 @@ unsigned long timestamp = 0;
 bool override = false;
 
 void display()
-{	
+{
 	// Reset timer
 	timestamp = millis();
 	
@@ -86,10 +96,8 @@ void cal_btn_event()
 
 void setup()
 {
-	//btnCal.pin = 6;
 	btnCal = 2;
 
-	//btnToggle.pin = 7;
 	btnToggle = 3;
 
 	pinMode(btnCal, INPUT);
