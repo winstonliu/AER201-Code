@@ -100,6 +100,7 @@ void setup()
 
 void loop()
 {
+	// Delay 500 ms
 	if (millis() - timestamp > 500) display();
 
 	attachInterrupt(0, cal_btn_event, CHANGE);	
