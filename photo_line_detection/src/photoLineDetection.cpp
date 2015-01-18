@@ -1,5 +1,5 @@
 #include "Arduino.h"
-#include "PhotoLineDetection.h"
+#include "photoLineDetection.h"
 
 PhotoLineDetection::PhotoLineDetection(int newSensorPin)
 {

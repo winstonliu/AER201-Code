@@ -1,9 +1,11 @@
 #include <LiquidCrystal.h>
-#include "PhotoLineDetection.h"
+#include "photoLineDetection.h"
 
 // Wiring
 //
 // A0: photoresistor + 220 
+// A1: photoresistor + 220 
+// A2: photoresistor + 220 
 //  2: btnCal + 10k pulldown
 //  3: btnToggle + 10k pulldown
 //  4: LCD 14
@@ -14,7 +16,9 @@
 // 12: LCD 4
 
 LiquidCrystal lcd(12, 11, 7, 6, 5, 4);
-PhotoLineDetection lineDet(A0);
+PhotoLineDetection line_1(A0);
+PhotoLineDetection line_2(A1);
+PhotoLineDetection line_3(A2);
 
 // Initialize calibration buttons
 int btnCal;
@@ -41,8 +45,12 @@ void display()
 	}
 
 	lcd.clear();
-	lcd.print(lineDet.checkSensor());
-	lcd.setCursor(0,2);
+	lcd.print(line_1.checkSensor());
+	lcd.setCursor(4,0);
+	lcd.print(line_2.checkSensor());
+	lcd.setCursor(8,0);
+	lcd.print(line_3.checkSensor());
+	lcd.setCursor(0,1);
 
 	switch(cal_color)
 	{
@@ -56,11 +64,23 @@ void display()
 			lcd.print("SET BLACK"); 
 			break;
 		case CALIBRATED:
-			lcd.print(lineDet.detect());
+			lcd.print(line_1.detect());
+			lcd.setCursor(4,1);
+			lcd.print(line_2.detect());
+			lcd.setCursor(8,1);
+			lcd.print(line_3.detect());
 			break;
 		default:
 			lcd.print("HE'S DEAD JIM"); 
 	}
+}
+
+void advance_cal_color()
+{
+	if (cal_color != 3)
+		++cal_color;
+	else
+		cal_color = 0;
 }
 
 void toggle_btn_event()
@@ -68,11 +88,7 @@ void toggle_btn_event()
 	// Toggles the FSM, advances calibration
 	if (digitalRead(btnToggle) == HIGH)
 	{
-		if (cal_color != 3)
-			++cal_color;
-		else
-			cal_color = 0;
-
+		advance_cal_color();
 		display();
 	}
 }
@@ -83,13 +99,13 @@ void cal_btn_event()
 	if (digitalRead(btnCal) == HIGH && cal_color != 3)
 	{
 		override = true;
-		lineDet.calibrate(cal_color);
+		line_1.calibrate(cal_color);
+		line_2.calibrate(cal_color);
+		line_3.calibrate(cal_color);
 		lcd.setCursor(0,2);
-		lcd.println("CALIBRATED");
+		lcd.print("CALIBRATED");
 		
-		if (cal_color == BLACK)
-			cal_color = CALIBRATED;
-		
+		advance_cal_color();
 		display();
 	}
 }
@@ -97,7 +113,6 @@ void cal_btn_event()
 void setup()
 {
 	btnCal = 2;
-
 	btnToggle = 3;
 
 	pinMode(btnCal, INPUT);
