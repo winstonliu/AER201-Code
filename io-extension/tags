@@ -4,3 +4,152 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
+ALL_BUTTON_BITS	lib/LiquidTWI2/LiquidTWI2.h	42;"	d
+BLUE	lib/LiquidTWI2/LiquidTWI2.h	24;"	d
+BUTTON_DOWN	lib/LiquidTWI2/LiquidTWI2.h	30;"	d
+BUTTON_LEFT	lib/LiquidTWI2/LiquidTWI2.h	31;"	d
+BUTTON_RIGHT	lib/LiquidTWI2/LiquidTWI2.h	32;"	d
+BUTTON_SELECT	lib/LiquidTWI2/LiquidTWI2.h	33;"	d
+BUTTON_UP	lib/LiquidTWI2/LiquidTWI2.h	29;"	d
+DEFAULT_TYPE	lib/LiquidTWI2/LiquidTWI2.h	129;"	d
+DETECT_DEVICE	lib/LiquidTWI2/LiquidTWI2.h	16;"	d
+GREEN	lib/LiquidTWI2/LiquidTWI2.h	22;"	d
+LCD_1LINE	lib/LiquidTWI2/LiquidTWI2.h	122;"	d
+LCD_2LINE	lib/LiquidTWI2/LiquidTWI2.h	121;"	d
+LCD_4BITMODE	lib/LiquidTWI2/LiquidTWI2.h	120;"	d
+LCD_5x10DOTS	lib/LiquidTWI2/LiquidTWI2.h	123;"	d
+LCD_5x8DOTS	lib/LiquidTWI2/LiquidTWI2.h	124;"	d
+LCD_BACKLIGHT	lib/LiquidTWI2/LiquidTWI2.h	110;"	d
+LCD_BLINKOFF	lib/LiquidTWI2/LiquidTWI2.h	105;"	d
+LCD_BLINKON	lib/LiquidTWI2/LiquidTWI2.h	104;"	d
+LCD_CLEARDISPLAY	lib/LiquidTWI2/LiquidTWI2.h	88;"	d
+LCD_CURSORMOVE	lib/LiquidTWI2/LiquidTWI2.h	114;"	d
+LCD_CURSOROFF	lib/LiquidTWI2/LiquidTWI2.h	107;"	d
+LCD_CURSORON	lib/LiquidTWI2/LiquidTWI2.h	106;"	d
+LCD_CURSORSHIFT	lib/LiquidTWI2/LiquidTWI2.h	92;"	d
+LCD_DISPLAYCONTROL	lib/LiquidTWI2/LiquidTWI2.h	91;"	d
+LCD_DISPLAYMOVE	lib/LiquidTWI2/LiquidTWI2.h	113;"	d
+LCD_DISPLAYOFF	lib/LiquidTWI2/LiquidTWI2.h	109;"	d
+LCD_DISPLAYON	lib/LiquidTWI2/LiquidTWI2.h	108;"	d
+LCD_ENTRYLEFT	lib/LiquidTWI2/LiquidTWI2.h	99;"	d
+LCD_ENTRYMODESET	lib/LiquidTWI2/LiquidTWI2.h	90;"	d
+LCD_ENTRYRIGHT	lib/LiquidTWI2/LiquidTWI2.h	98;"	d
+LCD_ENTRYSHIFTDECREMENT	lib/LiquidTWI2/LiquidTWI2.h	101;"	d
+LCD_ENTRYSHIFTINCREMENT	lib/LiquidTWI2/LiquidTWI2.h	100;"	d
+LCD_FUNCTIONSET	lib/LiquidTWI2/LiquidTWI2.h	93;"	d
+LCD_MOVELEFT	lib/LiquidTWI2/LiquidTWI2.h	116;"	d
+LCD_MOVERIGHT	lib/LiquidTWI2/LiquidTWI2.h	115;"	d
+LCD_RETURNHOME	lib/LiquidTWI2/LiquidTWI2.h	89;"	d
+LCD_SETCGRAMADDR	lib/LiquidTWI2/LiquidTWI2.h	94;"	d
+LCD_SETDDRAMADDR	lib/LiquidTWI2/LiquidTWI2.h	95;"	d
+LTI_TYPE_MCP23008	lib/LiquidTWI2/LiquidTWI2.h	127;"	d
+LTI_TYPE_MCP23017	lib/LiquidTWI2/LiquidTWI2.h	128;"	d
+LcdDetected	lib/LiquidTWI2/LiquidTWI2.h	/^	uint8_t LcdDetected() { return _deviceDetected; }$/;"	f	class:LiquidTWI2
+LiquidTWI2	lib/LiquidTWI2/LiquidTWI2.cpp	/^LiquidTWI2::LiquidTWI2(uint8_t i2cAddr,uint8_t detectDevice, uint8_t backlightInverted) {$/;"	f	class:LiquidTWI2
+LiquidTWI2	lib/LiquidTWI2/LiquidTWI2.h	/^class LiquidTWI2 : public Print {$/;"	c
+LiquidTWI2_h	lib/LiquidTWI2/LiquidTWI2.h	2;"	d
+M17_BIT_B0	lib/LiquidTWI2/LiquidTWI2.cpp	53;"	d	file:
+M17_BIT_B1	lib/LiquidTWI2/LiquidTWI2.cpp	52;"	d	file:
+M17_BIT_B2	lib/LiquidTWI2/LiquidTWI2.cpp	51;"	d	file:
+M17_BIT_B3	lib/LiquidTWI2/LiquidTWI2.cpp	50;"	d	file:
+M17_BIT_B4	lib/LiquidTWI2/LiquidTWI2.cpp	49;"	d	file:
+M17_BIT_BZ	lib/LiquidTWI2/LiquidTWI2.cpp	48;"	d	file:
+M17_BIT_D4	lib/LiquidTWI2/LiquidTWI2.cpp	41;"	d	file:
+M17_BIT_D5	lib/LiquidTWI2/LiquidTWI2.cpp	42;"	d	file:
+M17_BIT_D6	lib/LiquidTWI2/LiquidTWI2.cpp	43;"	d	file:
+M17_BIT_D7	lib/LiquidTWI2/LiquidTWI2.cpp	44;"	d	file:
+M17_BIT_EN	lib/LiquidTWI2/LiquidTWI2.cpp	40;"	d	file:
+M17_BIT_LB	lib/LiquidTWI2/LiquidTWI2.cpp	45;"	d	file:
+M17_BIT_LG	lib/LiquidTWI2/LiquidTWI2.cpp	46;"	d	file:
+M17_BIT_LR	lib/LiquidTWI2/LiquidTWI2.cpp	47;"	d	file:
+M17_BIT_RS	lib/LiquidTWI2/LiquidTWI2.cpp	38;"	d	file:
+M17_BIT_RW	lib/LiquidTWI2/LiquidTWI2.cpp	39;"	d	file:
+MCP23008	lib/LiquidTWI2/LiquidTWI2.h	9;"	d
+MCP23008_ADDRESS	lib/LiquidTWI2/LiquidTWI2.h	44;"	d
+MCP23008_DEFVAL	lib/LiquidTWI2/LiquidTWI2.h	50;"	d
+MCP23008_GPINTEN	lib/LiquidTWI2/LiquidTWI2.h	49;"	d
+MCP23008_GPIO	lib/LiquidTWI2/LiquidTWI2.h	56;"	d
+MCP23008_GPPU	lib/LiquidTWI2/LiquidTWI2.h	53;"	d
+MCP23008_INTCAP	lib/LiquidTWI2/LiquidTWI2.h	55;"	d
+MCP23008_INTCON	lib/LiquidTWI2/LiquidTWI2.h	51;"	d
+MCP23008_INTF	lib/LiquidTWI2/LiquidTWI2.h	54;"	d
+MCP23008_IOCON	lib/LiquidTWI2/LiquidTWI2.h	52;"	d
+MCP23008_IODIR	lib/LiquidTWI2/LiquidTWI2.h	47;"	d
+MCP23008_IPOL	lib/LiquidTWI2/LiquidTWI2.h	48;"	d
+MCP23008_OLAT	lib/LiquidTWI2/LiquidTWI2.h	57;"	d
+MCP23017	lib/LiquidTWI2/LiquidTWI2.h	8;"	d
+MCP23017_ADDRESS	lib/LiquidTWI2/LiquidTWI2.h	59;"	d
+MCP23017_DEFVALA	lib/LiquidTWI2/LiquidTWI2.h	65;"	d
+MCP23017_DEFVALB	lib/LiquidTWI2/LiquidTWI2.h	78;"	d
+MCP23017_GPINTENA	lib/LiquidTWI2/LiquidTWI2.h	64;"	d
+MCP23017_GPINTENB	lib/LiquidTWI2/LiquidTWI2.h	77;"	d
+MCP23017_GPIOA	lib/LiquidTWI2/LiquidTWI2.h	71;"	d
+MCP23017_GPIOB	lib/LiquidTWI2/LiquidTWI2.h	84;"	d
+MCP23017_GPPUA	lib/LiquidTWI2/LiquidTWI2.h	68;"	d
+MCP23017_GPPUB	lib/LiquidTWI2/LiquidTWI2.h	81;"	d
+MCP23017_INTCAPA	lib/LiquidTWI2/LiquidTWI2.h	70;"	d
+MCP23017_INTCAPB	lib/LiquidTWI2/LiquidTWI2.h	83;"	d
+MCP23017_INTCONA	lib/LiquidTWI2/LiquidTWI2.h	66;"	d
+MCP23017_INTCONB	lib/LiquidTWI2/LiquidTWI2.h	79;"	d
+MCP23017_INTFA	lib/LiquidTWI2/LiquidTWI2.h	69;"	d
+MCP23017_INTFB	lib/LiquidTWI2/LiquidTWI2.h	82;"	d
+MCP23017_IOCONA	lib/LiquidTWI2/LiquidTWI2.h	67;"	d
+MCP23017_IOCONB	lib/LiquidTWI2/LiquidTWI2.h	80;"	d
+MCP23017_IODIRA	lib/LiquidTWI2/LiquidTWI2.h	62;"	d
+MCP23017_IODIRB	lib/LiquidTWI2/LiquidTWI2.h	75;"	d
+MCP23017_IPOLA	lib/LiquidTWI2/LiquidTWI2.h	63;"	d
+MCP23017_IPOLB	lib/LiquidTWI2/LiquidTWI2.h	76;"	d
+MCP23017_OLATA	lib/LiquidTWI2/LiquidTWI2.h	72;"	d
+MCP23017_OLATB	lib/LiquidTWI2/LiquidTWI2.h	85;"	d
+OFF	lib/LiquidTWI2/LiquidTWI2.h	19;"	d
+PANELOLU2_ENCODER_A	lib/LiquidTWI2/LiquidTWI2.h	38;"	d
+PANELOLU2_ENCODER_B	lib/LiquidTWI2/LiquidTWI2.h	37;"	d
+PANELOLU2_ENCODER_C	lib/LiquidTWI2/LiquidTWI2.h	36;"	d
+RED	lib/LiquidTWI2/LiquidTWI2.h	20;"	d
+TEAL	lib/LiquidTWI2/LiquidTWI2.h	23;"	d
+VIOLET	lib/LiquidTWI2/LiquidTWI2.h	25;"	d
+WHITE	lib/LiquidTWI2/LiquidTWI2.h	26;"	d
+Wire	lib/LiquidTWI2/LiquidTWI2.cpp	21;"	d	file:
+YELLOW	lib/LiquidTWI2/LiquidTWI2.h	21;"	d
+_backlightBits	lib/LiquidTWI2/LiquidTWI2.h	/^	uint16_t _backlightBits; \/\/ only for MCP23017$/;"	m	class:LiquidTWI2
+_backlightInverted	lib/LiquidTWI2/LiquidTWI2.h	/^	uint8_t _backlightInverted;$/;"	m	class:LiquidTWI2
+_currline	lib/LiquidTWI2/LiquidTWI2.h	/^	uint8_t _numlines,_currline;$/;"	m	class:LiquidTWI2
+_deviceDetected	lib/LiquidTWI2/LiquidTWI2.h	/^	uint8_t _deviceDetected;$/;"	m	class:LiquidTWI2
+_displaycontrol	lib/LiquidTWI2/LiquidTWI2.h	/^	uint8_t _displaycontrol;$/;"	m	class:LiquidTWI2
+_displayfunction	lib/LiquidTWI2/LiquidTWI2.h	/^	uint8_t _displayfunction;$/;"	m	class:LiquidTWI2
+_displaymode	lib/LiquidTWI2/LiquidTWI2.h	/^	uint8_t _displaymode;$/;"	m	class:LiquidTWI2
+_i2cAddr	lib/LiquidTWI2/LiquidTWI2.h	/^	uint8_t _i2cAddr;$/;"	m	class:LiquidTWI2
+_mcpType	lib/LiquidTWI2/LiquidTWI2.h	/^	uint8_t _mcpType; \/\/ LTI_MODE_xx$/;"	m	class:LiquidTWI2
+_numlines	lib/LiquidTWI2/LiquidTWI2.h	/^	uint8_t _numlines,_currline;$/;"	m	class:LiquidTWI2
+autoscroll	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::autoscroll(void) {$/;"	f	class:LiquidTWI2
+begin	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {$/;"	f	class:LiquidTWI2
+blink	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::blink() {$/;"	f	class:LiquidTWI2
+burstBits16	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::burstBits16(uint16_t value) {$/;"	f	class:LiquidTWI2
+burstBits8	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::burstBits8(uint8_t value) {$/;"	f	class:LiquidTWI2
+burstBits8b	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::burstBits8b(uint8_t value) {$/;"	f	class:LiquidTWI2
+buzz	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::buzz(long duration, uint16_t freq) {$/;"	f	class:LiquidTWI2
+clear	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::clear()$/;"	f	class:LiquidTWI2
+command	lib/LiquidTWI2/LiquidTWI2.cpp	/^inline void LiquidTWI2::command(uint8_t value) {$/;"	f	class:LiquidTWI2
+createChar	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::createChar(uint8_t location, uint8_t charmap[]) {$/;"	f	class:LiquidTWI2
+cursor	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::cursor() {$/;"	f	class:LiquidTWI2
+display	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::display() {$/;"	f	class:LiquidTWI2
+home	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::home()$/;"	f	class:LiquidTWI2
+leftToRight	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::leftToRight(void) {$/;"	f	class:LiquidTWI2
+noAutoscroll	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::noAutoscroll(void) {$/;"	f	class:LiquidTWI2
+noBlink	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::noBlink() {$/;"	f	class:LiquidTWI2
+noCursor	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::noCursor() {$/;"	f	class:LiquidTWI2
+noDisplay	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::noDisplay() {$/;"	f	class:LiquidTWI2
+readButtons	lib/LiquidTWI2/LiquidTWI2.cpp	/^uint8_t LiquidTWI2::readButtons(void) {$/;"	f	class:LiquidTWI2
+readRegister	lib/LiquidTWI2/LiquidTWI2.cpp	/^uint8_t LiquidTWI2::readRegister(uint8_t reg) {$/;"	f	class:LiquidTWI2
+rightToLeft	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::rightToLeft(void) {$/;"	f	class:LiquidTWI2
+scrollDisplayLeft	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::scrollDisplayLeft(void) {$/;"	f	class:LiquidTWI2
+scrollDisplayRight	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::scrollDisplayRight(void) {$/;"	f	class:LiquidTWI2
+send	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::send(uint8_t value, uint8_t mode) {$/;"	f	class:LiquidTWI2
+setBacklight	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::setBacklight(uint8_t status) {$/;"	f	class:LiquidTWI2
+setCursor	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::setCursor(uint8_t col, uint8_t row)$/;"	f	class:LiquidTWI2
+setMCPType	lib/LiquidTWI2/LiquidTWI2.h	/^	void setMCPType(uint8_t mcptype) {$/;"	f	class:LiquidTWI2
+setRegister	lib/LiquidTWI2/LiquidTWI2.cpp	/^void LiquidTWI2::setRegister(uint8_t reg, uint8_t value) {$/;"	f	class:LiquidTWI2
+wirerecv	lib/LiquidTWI2/LiquidTWI2.cpp	/^static inline uint8_t wirerecv(void) {$/;"	f	file:
+wiresend	lib/LiquidTWI2/LiquidTWI2.cpp	/^static inline void wiresend(uint8_t x) {$/;"	f	file:
+write	lib/LiquidTWI2/LiquidTWI2.cpp	/^inline size_t LiquidTWI2::write(uint8_t value) {$/;"	f	class:LiquidTWI2
+write	lib/LiquidTWI2/LiquidTWI2.cpp	/^inline void LiquidTWI2::write(uint8_t value) {$/;"	f	class:LiquidTWI2
