@@ -1,0 +1,3 @@
+[submodule "photoresistor/lib/Grove_LCD_RGB_Backlight"]
+	path = photoresistor/lib/Grove_LCD_RGB_Backlight
+	url = git@github.com:winstonliu/Grove_LCD_RGB_Backlight.git
