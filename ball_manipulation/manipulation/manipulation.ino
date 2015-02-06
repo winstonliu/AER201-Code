@@ -28,20 +28,28 @@ void loop()
     //Triggers the motor
     if(read_val(hopper_sensor) > 600 && !on){
       on = true;
+      Serial.println("Motor starting");
     }
 
     if(on){
       boolean ret = turn_motor(claw_in);
       if(ret){
         on = false;
-        claw_in = !claw_in;        
+        claw_in = !claw_in;
+        if(!claw_in){
+          Serial.println("Motor stopped");
+          delay(2000);
+          on = true;
+          Serial.println("Motor resetting");
+        }else{
+          Serial.println("Motor reset");
+          boolean ret = ball_collected();
+          if(ret){
+            blink_led();
+          }
+        }  
       }
-    }
-
-    if(!claw_in){
-      delay(2000);
-      on = true;
-    }  
+    }    
 
     delay(500);
 }
@@ -53,12 +61,23 @@ int read_val(int pin){
     int sensorValue = analogRead(pin);
     
     // print that variable over the serial connection
-    Serial.print("Pin #");
-    Serial.print(pin);
-    Serial.print(": ");
-    Serial.println(sensorValue);
+    //Serial.print("Pin #");
+    //Serial.print(pin);
+    //Serial.print(": ");
+    //Serial.println(sensorValue);
 
     return sensorValue;
+}
+
+boolean ball_collected(){
+  return true;
+}  
+
+void blink_led(){
+  Serial.println("Blinking LED");
+  digitalWrite(LED, HIGH);
+  delay(500);
+  digitalWrite(LED, LOW);
 }
 
 //-----Drive
