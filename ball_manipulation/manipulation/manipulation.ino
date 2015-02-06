@@ -8,6 +8,8 @@ int motor_left[] = {3,2};
 
 int hopper_sensor = 1;
 int encoder_sensor = 0;
+int ball_collected_sensor = 2;
+int LED = 10;
 
 boolean claw_in = true;
 boolean on = false;
@@ -28,18 +30,18 @@ void loop()
       on = true;
     }
 
-    if(on){      
+    if(on){
       boolean ret = turn_motor(claw_in);
       if(ret){
         on = false;
-        claw_in = !claw_in;
+        claw_in = !claw_in;        
       }
     }
 
     if(!claw_in){
       delay(2000);
       on = true;
-    }
+    }  
 
     delay(500);
 }
