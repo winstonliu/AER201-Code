@@ -1,0 +1,12 @@
+To use the submodule in ball_manipulation/lib/Grove_LCD run:
+
+git submodule update
+
+When you want to switch branches, create an empty branch and checkout that first. Remove everything remaining. ie,
+
+git checkout empty
+rm -rf *
+
+And then proceed to checkout whatever branch suits your fancy.
+
+There's probably a better way to do this on newer versions of git.
