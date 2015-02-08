@@ -3,6 +3,9 @@
 // if you need PWM, just use the PWM outputs on the Arduino
 // and instead of digitalWrite, you should use the analogWrite command
 
+#include <Wire.h>
+#include "rgb_lcd.h"
+
 // --------------------------------------------------------------------------- Motors
 int motor_left[] = {3,2};
 
@@ -10,6 +13,8 @@ int hopper_sensor = 1;
 int encoder_sensor = 0;
 int ball_collected_sensor = 2;
 int LED = 10;
+
+rgb_lcd lcd;
 
 boolean claw_in = true;
 boolean on = false;
@@ -19,6 +24,7 @@ boolean engaged = false;
 // --------------------------------------------------------------------------- Setup
 void setup() {
     Serial.begin(9600);
+		lcd.begin(16,2);
     pinMode(motor_left[0], OUTPUT);
     pinMode(motor_left[1], OUTPUT);
 }
@@ -29,6 +35,8 @@ void loop()
     if(read_val(hopper_sensor) > 600 && !on){
       on = true;
       Serial.println("Motor starting");
+			lcd.clear();	
+			lcd.print("Motor Start");
     }
 
     if(on){
@@ -38,14 +46,23 @@ void loop()
         claw_in = !claw_in;
         if(!claw_in){
           Serial.println("Motor stopped");
+					lcd.clear();	
+					lcd.print("Motor Stop");
           delay(2000);
           on = true;
           Serial.println("Motor resetting");
+					lcd.clear();	
+					lcd.print("Motor Reset Now");
         }else{
           Serial.println("Motor reset");
+					lcd.clear();	
+					lcd.print("Motor Reset");
           boolean ret = ball_collected();
           if(ret){
             blink_led();
+						lcd.clear();	
+						lcd.println("Mission");
+						lcd.print("Accomplished");
           }
         }  
       }
