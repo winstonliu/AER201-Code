@@ -1,0 +1,3 @@
+[submodule "ball_manipulation/lib/Grove_LCD"]
+	path = ball_manipulation/lib/Grove_LCD
+	url = git@github.com:winstonliu/Grove_LCD_RGB_Backlight.git
