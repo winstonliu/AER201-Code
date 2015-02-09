@@ -3,16 +3,22 @@
 // if you need PWM, just use the PWM outputs on the Arduino
 // and instead of digitalWrite, you should use the analogWrite command
 
+// 0 implies using optical encoder, 1 implies breakbeam
+
 #include <Wire.h>
 #include "rgb_lcd.h"
 
 // --------------------------------------------------------------------------- Motors
 const int MOTOR_LEFT[] = {5,4};
 
-const int HOPPER_SENSOR = 3;
-const int ENCODER_SENSOR = 2;
-const int ball_collected_sensor = 7;
+const int START_BTN = 7;
+const int ARM_SENSOR = 3;
+const int KILL_SWITCH = 2;
 const int LED = 10;
+const int retract_time = 1000;
+
+const int BREAKBEAM = 0;
+volatile bool motor_state = false;
 
 rgb_lcd lcd;
 
@@ -20,21 +26,35 @@ boolean claw_dir = true;
 boolean motor_on = false;
 boolean engaged = false;
 
+boolean arm_retracting = false;
 
 // --------------------------------------------------------------------------- Setup
+
+void set_bools()
+{
+	claw_dir = true;
+	motor_on = false;
+	engaged = false;
+	arm_retracting = false;
+}
+
 void setup() 
 {
     Serial.begin(9600);
 	lcd.begin(16,2);
     pinMode(MOTOR_LEFT[0], OUTPUT);
     pinMode(MOTOR_LEFT[1], OUTPUT);
-	pinMode(HOPPER_SENSOR, INPUT);
-	pinMode(ENCODER_SENSOR, INPUT);
+	pinMode(START_BTN, INPUT);
+
+	//attachInterrupt(0, kill_all, RISING);
+
+	if (BREAKBEAM == 1)
+		attachInterrupt(1, toggle_motor, CHANGE);
 }
 
 void loop()
 {    
-	int buttonstate = digitalRead(HOPPER_SENSOR);
+	int buttonstate = digitalRead(START_BTN);
     //Triggers the motor
     if(buttonstate == HIGH && !motor_on)
 	{
@@ -42,14 +62,21 @@ void loop()
 		Serial.println("Motor starting");
 		lcd.clear();	
 		lcd.print("Motor Start");
+	
+		if (BREAKBEAM == 1)
+		{
+			motor_l();	
+			lcd.setCursor(0,1);
+			lcd.print("BREAKBEAM");
+		}
     }
 
-    if(motor_on)
+    if(motor_on && BREAKBEAM == 0)
 	{
 		boolean ret = turn_motor(claw_dir);
 		if(ret)
 		{
-			on = false;
+			motor_on = false;
 			claw_dir = !claw_dir;
 			if(!claw_dir)
 			{
@@ -58,15 +85,15 @@ void loop()
 				lcd.print("Motor Stop");
 				delay(2000);
 				motor_on = true;
-				Serial.println("Motor resetting");
+				Serial.println("Motor Reset");
 				lcd.clear();	
-				lcd.print("Motor Reset Now");
+				lcd.print("Motor Reset");
 			}
 			else
 			{
-				Serial.println("Motor reset");
+				Serial.println("Motor Reversing");
 				lcd.clear();
-				lcd.print("Motor Reset");
+				lcd.print("Motor Reversing");
 				boolean ret = ball_collected();
 				if(ret)
 				{
@@ -79,13 +106,34 @@ void loop()
 			}  
 		}
     }    
+	else if (BREAKBEAM == 1)
+	{
+		if (arm_retracting == true && motor_on == true)
+		{
+			delay(2000);
+			motor_r();		
+			delay(retract_time);
+			motor_stop();	
+			lcd.clear();	
+			lcd.print("Mission");
+			lcd.setCursor(0,1);
+			lcd.print("Accomplished");
+			set_bools();
+		}
+	}
     delay(500);
 	Serial.print("claw_dir: ");
 	Serial.print(claw_dir);
 	Serial.print(" motor_on: ");
 	Serial.print(motor_on);
+	Serial.print(" button state: ");
+	Serial.print(buttonstate);
 	Serial.print(" engaged: ");
-	Serial.println(engaged);
+	Serial.print(engaged);
+	Serial.print(" motor state: ");
+	Serial.print(motor_state);
+	Serial.print(" arm retracting: ");
+	Serial.println(arm_retracting);
 }
 
 
@@ -120,9 +168,10 @@ void blink_led(){
 //--------------------
 boolean turn_motor(boolean left)
 {
-	int sensorstate = digitalRead(ENCODER_SENSOR);
+	int sensorstate = digitalRead(ARM_SENSOR);
+
 	//Runs the motor
-    if(sensorstate == LOW && motor_on)
+	if(sensorstate == LOW && motor_on)
 	{
 		if(engaged)
 		{    //Kill motor
@@ -131,14 +180,14 @@ boolean turn_motor(boolean left)
 			motor_stop();
 			return true;
 		}
-    }    
-    else if (sensorstate == HIGH && motor_on)
+	}    
+	else if (sensorstate == HIGH && motor_on)
 	{
 		if(!engaged)
 		{
 			engaged = true;
 		}
-    }
+	}
 
     //Output of FSM
     if(left)
@@ -171,3 +220,19 @@ void motor_l()
     digitalWrite(MOTOR_LEFT[1], HIGH);    
 }
 
+void toggle_motor()
+{
+	motor_state = !motor_state;	
+	motor_stop();
+	//lcd.clear();
+	//lcd.print("Motor Reversing");
+	arm_retracting = true;	
+}
+
+void kill_all()
+{
+	motor_stop();
+	lcd.clear();
+	lcd.print("Sagan is dead");
+	set_bools();		
+}
