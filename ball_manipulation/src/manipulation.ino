@@ -7,8 +7,10 @@
 
 #include <Wire.h>
 #include "rgb_lcd.h"
+#include "motor.h"
 
 // --------------------------------------------------------------------------- Motors
+// [enable, direction]
 const int MOTOR_LEFT[] = {5,4};
 
 const int START_BTN = 3;
@@ -45,10 +47,10 @@ void setup()
 {
     Serial.begin(9600);
 	lcd.begin(16,2);
-    pinMode(MOTOR_LEFT[0], OUTPUT);
-    pinMode(MOTOR_LEFT[1], OUTPUT);
 	pinMode(START_BTN, INPUT);
 	pinMode(ARM_SENSOR, INPUT);
+
+	motor arm(5,4);
 
 	//attachInterrupt(0, kill_all, RISING);
 
@@ -69,7 +71,7 @@ void loop()
 	
 		if (BREAKBEAM == 1)
 		{
-			motor_l();	
+			arm.left(); 
 			lcd.setCursor(0,1);
 			lcd.print("BREAKBEAM");
 		}
@@ -77,8 +79,7 @@ void loop()
 
     if(motor_on && BREAKBEAM == 0)
 	{
-		boolean ret = turn_motor(claw_dir);
-		if(ret)
+		if(turn_motor(arm_dir))
 		{
 			motor_on = false;
 			claw_dir = !claw_dir;
@@ -98,15 +99,11 @@ void loop()
 				Serial.println("Motor Reversing");
 				lcd.clear();
 				lcd.print("Motor Reversing");
-				boolean ret = ball_collected();
-				if(ret)
-				{
-					blink_led();
-					lcd.clear();	
-					lcd.print("Mission");
-					lcd.setCursor(0,1);
-					lcd.print("Accomplished");
-				}
+				blink_led();
+				lcd.clear();	
+				lcd.print("Mission");
+				lcd.setCursor(0,1);
+				lcd.print("Accomplished");
 			}  
 		}
     }    
@@ -126,9 +123,9 @@ void loop()
 			delay(2000);
 			lcd.clear();	
 			lcd.print("Retracting");
-			motor_r();		
+			arm.right();	
 			delay(4000);
-			motor_stop();	
+			arm.stop(); 
 			lcd.clear();	
 			lcd.print("Mission");
 			lcd.setCursor(0,1);
@@ -174,10 +171,6 @@ int read_val(int pin){
 }
 */
 
-boolean ball_collected(){
-	return true;
-}  
-
 void blink_led(){
 	Serial.println("Blinking LED");
 	digitalWrite(LED, HIGH);
@@ -198,7 +191,7 @@ boolean turn_motor(boolean left)
 		{    //Kill motor
 			Serial.println("Motor Off");        
 			engaged = false;
-			motor_stop();
+			arm.stop();
 			return true;
 		}
 	}    
@@ -213,32 +206,14 @@ boolean turn_motor(boolean left)
     //Output of FSM
     if(left)
 	{
-		motor_l();
+		arm.left();
     }
     else
 	{
-		motor_r();
+		arm.right();
     }
     
     return false;
-}
-
-void motor_stop()
-{
-    digitalWrite(MOTOR_LEFT[0], LOW);
-    digitalWrite(MOTOR_LEFT[1], LOW);    
-}
-
-void motor_r()
-{
-    digitalWrite(MOTOR_LEFT[0], HIGH);
-    digitalWrite(MOTOR_LEFT[1], LOW);
-}
-
-void motor_l()
-{
-    digitalWrite(MOTOR_LEFT[0], HIGH);
-    digitalWrite(MOTOR_LEFT[1], HIGH);    
 }
 
 void toggle_motor()
@@ -246,7 +221,7 @@ void toggle_motor()
 	if (motor_state == true)
 	{
 		motor_state = false;	
-		motor_stop();
+		arm.stop();
 		//lcd.clear();
 		//lcd.print("Motor Reversing");
 		arm_retracting = true;	
@@ -255,7 +230,7 @@ void toggle_motor()
 
 void kill_all()
 {
-	motor_stop();
+	arm.stop();
 	lcd.clear();
 	lcd.print("Sagan is dead");
 	set_bools();		
