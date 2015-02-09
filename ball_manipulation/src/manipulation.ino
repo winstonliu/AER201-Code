@@ -11,14 +11,16 @@
 // --------------------------------------------------------------------------- Motors
 const int MOTOR_LEFT[] = {5,4};
 
-const int START_BTN = 7;
-const int ARM_SENSOR = 3;
-const int KILL_SWITCH = 2;
+const int START_BTN = 3;
+const int ARM_SENSOR = 2;
+//const int KILL_SWITCH = 2;
 const int LED = 10;
 const int retract_time = 1000;
 
-const int BREAKBEAM = 0;
-volatile bool motor_state = false;
+const int BREAKBEAM = 1;
+volatile bool motor_state = true;
+
+int print_cnt = 0;
 
 rgb_lcd lcd;
 
@@ -36,6 +38,7 @@ void set_bools()
 	motor_on = false;
 	engaged = false;
 	arm_retracting = false;
+	motor_state = true;
 }
 
 void setup() 
@@ -45,11 +48,12 @@ void setup()
     pinMode(MOTOR_LEFT[0], OUTPUT);
     pinMode(MOTOR_LEFT[1], OUTPUT);
 	pinMode(START_BTN, INPUT);
+	pinMode(ARM_SENSOR, INPUT);
 
 	//attachInterrupt(0, kill_all, RISING);
 
 	if (BREAKBEAM == 1)
-		attachInterrupt(1, toggle_motor, CHANGE);
+		attachInterrupt(0, toggle_motor, RISING);
 }
 
 void loop()
@@ -108,32 +112,49 @@ void loop()
     }    
 	else if (BREAKBEAM == 1)
 	{
+		/*if (digitalRead(ARM_SENSOR) == true)
+		{
+			toggle_motor();
+		}
+*/
+
 		if (arm_retracting == true && motor_on == true)
 		{
+			//detachInterrupt(0);
+			lcd.clear();	
+			lcd.print("Stopped");
 			delay(2000);
+			lcd.clear();	
+			lcd.print("Retracting");
 			motor_r();		
-			delay(retract_time);
+			delay(4000);
 			motor_stop();	
 			lcd.clear();	
 			lcd.print("Mission");
 			lcd.setCursor(0,1);
 			lcd.print("Accomplished");
+			attachInterrupt(0, toggle_motor, CHANGE);
 			set_bools();
 		}
 	}
-    delay(500);
-	Serial.print("claw_dir: ");
-	Serial.print(claw_dir);
-	Serial.print(" motor_on: ");
-	Serial.print(motor_on);
-	Serial.print(" button state: ");
-	Serial.print(buttonstate);
-	Serial.print(" engaged: ");
-	Serial.print(engaged);
-	Serial.print(" motor state: ");
-	Serial.print(motor_state);
-	Serial.print(" arm retracting: ");
-	Serial.println(arm_retracting);
+    delay(50);
+	if (print_cnt >= 10)
+	{
+		print_cnt = 0;
+		Serial.print("claw_dir: ");
+		Serial.print(claw_dir);
+		Serial.print(" motor_on: ");
+		Serial.print(motor_on);
+		Serial.print(" button state: ");
+		Serial.print(buttonstate);
+		//Serial.print(" engaged: ");
+		//Serial.print(engaged);
+		Serial.print(" togglestate: ");
+		Serial.print(motor_state);
+		Serial.print(" arm retracting: ");
+		Serial.println(arm_retracting);
+	}
+	++print_cnt;
 }
 
 
@@ -222,11 +243,14 @@ void motor_l()
 
 void toggle_motor()
 {
-	motor_state = !motor_state;	
-	motor_stop();
-	//lcd.clear();
-	//lcd.print("Motor Reversing");
-	arm_retracting = true;	
+	if (motor_state == true)
+	{
+		motor_state = false;	
+		motor_stop();
+		//lcd.clear();
+		//lcd.print("Motor Reversing");
+		arm_retracting = true;	
+	}
 }
 
 void kill_all()
