@@ -1,0 +1,38 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+BLACK	irsensor/lib/ref/photoLineDetection.h	13;"	d
+BLACK	irsensor/src/sensor.h	13;"	d
+CALIBRATED	irsensor/lib/ref/photoLineDetection.h	15;"	d
+IRSensor	irsensor/src/irsensor.cpp	/^IRSensor::IRSensor(int sv)$/;"	f	class:IRSensor
+IRSensor	irsensor/src/irsensor.h	/^class IRSensor: public Sensor$/;"	c
+PhotoLineDetection	irsensor/lib/ref/photoLineDetection.cpp	/^PhotoLineDetection::PhotoLineDetection(int newSensorPin)$/;"	f	class:PhotoLineDetection
+PhotoLineDetection	irsensor/lib/ref/photoLineDetection.h	/^class PhotoLineDetection$/;"	c
+PhotoLineDetection_h	irsensor/lib/ref/photoLineDetection.h	7;"	d
+PhotoThresholdValues	irsensor/lib/ref/photoLineDetection.h	/^struct PhotoThresholdValues$/;"	s
+RED	irsensor/lib/ref/photoLineDetection.h	14;"	d
+RED	irsensor/src/sensor.h	14;"	d
+Sensor	irsensor/src/sensor.h	/^class Sensor$/;"	c
+WHITE	irsensor/lib/ref/photoLineDetection.h	12;"	d
+WHITE	irsensor/src/sensor.h	12;"	d
+black	irsensor/lib/ref/photoLineDetection.h	/^	int black;$/;"	m	struct:PhotoThresholdValues
+calibrate	irsensor/lib/ref/photoLineDetection.cpp	/^void PhotoLineDetection::calibrate(int calibrate_color)$/;"	f	class:PhotoLineDetection
+calibrate	irsensor/src/sensor.cpp	/^void Sensor::calibrate(int cc)$/;"	f	class:Sensor
+checkSensor	irsensor/lib/ref/photoLineDetection.cpp	/^int PhotoLineDetection::checkSensor()$/;"	f	class:PhotoLineDetection
+detect	irsensor/lib/ref/photoLineDetection.cpp	/^int PhotoLineDetection::detect()$/;"	f	class:PhotoLineDetection
+detect	irsensor/src/irsensor.cpp	/^int IRSensor::detect()$/;"	f	class:IRSensor
+irsensor_h	irsensor/src/irsensor.h	2;"	d
+readSensor	irsensor/src/sensor.cpp	/^int Sensor::readSensor()$/;"	f	class:Sensor
+red	irsensor/lib/ref/photoLineDetection.h	/^	int red;$/;"	m	struct:PhotoThresholdValues
+sensorPin	irsensor/lib/ref/photoLineDetection.h	/^		int sensorPin;$/;"	m	class:PhotoLineDetection
+sensorPin	irsensor/src/sensor.h	/^		int sensorPin;$/;"	m	class:Sensor
+sensorVal	irsensor/src/sensor.h	/^		int sensorVal;$/;"	m	class:Sensor
+sensor_h	irsensor/src/sensor.h	7;"	d
+sensor_thresh	irsensor/lib/ref/photoLineDetection.h	/^		int sensor_thresh;$/;"	m	class:PhotoLineDetection
+sensor_value	irsensor/lib/ref/photoLineDetection.h	/^		int sensor_value;$/;"	m	class:PhotoLineDetection
+thresh	irsensor/lib/ref/photoLineDetection.h	/^		PhotoThresholdValues thresh;$/;"	m	class:PhotoLineDetection
+thresh	irsensor/src/sensor.h	/^		int thresh[3];$/;"	m	class:Sensor
+white	irsensor/lib/ref/photoLineDetection.h	/^	int white;$/;"	m	struct:PhotoThresholdValues
