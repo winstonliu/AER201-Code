@@ -22,9 +22,10 @@ class Sensor
 		int sensorPin;
 		int thresh[3];
 	public:
-		Sensor(int);
+		Sensor(int pin);
 		int readSensor();
-		void calibrate(int);
+		void setThresh(int* values);
+		void calibrate(int color);
 		virtual int detect();
 
 };

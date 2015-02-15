@@ -1,9 +1,9 @@
 #include "sensor.h"
 
-Sensor::Sensor(int sv) 
+Sensor::Sensor(int pin) 
 {
-	pinMode(sv, INPUT);
-	sensorPin = sv;
+	pinMode(pin, INPUT);
+	sensorPin = pin;
 	sensorVal = 0;
 }
 
@@ -13,9 +13,17 @@ int Sensor::readSensor()
 	return sensorVal;
 }
 
-void Sensor::calibrate(int cc)
+void Sensor::setThresh(int* values)
 {
-	switch (cc)
+	for (int i = 0; i < sizeof(thresh)/sizeof(int); ++i)
+	{
+		thresh[i] = values[i];
+	}
+}
+
+void Sensor::calibrate(int color)
+{
+	switch (color)
 	{
 		case WHITE:
 			thresh[WHITE] = sensorVal;	
