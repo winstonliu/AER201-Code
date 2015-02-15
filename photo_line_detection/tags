@@ -1,0 +1,24 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+BLACK	src/photoLineDetection.h	14;"	d
+CALIBRATED	src/photoLineDetection.h	15;"	d
+PhotoLineDetection	src/photoLineDetection.cpp	/^PhotoLineDetection::PhotoLineDetection(int newSensorPin)$/;"	f	class:PhotoLineDetection
+PhotoLineDetection	src/photoLineDetection.h	/^class PhotoLineDetection$/;"	c
+PhotoLineDetection_h	src/photoLineDetection.h	7;"	d
+PhotoThresholdValues	src/photoLineDetection.h	/^struct PhotoThresholdValues$/;"	s
+RED	src/photoLineDetection.h	13;"	d
+WHITE	src/photoLineDetection.h	12;"	d
+black	src/photoLineDetection.h	/^	int black;$/;"	m	struct:PhotoThresholdValues
+calibrate	src/photoLineDetection.cpp	/^void PhotoLineDetection::calibrate(int calibrate_color)$/;"	f	class:PhotoLineDetection
+checkSensor	src/photoLineDetection.cpp	/^int PhotoLineDetection::checkSensor()$/;"	f	class:PhotoLineDetection
+detect	src/photoLineDetection.cpp	/^int PhotoLineDetection::detect()$/;"	f	class:PhotoLineDetection
+red	src/photoLineDetection.h	/^	int red;$/;"	m	struct:PhotoThresholdValues
+sensorPin	src/photoLineDetection.h	/^		int sensorPin;$/;"	m	class:PhotoLineDetection
+sensor_thresh	src/photoLineDetection.h	/^		int sensor_thresh;$/;"	m	class:PhotoLineDetection
+sensor_value	src/photoLineDetection.h	/^		int sensor_value;$/;"	m	class:PhotoLineDetection
+thresh	src/photoLineDetection.h	/^		PhotoThresholdValues thresh;$/;"	m	class:PhotoLineDetection
+white	src/photoLineDetection.h	/^	int white;$/;"	m	struct:PhotoThresholdValues
