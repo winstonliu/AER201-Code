@@ -1,13 +1,13 @@
 #include "sensor.h"
 
-Sensor::Sensor(int sv)
+Sensor::Sensor(int sv) 
 {
 	pinMode(sv, INPUT);
 	sensorPin = sv;
 	sensorVal = 0;
 }
 
-int Sensor::read()
+int Sensor::readSensor()
 {
 	sensorVal = analogRead(sensorPin);
 	return sensorVal;
@@ -27,4 +27,10 @@ void Sensor::calibrate(int cc)
 			thresh[RED] = sensorVal;
 			break;
 	}
+}
+
+int Sensor::detect()
+{
+	//XXX Placeholder
+	return 3;
 }

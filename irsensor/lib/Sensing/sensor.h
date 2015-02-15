@@ -12,6 +12,7 @@
 #define WHITE 0
 #define BLACK 1
 #define RED 2
+#define UNKNOWN 3
 
 class Sensor
 {
@@ -22,9 +23,9 @@ class Sensor
 		int thresh[3];
 	public:
 		Sensor(int);
-		int read();
-		void calibrate(int);	
-		virtual int detect() =0;
+		int readSensor();
+		void calibrate(int);
+		virtual int detect();
 
 };
 

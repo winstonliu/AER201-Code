@@ -1,8 +1,8 @@
 #include "irsensor.h"
 
-const int SP_1 = A0;
-const int SP_2 = A1;
-const int SP_3 = A2;
+IRSensor irsen1(A0);
+IRSensor irsen2(A1);
+IRSensor irsen3(A2);
 
 unsigned int lap_time = 0;
 
@@ -22,10 +22,9 @@ void loop()
 
 void display()
 {
-	Serial.print(analogRead(SP_1));
+	Serial.print(irsen1.readSensor());
 	Serial.print(" ");
-	Serial.print(analogRead(SP_2));
+	Serial.print(irsen2.readSensor());
 	Serial.print(" ");
-	Serial.println(analogRead(SP_3));
-
+	Serial.println(irsen3.readSensor());
 }

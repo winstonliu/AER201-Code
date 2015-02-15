@@ -6,6 +6,7 @@
 class IRSensor: public Sensor
 {
 	public:
+		IRSensor(int);
 		int detect();
 };
 
