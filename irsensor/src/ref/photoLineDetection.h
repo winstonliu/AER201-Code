@@ -10,8 +10,8 @@
 
 // Define color codes for calibration
 #define WHITE 0
-#define RED 1
-#define BLACK 2
+#define BLACK 1
+#define RED 2
 #define CALIBRATED 3
 
 struct PhotoThresholdValues

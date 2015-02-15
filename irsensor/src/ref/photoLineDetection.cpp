@@ -23,11 +23,11 @@ void PhotoLineDetection::calibrate(int calibrate_color)
 		case WHITE:
 			thresh.white = sensor_value;	
 			break;
-		case RED:
-			thresh.red = sensor_value;
-			break;
 		case BLACK:
 			thresh.black = sensor_value;
+			break;
+		case RED:
+			thresh.red = sensor_value;
 			break;
 	}
 }

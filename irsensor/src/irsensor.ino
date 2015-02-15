@@ -1,3 +1,5 @@
+#include "irsensor.h"
+
 const int SP_1 = A0;
 const int SP_2 = A1;
 const int SP_3 = A2;
