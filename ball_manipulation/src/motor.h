@@ -1,5 +1,4 @@
-#ifndef MOTOR_H
-#define MOTOR_H
+#pragma once
 
 enum motor_states
 {
@@ -23,5 +22,3 @@ class motor
 		void left();
 		motor_states get_status();
 }
-
-#endif // motor.h
