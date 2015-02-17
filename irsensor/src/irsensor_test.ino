@@ -20,16 +20,24 @@ void loop()
 {
 	if ((millis() - lap_time) > 500)
 	{
-		display();	
+		display();
 		lap_time = millis();
 	}	
 }
 
 void display()
 {
+	Serial.print("| ");
 	Serial.print(irsen1.readSensor());
 	Serial.print(" ");
+	Serial.print(irsen1.detect());
+	Serial.print(" | ");
 	Serial.print(irsen2.readSensor());
 	Serial.print(" ");
-	Serial.println(irsen3.readSensor());
+	Serial.print(irsen2.detect());
+	Serial.print(" | ");
+	Serial.print(irsen3.readSensor());
+	Serial.print(" ");
+	Serial.print(irsen3.detect());
+	Serial.println(" |");
 }
