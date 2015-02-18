@@ -1,5 +1,4 @@
-#ifndef irsensor_h
-#define irsensor_h
+#pragma once
 
 #include "sensor.h"
 
@@ -9,5 +8,3 @@ class IRSensor: public Sensor
 		IRSensor(int);
 		int detect();
 };
-
-#endif

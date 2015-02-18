@@ -13,14 +13,14 @@ Motor::Motor(int pin_enable, int pin_direction)
 
 void Motor::stop()
 {
-	status = OFF;
+	status = MOTOR_OFF;
     digitalWrite(enable, LOW);
     digitalWrite(direction, LOW);    
 }
 
 void Motor::right(int speed)
 {
-	status = RIGHT;
+	status = MOTOR_RIGHT;
 
 	// PWM
 	if (speed < 255)
@@ -33,7 +33,7 @@ void Motor::right(int speed)
 
 void Motor::left(int speed)
 {
-	status = LEFT;
+	status = MOTOR_LEFT;
 
 	// PWM
 	if (speed < 255)
@@ -44,7 +44,7 @@ void Motor::left(int speed)
     digitalWrite(direction, HIGH);    
 }
 
-motor_states get_status() 
+motor_states Motor::get_status() 
 { 
 	return status; 
 }

@@ -1,5 +1,6 @@
 #include "irsensor.h"
 #include "motor.h"
+#include "pid.h"
 #include "line_pid.h"
 
 // Initialize irsensors
@@ -7,9 +8,9 @@ IRSensor irsen1(A0);
 IRSensor irsen2(A1);
 IRSensor irsen3(A2);
 
-// Initialize motors
-Motor port(4,5);
-Motor starboard(6,7);
+// Initialize motors (en, dir)
+Motor port(3,2);
+Motor starboard(5,4);
 
 // PID values
 const int target_heading = 0;
@@ -17,7 +18,7 @@ int current_heading = 0;
 int motor_pwm = 0;
 
 // PID Control initialize
-PID<int> motor_ctrl(current_heading, target_heading, motor_pwm);
+PID motor_ctrl(current_heading, target_heading, motor_pwm);
 
 // Timing loops
 unsigned int display_lap = 0;
@@ -55,11 +56,7 @@ void loop()
 		irsen3.readSensor();		
 
 		// Update heading
-		current_heading = mapLinePid(
-			(irsen1.detect() > 0) ? true : false,
-			(irsen2.detect() > 0) ? true : false,
-			(irsen3.detect() > 0) ? true : false
-		);
+		current_heading = mapLinePid(irsen1.detect(),irsen2.detect(),irsen3.detect());
 
 		poll_lap = millis();
 	}

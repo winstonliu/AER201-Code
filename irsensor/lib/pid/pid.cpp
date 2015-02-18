@@ -1,30 +1,30 @@
 #include "Arduino.h"
 #include "pid.h"
 
-template <typename T>
-PID<T>::PID(const T& in, const T& set, T& out, double p, double i, double d, bool res)
-		: 
-		input(&in), 
-		setpoint(&set), 
-		output(&out), 
-		response(res),
-		integral(0), 
-		input_prev(0), 
-		time_prev(0), cycle_time(100), 
-		low(0), high(255), 
-		on(OFF) {
-			tune(p,i,d);
-		}
+PID::PID(int& in, const int& set, int& out, double p, double i, double d, bool res)
+{
+	input = &in;
+	setpoint = &set;
+	output = &out;
+	response = res;
+	integral = 0;
+	input_prev = 0;
+	time_prev = 0;
+	cycle_time = 0;
+	low = 0;
+	high = 255;
+	on = 0;
+
+	tune(p, i, d);
+}
 
 // clamp to external limits
-template <typename T>
-void PID<T>::clamp(T& parameter) {
+void PID::clamp(int& parameter) {
 	if (parameter > high) parameter = high;
 	else if (parameter < low) parameter = low;	
 }
 
-template <typename T>
-bool PID<T>::compute() {
+bool PID::compute() {
 	if (!on) return false;
 	unsigned long now = millis();
 	// after 110 days, millis() will reset to 0
@@ -40,9 +40,9 @@ bool PID<T>::compute() {
 	clamp(integral);
 
 	// derivative on measurement to fix derivative kick
-	T input_change = (*input - input_prev);
+	int input_change = (*input - input_prev);
 
-	T out = kp*error + integral - kd*input_change;
+	int out = kp*error + integral - kd*input_change;
 	clamp(out);
 	*output = out;
 
@@ -52,29 +52,26 @@ bool PID<T>::compute() {
 	return true;
 }
 
-template <typename T>
-void PID<T>::tune(double p, double i, double d) {
+void PID::tune(double p, double i, double d) {
 	double cycle_time_sec = ((double)cycle_time) / 1000;
 	kp = p;
 	ki = i * cycle_time_sec;
 	kd = d / cycle_time_sec;
-	if (response == NEGATIVE) {
+	if (response == 0) {
 		kp = -kp;
 		ki = -ki;
 		kd = -kd;
 	} 
 }
 
-template <typename T>
-void PID<T>::set_cycle(unsigned int new_cycle_time) {
+void PID::set_cycle(unsigned int new_cycle_time) {
 	double adjust_ratio = ((double)new_cycle_time) / ((double)cycle_time);
 	ki *= adjust_ratio;
 	kd /= adjust_ratio;
 	cycle_time = new_cycle_time;
 }
 
-template <typename T>
-void PID<T>::set_limits(T l, T h) {
+void PID::set_limits(int l, int h) {
 	// ignore troll value
 	if (l >= h) return;
 	low = l;
@@ -86,8 +83,7 @@ void PID<T>::set_limits(T l, T h) {
 	}
 }
 
-template <typename T>
-void PID<T>::set_response(bool r) {
+void PID::set_response(bool r) {
 	if (on && r != response) {
 		kp = -kp;
 		ki = -ki;
@@ -96,27 +92,21 @@ void PID<T>::set_response(bool r) {
 	response = r;
 }
 
-template <typename T>
-void PID<T>::start() {
+void PID::start() {
 	if (!on) {
-		on = ON;
+		on = 1;
 		reinitialize();
 	}
 }
-template <typename T>
-void PID<T>::stop() {on = OFF;}
+void PID::stop() {on = 0;}
 
-template <typename T>
-void PID<T>::reinitialize() {
+void PID::reinitialize() {
 	input_prev = *input;
 	integral = *output;
 	clamp(integral);
 }
 
-template <typename T>
-bool PID<T>::get_onoff(){return on;}
+bool PID::get_onoff() const {return on;}
 
-template <typename T>
-bool PID<T>::get_response() const {return response;}
+bool PID::get_response() const {return response;}
 
-template class PID<int>;
