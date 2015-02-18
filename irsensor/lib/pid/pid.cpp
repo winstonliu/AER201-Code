@@ -2,7 +2,7 @@
 #include "pid.h"
 
 template <typename T>
-PID<T>::PID(volatile const T& in, const T& set, T& out, double p, double i, double d, bool res)
+PID<T>::PID(const T& in, const T& set, T& out, double p, double i, double d, bool res)
 		: 
 		input(&in), 
 		setpoint(&set), 
@@ -114,7 +114,7 @@ void PID<T>::reinitialize() {
 }
 
 template <typename T>
-bool PID<T>::get_onoff() const {return on;}
+bool PID<T>::get_onoff(){return on;}
 
 template <typename T>
 bool PID<T>::get_response() const {return response;}

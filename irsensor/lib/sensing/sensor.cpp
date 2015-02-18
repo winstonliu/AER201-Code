@@ -13,6 +13,11 @@ int Sensor::readSensor()
 	return sensorVal;
 }
 
+int Sensor::getValue()
+{
+	return sensorVal;
+}
+
 void Sensor::setThresh(int* values)
 {
 	for (int i = 0; i < sizeof(thresh)/sizeof(int); ++i)

@@ -7,7 +7,7 @@ const bool POSITIVE = 1;
 template <typename T = int>
 class PID {
 	// not going to change input and setpoint inside
-	volatile const T* input;
+	const T* input;
 	const T* setpoint;
 	T* output;
 	// adjustable constants
@@ -30,7 +30,7 @@ class PID {
 
 public:
 	// by default off
-	PID(volatile const T& in, const T& set, T& out, double p = 0.5, double i = 0, double d = 0, bool res = POSITIVE);
+	PID(const T& in, const T& set, T& out, double p = 0.5, double i = 0, double d = 0, bool res = POSITIVE);
 
 	bool compute();
 	// change parameters (1/s)

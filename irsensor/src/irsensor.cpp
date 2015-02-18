@@ -14,6 +14,5 @@ int IRSensor::detect()
 		return BLACK;
 	else
 		return WHITE;
-	
 
 }

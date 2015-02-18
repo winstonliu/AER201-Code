@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "motor.h"
 
-motor::motor(int pin_enable, int pin_direction)
+Motor::Motor(int pin_enable, int pin_direction)
 {
 	enable = pin_enable;
 	direction = pin_direction;
@@ -11,24 +11,36 @@ motor::motor(int pin_enable, int pin_direction)
 	pinMode(direction, OUTPUT);
 }
 
-void motor::stop()
+void Motor::stop()
 {
 	status = OFF;
     digitalWrite(enable, LOW);
     digitalWrite(direction, LOW);    
 }
 
-void motor::right()
+void Motor::right(int speed)
 {
 	status = RIGHT;
-    digitalWrite(enable, HIGH);
+
+	// PWM
+	if (speed < 255)
+		analogWrite(enable, speed);
+	else
+		digitalWrite(enable, HIGH);
+
     digitalWrite(direction, LOW);
 }
 
-void motor::left()
+void Motor::left(int speed)
 {
 	status = LEFT;
-    digitalWrite(enable, HIGH);
+
+	// PWM
+	if (speed < 255)
+		analogWrite(enable, speed);
+	else
+		digitalWrite(enable, HIGH);
+
     digitalWrite(direction, HIGH);    
 }
 

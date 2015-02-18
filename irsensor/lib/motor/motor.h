@@ -2,23 +2,23 @@
 
 enum motor_states
 {
-	RIGHT,
-	LEFT,
-	OFF
+	MOTOR_RIGHT,
+	MOTOR_LEFT,
+	MOTOR_OFF
 }
 
-class motor
+class Motor
 {
 	private:
 		int enable;
 		int direction;
 		motor_states status;
 	public:
-		motor(int pin_enable, int pin_direction);	
+		Motor(int pin_enable, int pin_direction);	
 		void stop();
 		// LOW direction pin implies rightward rotation
-		void right();
+		void right(int speed = 255);
 		// HIGH direction pin implies leftward rotation
-		void left();
+		void left(int speed = 255);
 		motor_states get_status();
 }
