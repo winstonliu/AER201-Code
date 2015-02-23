@@ -4,35 +4,110 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
-BLACK	irsensor/lib/ref/photoLineDetection.h	13;"	d
-BLACK	irsensor/src/sensor.h	13;"	d
-CALIBRATED	irsensor/lib/ref/photoLineDetection.h	15;"	d
-IRSensor	irsensor/src/irsensor.cpp	/^IRSensor::IRSensor(int sv)$/;"	f	class:IRSensor
+BLACK	irsensor/lib/legacy/photoLineDetection.h	13;"	d
+BLACK	irsensor/lib/sensing/sensor.h	13;"	d
+CALIBRATED	irsensor/lib/legacy/photoLineDetection.h	15;"	d
+IRSensor	irsensor/src/irsensor.cpp	/^IRSensor::IRSensor(int sv):Sensor(sv) {};$/;"	f	class:IRSensor
 IRSensor	irsensor/src/irsensor.h	/^class IRSensor: public Sensor$/;"	c
-PhotoLineDetection	irsensor/lib/ref/photoLineDetection.cpp	/^PhotoLineDetection::PhotoLineDetection(int newSensorPin)$/;"	f	class:PhotoLineDetection
-PhotoLineDetection	irsensor/lib/ref/photoLineDetection.h	/^class PhotoLineDetection$/;"	c
-PhotoLineDetection_h	irsensor/lib/ref/photoLineDetection.h	7;"	d
-PhotoThresholdValues	irsensor/lib/ref/photoLineDetection.h	/^struct PhotoThresholdValues$/;"	s
-RED	irsensor/lib/ref/photoLineDetection.h	14;"	d
-RED	irsensor/src/sensor.h	14;"	d
-Sensor	irsensor/src/sensor.h	/^class Sensor$/;"	c
-WHITE	irsensor/lib/ref/photoLineDetection.h	12;"	d
-WHITE	irsensor/src/sensor.h	12;"	d
-black	irsensor/lib/ref/photoLineDetection.h	/^	int black;$/;"	m	struct:PhotoThresholdValues
-calibrate	irsensor/lib/ref/photoLineDetection.cpp	/^void PhotoLineDetection::calibrate(int calibrate_color)$/;"	f	class:PhotoLineDetection
-calibrate	irsensor/src/sensor.cpp	/^void Sensor::calibrate(int cc)$/;"	f	class:Sensor
-checkSensor	irsensor/lib/ref/photoLineDetection.cpp	/^int PhotoLineDetection::checkSensor()$/;"	f	class:PhotoLineDetection
-detect	irsensor/lib/ref/photoLineDetection.cpp	/^int PhotoLineDetection::detect()$/;"	f	class:PhotoLineDetection
+MOTOR_LEFT	irsensor/lib/motor/motor.h	/^	MOTOR_LEFT,$/;"	e	enum:motor_states
+MOTOR_LEFT	motor_test/src/motor.h	/^	MOTOR_LEFT,$/;"	e	enum:motor_states
+MOTOR_OFF	irsensor/lib/motor/motor.h	/^	MOTOR_OFF$/;"	e	enum:motor_states
+MOTOR_OFF	motor_test/src/motor.h	/^	MOTOR_OFF$/;"	e	enum:motor_states
+MOTOR_RIGHT	irsensor/lib/motor/motor.h	/^	MOTOR_RIGHT,$/;"	e	enum:motor_states
+MOTOR_RIGHT	motor_test/src/motor.h	/^	MOTOR_RIGHT,$/;"	e	enum:motor_states
+Motor	irsensor/lib/motor/motor.cpp	/^Motor::Motor(int pin_enable, int pin_direction)$/;"	f	class:Motor
+Motor	irsensor/lib/motor/motor.h	/^class Motor$/;"	c
+Motor	motor_test/src/motor.cpp	/^Motor::Motor(int pin_enable, int pin_direction)$/;"	f	class:Motor
+Motor	motor_test/src/motor.h	/^class Motor$/;"	c
+NEGATIVE	irsensor/lib/pid/pid.h	/^const bool NEGATIVE = 0;$/;"	v
+OFF	irsensor/lib/pid/pid.h	/^const bool OFF = 0;$/;"	v
+ON	irsensor/lib/pid/pid.h	/^const bool ON = 1;$/;"	v
+ON_WHITE	irsensor/lib/pid/line_pid.h	/^const int ON_WHITE = false;$/;"	v
+PID	irsensor/lib/pid/pid.cpp	/^PID::PID(int& in, const int& set, int& out, double p, double i, double d, bool res)$/;"	f	class:PID
+PID	irsensor/lib/pid/pid.h	/^class PID {$/;"	c
+POSITIVE	irsensor/lib/pid/pid.h	/^const bool POSITIVE = 1;$/;"	v
+PhotoLineDetection	irsensor/lib/legacy/photoLineDetection.cpp	/^PhotoLineDetection::PhotoLineDetection(int newSensorPin)$/;"	f	class:PhotoLineDetection
+PhotoLineDetection	irsensor/lib/legacy/photoLineDetection.h	/^class PhotoLineDetection$/;"	c
+PhotoLineDetection_h	irsensor/lib/legacy/photoLineDetection.h	7;"	d
+PhotoThresholdValues	irsensor/lib/legacy/photoLineDetection.h	/^struct PhotoThresholdValues$/;"	s
+RED	irsensor/lib/legacy/photoLineDetection.h	14;"	d
+RED	irsensor/lib/sensing/sensor.h	14;"	d
+Sensor	irsensor/lib/sensing/sensor.cpp	/^Sensor::Sensor(int pin) $/;"	f	class:Sensor
+Sensor	irsensor/lib/sensing/sensor.h	/^class Sensor$/;"	c
+UNKNOWN	irsensor/lib/sensing/sensor.h	15;"	d
+WHITE	irsensor/lib/legacy/photoLineDetection.h	12;"	d
+WHITE	irsensor/lib/sensing/sensor.h	12;"	d
+black	irsensor/lib/legacy/photoLineDetection.h	/^	int black;$/;"	m	struct:PhotoThresholdValues
+calibrate	irsensor/lib/legacy/photoLineDetection.cpp	/^void PhotoLineDetection::calibrate(int calibrate_color)$/;"	f	class:PhotoLineDetection
+calibrate	irsensor/lib/sensing/sensor.cpp	/^void Sensor::calibrate(int color)$/;"	f	class:Sensor
+checkSensor	irsensor/lib/legacy/photoLineDetection.cpp	/^int PhotoLineDetection::checkSensor()$/;"	f	class:PhotoLineDetection
+clamp	irsensor/lib/pid/pid.cpp	/^void PID::clamp(int& parameter) {$/;"	f	class:PID
+compute	irsensor/lib/pid/pid.cpp	/^bool PID::compute() {$/;"	f	class:PID
+current_heading	irsensor/.build/uno/src/irsensor_test.cpp	/^int current_heading = 0;$/;"	v
+cycle_time	irsensor/lib/pid/pid.h	/^		unsigned int cycle_time;	\/\/ 100ms 0.1s$/;"	m	class:PID
+detect	irsensor/lib/legacy/photoLineDetection.cpp	/^int PhotoLineDetection::detect()$/;"	f	class:PhotoLineDetection
+detect	irsensor/lib/sensing/sensor.cpp	/^int Sensor::detect()$/;"	f	class:Sensor
 detect	irsensor/src/irsensor.cpp	/^int IRSensor::detect()$/;"	f	class:IRSensor
-irsensor_h	irsensor/src/irsensor.h	2;"	d
-readSensor	irsensor/src/sensor.cpp	/^int Sensor::readSensor()$/;"	f	class:Sensor
-red	irsensor/lib/ref/photoLineDetection.h	/^	int red;$/;"	m	struct:PhotoThresholdValues
-sensorPin	irsensor/lib/ref/photoLineDetection.h	/^		int sensorPin;$/;"	m	class:PhotoLineDetection
-sensorPin	irsensor/src/sensor.h	/^		int sensorPin;$/;"	m	class:Sensor
-sensorVal	irsensor/src/sensor.h	/^		int sensorVal;$/;"	m	class:Sensor
-sensor_h	irsensor/src/sensor.h	7;"	d
-sensor_thresh	irsensor/lib/ref/photoLineDetection.h	/^		int sensor_thresh;$/;"	m	class:PhotoLineDetection
-sensor_value	irsensor/lib/ref/photoLineDetection.h	/^		int sensor_value;$/;"	m	class:PhotoLineDetection
-thresh	irsensor/lib/ref/photoLineDetection.h	/^		PhotoThresholdValues thresh;$/;"	m	class:PhotoLineDetection
-thresh	irsensor/src/sensor.h	/^		int thresh[3];$/;"	m	class:Sensor
-white	irsensor/lib/ref/photoLineDetection.h	/^	int white;$/;"	m	struct:PhotoThresholdValues
+direction	irsensor/lib/motor/motor.h	/^		int direction;$/;"	m	class:Motor
+direction	motor_test/src/motor.h	/^		int direction;$/;"	m	class:Motor
+display	irsensor/.build/uno/src/irsensor_test.cpp	/^void display()$/;"	f
+display_lap	irsensor/.build/uno/src/irsensor_test.cpp	/^unsigned int display_lap = 0;$/;"	v
+display_lcd	irsensor/.build/uno/src/irsensor_test.cpp	/^void display_lcd()$/;"	f
+enable	irsensor/lib/motor/motor.h	/^		int enable;$/;"	m	class:Motor
+enable	motor_test/src/motor.h	/^		int enable;$/;"	m	class:Motor
+getValue	irsensor/lib/sensing/sensor.cpp	/^int Sensor::getValue()$/;"	f	class:Sensor
+get_onoff	irsensor/lib/pid/pid.cpp	/^bool PID::get_onoff() const {return on;}$/;"	f	class:PID
+get_response	irsensor/lib/pid/pid.cpp	/^bool PID::get_response() const {return response;}$/;"	f	class:PID
+get_status	irsensor/lib/motor/motor.cpp	/^motor_states Motor::get_status() $/;"	f	class:Motor
+get_status	motor_test/src/motor.cpp	/^motor_states Motor::get_status() $/;"	f	class:Motor
+high	irsensor/lib/pid/pid.h	/^		int low, high;$/;"	m	class:PID
+input	irsensor/lib/pid/pid.h	/^		const int* input;$/;"	m	class:PID
+input_prev	irsensor/lib/pid/pid.h	/^		int integral, input_prev;$/;"	m	class:PID
+integral	irsensor/lib/pid/pid.h	/^		int integral, input_prev;$/;"	m	class:PID
+kd	irsensor/lib/pid/pid.h	/^		double kp, ki, kd;$/;"	m	class:PID
+ki	irsensor/lib/pid/pid.h	/^		double kp, ki, kd;$/;"	m	class:PID
+kp	irsensor/lib/pid/pid.h	/^		double kp, ki, kd;$/;"	m	class:PID
+left	irsensor/lib/motor/motor.cpp	/^void Motor::left(int speed)$/;"	f	class:Motor
+left	motor_test/src/motor.cpp	/^void Motor::left(int speed)$/;"	f	class:Motor
+loop	irsensor/.build/uno/src/irsensor_test.cpp	/^void loop()$/;"	f
+loop	motor_test/.build/uno/src/motor_test.cpp	/^void loop()$/;"	f
+low	irsensor/lib/pid/pid.h	/^		int low, high;$/;"	m	class:PID
+mapLinePid	irsensor/lib/pid/line_pid.cpp	/^int mapLinePid(bool l, bool m, bool r) $/;"	f
+motor_pwm	irsensor/.build/uno/src/irsensor_test.cpp	/^int motor_pwm = 0;$/;"	v
+motor_states	irsensor/lib/motor/motor.h	/^enum motor_states$/;"	g
+motor_states	motor_test/src/motor.h	/^enum motor_states$/;"	g
+on	irsensor/lib/pid/pid.h	/^		bool on;$/;"	m	class:PID
+output	irsensor/lib/pid/pid.h	/^		int* output;$/;"	m	class:PID
+poll_lap	irsensor/.build/uno/src/irsensor_test.cpp	/^unsigned int poll_lap = 0;$/;"	v
+readSensor	irsensor/lib/sensing/sensor.cpp	/^int Sensor::readSensor()$/;"	f	class:Sensor
+red	irsensor/lib/legacy/photoLineDetection.h	/^	int red;$/;"	m	struct:PhotoThresholdValues
+reinitialize	irsensor/lib/pid/pid.cpp	/^void PID::reinitialize() {$/;"	f	class:PID
+response	irsensor/lib/pid/pid.h	/^		bool response;$/;"	m	class:PID
+right	irsensor/lib/motor/motor.cpp	/^void Motor::right(int speed)$/;"	f	class:Motor
+right	motor_test/src/motor.cpp	/^void Motor::right(int speed)$/;"	f	class:Motor
+sensorPin	irsensor/lib/legacy/photoLineDetection.h	/^		int sensorPin;$/;"	m	class:PhotoLineDetection
+sensorPin	irsensor/lib/sensing/sensor.h	/^		int sensorPin;$/;"	m	class:Sensor
+sensorVal	irsensor/lib/sensing/sensor.h	/^		int sensorVal;$/;"	m	class:Sensor
+sensor_h	irsensor/lib/sensing/sensor.h	7;"	d
+sensor_thresh	irsensor/lib/legacy/photoLineDetection.h	/^		int sensor_thresh;$/;"	m	class:PhotoLineDetection
+sensor_value	irsensor/lib/legacy/photoLineDetection.h	/^		int sensor_value;$/;"	m	class:PhotoLineDetection
+setThresh	irsensor/lib/sensing/sensor.cpp	/^void Sensor::setThresh(int* values)$/;"	f	class:Sensor
+set_cycle	irsensor/lib/pid/pid.cpp	/^void PID::set_cycle(unsigned int new_cycle_time) {$/;"	f	class:PID
+set_limits	irsensor/lib/pid/pid.cpp	/^void PID::set_limits(int l, int h) {$/;"	f	class:PID
+set_response	irsensor/lib/pid/pid.cpp	/^void PID::set_response(bool r) {$/;"	f	class:PID
+setpoint	irsensor/lib/pid/pid.h	/^		const int* setpoint;$/;"	m	class:PID
+setup	irsensor/.build/uno/src/irsensor_test.cpp	/^void setup()$/;"	f
+setup	motor_test/.build/uno/src/motor_test.cpp	/^void setup()$/;"	f
+start	irsensor/lib/pid/pid.cpp	/^void PID::start() {$/;"	f	class:PID
+status	irsensor/lib/motor/motor.h	/^		motor_states status;$/;"	m	class:Motor
+status	motor_test/src/motor.h	/^		motor_states status;$/;"	m	class:Motor
+stop	irsensor/lib/motor/motor.cpp	/^void Motor::stop()$/;"	f	class:Motor
+stop	irsensor/lib/pid/pid.cpp	/^void PID::stop() {on = 0;}$/;"	f	class:PID
+stop	motor_test/src/motor.cpp	/^void Motor::stop()$/;"	f	class:Motor
+target_heading	irsensor/.build/uno/src/irsensor_test.cpp	/^const int target_heading = 0;$/;"	v
+thresh	irsensor/lib/legacy/photoLineDetection.h	/^		PhotoThresholdValues thresh;$/;"	m	class:PhotoLineDetection
+thresh	irsensor/lib/sensing/sensor.h	/^		int thresh[3];$/;"	m	class:Sensor
+threshold_values	irsensor/.build/uno/src/irsensor_test.cpp	/^int threshold_values[3] = {530, 777, 0};$/;"	v
+time_prev	irsensor/lib/pid/pid.h	/^		unsigned long time_prev;$/;"	m	class:PID
+tune	irsensor/lib/pid/pid.cpp	/^void PID::tune(double p, double i, double d) {$/;"	f	class:PID
+white	irsensor/lib/legacy/photoLineDetection.h	/^	int white;$/;"	m	struct:PhotoThresholdValues

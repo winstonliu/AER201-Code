@@ -5,6 +5,6 @@
 class IRSensor: public Sensor
 {
 	public:
-		IRSensor(int);
+		IRSensor(int pin);
 		int detect();
 };
