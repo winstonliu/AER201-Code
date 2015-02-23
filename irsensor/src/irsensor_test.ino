@@ -14,6 +14,7 @@ IRSensor irsen2(A1);
 IRSensor irsen3(A2);
 IRSensor irsenL(A3);
 IRSensor irsenR(A4);
+int irsenLval, irsenRval;
 
 // Initialize motors (en, dir)
 Motor port(3,2);
@@ -35,6 +36,7 @@ PID motor_ctrl(current_heading, target_heading, motor_pwm);
 // Timing loops
 unsigned int display_lap = 0;
 unsigned int poll_lap = 0;
+unsigned int rot_lap = 0;
 
 // White, black, red
 int threshold_values[3] = {530, 777, 0};
@@ -51,6 +53,11 @@ void setup()
 	irsen1.setThresh(threshold_values);
 	irsen2.setThresh(threshold_values);
 	irsen3.setThresh(threshold_values);
+	irsenL.setThresh(threshold_values);
+	irsenR.setThresh(threshold_values);
+
+	irsenLval = LOW;
+	irsenRval = LOW;
 
 	// PID Control
 	motor_ctrl.start();		
@@ -82,6 +89,8 @@ void loop()
 		irsen1.readSensor();		
 		irsen2.readSensor();		
 		irsen3.readSensor();		
+		irsenL.readSensor();		
+		irsenR.readSensor();		
 
 		// Update heading
 		current_heading = mapLinePid(
@@ -113,10 +122,26 @@ void loop()
 			port.left(255);
 		}
 	}
-	else
+
+	if (rotate == true)
 	{
-		// Rotate
-				
+		if ((millis() - rot_lap) > 50)
+		{
+			// Rotate will trigger when irsenL and irsenR
+			// Turn left
+			starboard.right(255);
+			port.right(255);
+			
+			if (irsenLval == LOW && irsenLval == HIGH)
+				irsenLval = HIGH;
+			if (irsenRval == LOW && irsenRval == HIGH)
+				irsenRval = HIGH;
+
+			if (irsenLval == HIGH && irsenRval == HIGH)
+				rotate = false;
+
+			rot_lap = millis();
+		}
 	}
 }
 
