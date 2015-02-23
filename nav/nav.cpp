@@ -1,3 +1,4 @@
+#include <cmath>
 #include "nav.h"
 
 nav::nav(grid start_position)
@@ -53,5 +54,65 @@ int nav::set_destination(grid new_destination)
 	return -1;
 }
 
+void nav::computePath()
+{
+	int next_xd;
+	int next_yd;
+	task thendo;
+	grid difference;
+
+	difference.x = abs(destination.x - current.x);
+	difference.y = abs(destination.y - current.y);	
+
+	// Calculate taxicab distance
+	// XXX Does not take into account hopper locations
+	
+	if (difference.x < 0) // destination is WEST
+	{
+		next_xd = 270;
+	}
+	else if (difference.x > 0) // destination is EAST
+	{
+		next_xd = 90;
+	}
+
+	if (difference.y < 0) // destination is SOUTH
+	{
+		next_yd = 180;
+	}
+	else if (difference.x > 0) // destination is NORTH
+	{
+		next_yd = 0;
+	}
+
+	// Rotate to face x
+	thendo.do_now = ROTATETO;		
+	thendo.value = next_xd;
+	taskMaster.push(thendo);
+
+	// Move x
+	thendo.do_now = MOVEFORWARD;
+	thendo.value = difference.x;
+	taskMaster.push(thendo);
+
+	// Rotate to face y
+	thendo.do_now = ROTATETO;		
+	thendo.value = next_yd;
+	taskMaster.push(thendo);
+
+	// Move y
+	thendo.do_now = MOVEFORWARD;
+	thendo.value = difference.y;
+	taskMaster.push(thendo);
+
+	// Rotate to face final
+	thendo.do_now = ROTATETO;		
+	thendo.value = destination.d;
+	taskMaster.push(thendo);
+}
+
+task nav::nextTask() { return taskMaster.front(); }
+void nav::doneTask() { taskMaster.pop(); }
+
 // Return current location
-grid get_current() { return current; }
+grid nav::get_current() { return current; }

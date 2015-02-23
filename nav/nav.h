@@ -8,13 +8,13 @@ enum isr
 
 enum action
 {
-	MOVETO,
-	ROTATE
+	MOVEFORWARD,
+	ROTATETO
 };
 
 struct task
 {
-	action nextTask;
+	action do_now;
 	int value;
 };
 
@@ -22,7 +22,7 @@ struct grid
 {
 	int x;	// x coordinates
 	int y;  // y coordinates
-	int d;	// 0 to 359, angle of rotation	
+	int d;	// 0 to 359, N:0, E:90, S:180, W:270
 };
 
 class nav
@@ -35,13 +35,15 @@ class nav
 		grid destination;
 		grid hopperEast;
 		grid hopperWest;
-		bool check_validity(grid);
+		bool check_validity(grid new_position);
 	public:
 		nav(grid);
-		int interrupt(isr);	
-		void computePath();
 
+		int interrupt(isr sensor_interrupt);	
+		void computePath();
+		task nextTask();
+		void doneTask();
 		int reset(grid);
-		int set_destination(grid);
+		int set_destination(grid new_destination);
 		grid get_current();
 };
