@@ -1,5 +1,6 @@
 #include <Wire.h>
 #include "rgb_lcd.h"
+#include "EventManager.h"
 
 #include "pid.h"
 #include "line_pid.h"
@@ -20,6 +21,9 @@ grid end_pos;
 end_pos.x = 6;
 end_pos.y = 5;
 end_pos.d = 90;
+
+// Initialize Event Handling
+EventManager EM();
 
 // Initialize navigation
 nav Navigator(start_pos);
