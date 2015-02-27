@@ -129,8 +129,11 @@ void loop()
 		{
 			// Rotate will trigger when irsenL and irsenR
 			// Turn left
-			starboard.right(255);
-			port.right(255);
+			if (starboard.get_status() != MOTOR_RIGHT && port.get_status() != MOTOR_RIGHT)
+			{
+				starboard.right(255);
+				port.right(255);
+			}
 			
 			if (irsenLval == LOW && irsenLval == HIGH)
 				irsenLval = HIGH;
