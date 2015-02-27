@@ -4,26 +4,35 @@
 #include "pid.h"
 #include "line_pid.h"
 #include "rgb_lcd.h"
+#include "nav.h"
 
 // Initialize lcd 
 rgb_lcd lcd;
 
+// Initialize nav
+grid start_pos;
+start_pos.x = 4;
+start_pos.y = 1;
+start_pos.d = 0;
+
+grid end_pos;
+end_pos.x = 6;
+end_pos.y = 5;
+end_pos.x = ;
+
+nav Navigator(start_pos);
+
 // Initialize irsensors
-IRSensor irsen1(A0);
-IRSensor irsen2(A1);
-IRSensor irsen3(A2);
-IRSensor irsenL(A3);
-IRSensor irsenR(A4);
-int irsenLval, irsenRval;
+const int NUMPINS = 5;
+int senPins [NUMPINS] = {A0,A1,A2,A3,A4};
+IRSensor irsen[NUMPINS];
 
 // Initialize motors (en, dir)
-Motor port(3,2);
-Motor starboard(5,4);
+motor port(3,2);
+motor starboard(5,4);
+
 const int btnCalibrate = 6;
 int btnCal_state;
-
-// Tasks
-bool rotate = false;
 
 // PID values
 const int target_heading = 0;
@@ -33,7 +42,7 @@ int motor_pwm = 0;
 // PID Control initialize
 PID motor_ctrl(current_heading, target_heading, motor_pwm);
 
-// Timing loops
+// Timing loops XXX
 unsigned int display_lap = 0;
 unsigned int poll_lap = 0;
 unsigned int rot_lap = 0;
@@ -49,15 +58,13 @@ void setup()
 	pinMode(btnCalibrate, INPUT);
 	btnCal_state = digitalRead(btnCalibrate);
 
-	// Set values
-	irsen1.setThresh(threshold_values);
-	irsen2.setThresh(threshold_values);
-	irsen3.setThresh(threshold_values);
-	irsenL.setThresh(threshold_values);
-	irsenR.setThresh(threshold_values);
-
-	irsenLval = LOW;
-	irsenRval = LOW;
+	// Set threshold values for irsensor
+	for (int i = 0; i < NUMPINS; ++i)
+	{
+		// Initialize irsensors
+		irsen[i](senPins(i));
+		irsen[i].setThresh(threshold_values);
+	}
 
 	// PID Control
 	motor_ctrl.start();		
@@ -86,24 +93,23 @@ void loop()
 	if ((millis() - poll_lap) > 20)
 	{
 		// Read sensors
-		irsen1.readSensor();		
-		irsen2.readSensor();		
-		irsen3.readSensor();		
-		irsenL.readSensor();		
-		irsenR.readSensor();		
+		for (int i = 0; i < NUMPINS; ++i) 
+		{
+			irsen[i].readSensor(); 
+		}
 
 		// Update heading
 		current_heading = mapLinePid(
-			irsen1.detect(),
-			irsen2.detect(),
-			irsen3.detect()
+			irsen[1].detect(),
+			irsen[2].detect(),
+			irsen[3].detect()
 		);
 
 		poll_lap = millis();
 	}
 		
 	// Toggles every 50 ms
-	if (motor_ctrl.compute() == true && rotate == false)
+	if (motor_ctrl.compute() == true)
 	{
 		// Motor driving code
 		if (current_heading > 0)
@@ -193,16 +199,14 @@ void display_lcd()
 
 void calibrate_all()
 {
-	int white1, white2;
 	// Middle sensor calibrates for black
 	// Right and left sensor averages calibrate for white
 	threshold_values[BLACK] = irsen2.readSensor();	
 	threshold_values[WHITE] = (irsen1.readSensor() + irsen3.readSensor()) / 2;
 
 	// Set values
-	irsen1.setThresh(threshold_values);
-	irsen2.setThresh(threshold_values);
-	irsen3.setThresh(threshold_values);
-	irsenL.setThresh(threshold_values);
-	irsenR.setThresh(threshold_values);
+	for (int i = 0; i < NUMPINS; ++i)
+	{
+		irsen[i].setThresh(threshold_values);
+	}
 }
