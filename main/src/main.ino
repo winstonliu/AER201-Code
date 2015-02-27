@@ -1,9 +1,10 @@
 #include <Wire.h>
-#include "irsensor.h"
-#include "motor.h"
+#include "rgb_lcd.h"
+
 #include "pid.h"
 #include "line_pid.h"
-#include "rgb_lcd.h"
+#include "irsensor.h"
+#include "motor.h"
 #include "nav.h"
 
 // Initialize lcd 
@@ -18,21 +19,18 @@ start_pos.d = 0;
 grid end_pos;
 end_pos.x = 6;
 end_pos.y = 5;
-end_pos.x = ;
+end_pos.d = 90;
 
+// Initialize navigation
 nav Navigator(start_pos);
 
 // Initialize irsensors
-const int NUMPINS = 5;
-int senPins [NUMPINS] = {A0,A1,A2,A3,A4};
-IRSensor irsen[NUMPINS];
+std::vector<int> senPins = {A0,A1,A2,A3,A4};
+std::vector<IRSensor> irsen;
 
 // Initialize motors (en, dir)
 motor port(3,2);
 motor starboard(5,4);
-
-const int btnCalibrate = 6;
-int btnCal_state;
 
 // PID values
 const int target_heading = 0;
@@ -40,7 +38,11 @@ int current_heading = 0;
 int motor_pwm = 0;
 
 // PID Control initialize
-PID motor_ctrl(current_heading, target_heading, motor_pwm);
+const int NUMMOTO = 2;
+std::vector<PID> motoPID;	 // port 0, starboard 1
+
+const int btnCalibrate = 6;
+int btnCal_state;
 
 // Timing loops XXX
 unsigned int display_lap = 0;
@@ -58,18 +60,26 @@ void setup()
 	pinMode(btnCalibrate, INPUT);
 	btnCal_state = digitalRead(btnCalibrate);
 
-	// Set threshold values for irsensor
-	for (int i = 0; i < NUMPINS; ++i)
+	// Initialize PID control
+	for (int i = 0; i < NUMMOTO; ++i)
 	{
-		// Initialize irsensors
-		irsen[i](senPins(i));
+		motoPID.push_back(PID(current_heading, target_heading, motor_pwm));
+		motoPID[i].start();		
+		motoPID[i].set_cycle(50);		
+		motoPID[i].tune(2.0, 0.5, 0.5);		
+	}
+
+	// Set threshold values for irsensor
+	irsen.reserve(senPins.size());
+	for (int i = 0; i < senPins.size(); ++i)
+	{
+		// Push new irsensor onto vector
+		irsen.push_back(IRSensor(senPins(i)));
 		irsen[i].setThresh(threshold_values);
 	}
 
-	// PID Control
-	motor_ctrl.start();		
-	motor_ctrl.set_cycle(50);		
-	motor_ctrl.tune(2.0, 0.5, 0.5);		
+	// Navigation
+	Navigation.computeRectilinearPath(end_pos);
 }
 
 void loop()
@@ -93,7 +103,7 @@ void loop()
 	if ((millis() - poll_lap) > 20)
 	{
 		// Read sensors
-		for (int i = 0; i < NUMPINS; ++i) 
+		for (int i = 0; i < senPins.size(); ++i) 
 		{
 			irsen[i].readSensor(); 
 		}
@@ -109,48 +119,16 @@ void loop()
 	}
 		
 	// Toggles every 50 ms
-	if (motor_ctrl.compute() == true)
+	if (motoPID[0].compute() == true)
+		port.adjustSpeed(motor_pwm);	
+	if (motoPID[1].compute() == true)
+		starboard.adjustSpeed(motor_pwm);	
+
+	if ((millis() - rot_lap) > 50)
 	{
-		// Motor driving code
-		if (current_heading > 0)
-		{
-			starboard.right(motor_pwm);	
-			port.left(255);	
-		}
-		else if (current_heading < 0)
-		{
-			starboard.right(255);
-			port.left(motor_pwm);
-		}
-		else
-		{
-			starboard.right(255);
-			port.left(255);
-		}
-	}
-
-	if (rotate == true)
-	{
-		if ((millis() - rot_lap) > 50)
-		{
-			// Rotate will trigger when irsenL and irsenR
-			// Turn left
-			if (starboard.get_status() != MOTOR_RIGHT && port.get_status() != MOTOR_RIGHT)
-			{
-				starboard.right(255);
-				port.right(255);
-			}
-			
-			if (irsenLval == LOW && irsenLval == HIGH)
-				irsenLval = HIGH;
-			if (irsenRval == LOW && irsenRval == HIGH)
-				irsenRval = HIGH;
-
-			if (irsenLval == HIGH && irsenRval == HIGH)
-				rotate = false;
-
+		// Rotate will trigger when irsenL and irsenR
+		// Turn left
 			rot_lap = millis();
-		}
 	}
 }
 
@@ -195,6 +173,23 @@ void display_lcd()
 	lcd.print("||");	
 	lcd.print(current_heading);	
 	lcd.print("|");	
+}
+
+void rotate()
+{
+	if (starboard.get_status() != MOTOR_RIGHT && port.get_status() != MOTOR_RIGHT)
+	{
+		starboard.right(255);
+		port.right(255);
+	}
+	
+	if (irsenLval == LOW && irsenLval == HIGH)
+		irsenLval = HIGH;
+	if (irsenRval == LOW && irsenRval == HIGH)
+		irsenRval = HIGH;
+
+	if (irsenLval == HIGH && irsenRval == HIGH)
+		return;
 }
 
 void calibrate_all()
