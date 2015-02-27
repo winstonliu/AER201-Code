@@ -56,6 +56,7 @@ int nav::set_destination(grid new_destination)
 
 void nav::computePath()
 {
+	// Computes the path the robot will take
 	int next_xd;
 	int next_yd;
 	task thendo;
