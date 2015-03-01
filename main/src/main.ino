@@ -121,6 +121,8 @@ void sensorPollingFunction(int event, int param)
 
 	// If all sensors have been triggered in the past n cycles,
 	// then trigger line detected
+	Serial.print("Sum pins");
+	Serial.println(sum_lines);
 	if (sum_lines == NUMPINS)
 	{
 		Navigator.interrupt(LINE_ISR);			
@@ -133,11 +135,19 @@ void sensorPollingFunction(int event, int param)
 		irsen[3].detect()
 	);
 } // end fold
+void doneFunction(int event, int param)
+{
+	Serial.println("DONE");
+	lcd.clear();
+	lcd.print("DONE");
+	FLAG_DONE = true;
+}
 
 // Call listeners
 GenericCallable<void(int,int)> display(displayFunction);
 GenericCallable<void(int,int)> calibrate(calibrateFunction);
 GenericCallable<void(int,int)> sensorPolling(calibrateFunction);
+GenericCallable<void(int,int)> doneNow(doneFunction);
 
 void killMotors()
 {
@@ -158,6 +168,7 @@ void setup()
 	eVM.addListener( EventManager::kEventDisplayLCD, &display);
 	eVM.addListener( EventManager::kEventCalibrate, &calibrate);
 	eVM.addListener( EventManager::kEventSensorPolling, &sensorPolling);
+	eVM.addListener( EventManager::kEventDone, &doneNow);
 
 	// Pins
 	pinMode(btnCalibrate, INPUT);
@@ -220,10 +231,7 @@ void loop()
 		Serial.println(temp_ret);
 		if (temp_ret == true)
 		{
-			Serial.println("DONE");
-			lcd.clear();
-			lcd.print("DONE");
-			FLAG_DONE = true;
+			eVM.queueEvent(EventManager::kEventDone, 0);
 		}
 		else if (Navigator.getAction() == IDLE)
 		{
