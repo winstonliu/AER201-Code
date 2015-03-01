@@ -8,6 +8,10 @@
 #include <motor.h>
 #include <nav.h>
 
+// Flags
+bool FLAG_NAVERR = false;
+bool FLAG_DONE = false;
+
 // Initialize lcd 
 rgb_lcd lcd;
 
@@ -22,13 +26,15 @@ EventManager eVM;
 nav Navigator(start_pos);
 
 // Initialize irsensors
-const int NUMPINS = 5;
-const int senPins[NUMPINS] = {A0,A1,A2,A3,A4};
+const int NUMPINS = 4;
+//const int senPins[NUMPINS] = {A0,A1,A2,A3,A4};
+const int senPins[NUMPINS] = {A0,A1,A2,A3};
 IRSensor irsen[NUMPINS];
 
 // Initialize motors (en, dir)
 motor port(3,2);
 motor starboard(5,4);
+motor wheel(9,8);
 
 // PID values
 const int target_heading = 0;
@@ -42,14 +48,14 @@ PID motoPID[NUMMOTO];	 // port 0, starboard 1
 const int btnCalibrate = 6;
 
 // White, black, red
-int threshold_values[3] = {530, 777, 0};
+int threshold_values[3] = {220, 800, 0};
 
 // Listener functions (folded)
 void displayFunction(int event, int param)
 {
+	grid temp_grid = Navigator.getGrid();
 	if (event == EventManager::kEventDisplaySerial)
 	{
-		Serial.print("| ");
 		Serial.print(irsen[1].getValue());
 		Serial.print(" ");
 		Serial.print(irsen[1].detect());
@@ -60,10 +66,17 @@ void displayFunction(int event, int param)
 		Serial.print(" | ");
 		Serial.print(irsen[3].getValue());
 		Serial.print(" ");
-		Serial.print(irsen[3].detect());
-		Serial.println(" |");
+		Serial.println(irsen[3].detect());
 		Serial.print("Current heading: ");
 		Serial.println(current_heading);
+		Serial.print(" x: ");
+		Serial.print(temp_grid.x);
+		Serial.print(" y: ");
+		Serial.print(temp_grid.y);
+		Serial.print(" d: ");
+		Serial.println(temp_grid.d);
+		Serial.print("# Tasks: ");
+		Serial.println(Navigator.countRemaining());
 	}
 	else if (event == EventManager::kEventDisplayLCD)
 	{
@@ -130,12 +143,15 @@ void killMotors()
 {
 	port.stop();
 	starboard.stop();
+	wheel.stop();
 }
 
 void setup()
 {
 	Serial.begin(9600);
 	lcd.begin(16,2);
+
+	wheel.left(125);	
 
 	// Event handling
 	eVM.addListener( EventManager::kEventDisplaySerial, &display);
@@ -163,31 +179,64 @@ void setup()
 	}
 
 	// Check for navigation error
-	if (Navigator.computeRectilinearPath(end_pos) == -1);
+	int ret_err = Navigator.computeRectilinearPath(end_pos);
+	Serial.print("Computation result: ");
+	Serial.println(ret_err);
+	if (ret_err < 0)
 	{
+		grid temp_grid = Navigator.getDestination(); 
+
+		// DEBUG
+		Serial.print(" x: ");
+		Serial.print(temp_grid.x);
+		Serial.print(" y: ");
+		Serial.print(temp_grid.y);
+		Serial.print(" d: ");
+		Serial.println(temp_grid.d);
+		Serial.print("# Tasks: ");
+		Serial.println(Navigator.countRemaining());
+
 		Serial.println("NAV ERROR");
 		lcd.clear();
 		lcd.print("NAV ERROR");
+		FLAG_NAVERR = true;
 	}
 }
 
 void loop()
 {
+	static int main_lap = 0;
+
+	if (FLAG_NAVERR == true || FLAG_DONE == true)
+		return;
+
 	// Check if there are any tasks left to do
-	if (Navigator.doneTasks() == true)
+	if ((millis() - main_lap) > 20)
 	{
-		Serial.println("DONE");
-		lcd.clear();
-		lcd.print("DONE");
+		// DEBUG
+		bool temp_ret = Navigator.doneTasks();
+
+		Serial.print("Is done: ");
+		Serial.println(temp_ret);
+		if (temp_ret == true)
+		{
+			Serial.println("DONE");
+			lcd.clear();
+			lcd.print("DONE");
+			FLAG_DONE = true;
+		}
+		else if (Navigator.getAction() == IDLE)
+		{
+			Navigator.startTask();
+		}
+		else if (Navigator.checkTaskComplete() == 0)
+		{
+			killMotors();		
+		}	
+
+		Serial.print("Current action: ");
+		Serial.println(Navigator.getAction());
 	}
-	else if (Navigator.getAction() == IDLE)
-	{
-		Navigator.startTask();
-	}
-	else if (Navigator.checkTaskComplete() == 0)
-	{
-		killMotors();		
-	}	
 	
 	// Event manager processing
 	eVM.processEvent();
@@ -207,19 +256,28 @@ void addEvents()
 	// Display event
 	if ((millis() - display_lap) > 500)
 	{
-		eVM.queueEvent(EventManager::kEventDisplayLCD, 0);
+		// DEBUG
+		Serial.println("Display");
+
+		eVM.queueEvent(EventManager::kEventDisplaySerial, 0);
 		display_lap = millis();
 	}
 
 	// Poll sensors
 	if ((millis() - poll_lap) > 20)
 	{
+		// DEBUG
+		Serial.println("Sensor Poll");
+
 		eVM.queueEvent(EventManager::kEventSensorPolling, 0);
 		poll_lap = millis();
 	}
 
 	if (Navigator.getAction() == MOVEFORWARD)	
 	{
+		// DEBUG
+		Serial.println("Moving Forward");
+
 		// TODO Toggles every 50 ms
 		if (motoPID[0].compute() == true)
 			port.adjustSpeed(motor_pwm);	
@@ -228,6 +286,9 @@ void addEvents()
 	}
 	else if (Navigator.getAction() == ROTATETO)
 	{
+		// DEBUG
+		Serial.println("Rotating");
+
 		if ((millis() - rot_lap) > 50)
 		{
 			// Rotate will trigger when irsenL and irsenR
