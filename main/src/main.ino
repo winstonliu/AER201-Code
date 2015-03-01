@@ -1,36 +1,30 @@
 #include <Wire.h>
-#include "rgb_lcd.h"
-#include "EventManager.h"
+#include <rgb_lcd.h>
+#include <EventManager.h>
 
-#include "pid.h"
-#include "line_pid.h"
-#include "irsensor.h"
-#include "motor.h"
-#include "nav.h"
+#include <pid.h>
+#include <line_pid.h>
+#include <irsensor.h>
+#include <motor.h>
+#include <nav.h>
 
 // Initialize lcd 
 rgb_lcd lcd;
 
-// Initialize nav
-grid start_pos;
-start_pos.x = 4;
-start_pos.y = 1;
-start_pos.d = 0;
-
-grid end_pos;
-end_pos.x = 6;
-end_pos.y = 5;
-end_pos.d = 90;
+// Initialize nav x,y,d
+grid start_pos(4, 1, 0);
+grid end_pos(6, 5, 90);
 
 // Initialize Event Handling
-EventManager eVM();
+EventManager eVM;
 
 // Initialize navigation
 nav Navigator(start_pos);
 
 // Initialize irsensors
-std::vector<int> senPins = {A0,A1,A2,A3,A4};
-std::vector<IRSensor> irsen;
+const int NUMPINS = 5;
+const int senPins[NUMPINS] = {A0,A1,A2,A3,A4};
+IRSensor irsen[NUMPINS];
 
 // Initialize motors (en, dir)
 motor port(3,2);
@@ -43,7 +37,7 @@ int motor_pwm = 0;
 
 // PID Control initialize
 const int NUMMOTO = 2;
-std::vector<PID> motoPID;	 // port 0, starboard 1
+PID motoPID[NUMMOTO];	 // port 0, starboard 1
 
 const int btnCalibrate = 6;
 
@@ -56,17 +50,17 @@ void displayFunction(int event, int param)
 	if (event == EventManager::kEventDisplaySerial)
 	{
 		Serial.print("| ");
-		Serial.print(irsen1.getValue());
+		Serial.print(irsen[1].getValue());
 		Serial.print(" ");
-		Serial.print(irsen1.detect());
+		Serial.print(irsen[1].detect());
 		Serial.print(" | ");
-		Serial.print(irsen2.getValue());
+		Serial.print(irsen[2].getValue());
 		Serial.print(" ");
-		Serial.print(irsen2.detect());
+		Serial.print(irsen[2].detect());
 		Serial.print(" | ");
-		Serial.print(irsen3.getValue());
+		Serial.print(irsen[3].getValue());
 		Serial.print(" ");
-		Serial.print(irsen3.detect());
+		Serial.print(irsen[3].detect());
 		Serial.println(" |");
 		Serial.print("Current heading: ");
 		Serial.println(current_heading);
@@ -75,21 +69,21 @@ void displayFunction(int event, int param)
 	{
 		lcd.clear();
 		lcd.print("|");	
-		lcd.print(irsen1.getValue());	
+		lcd.print(irsen[1].getValue());	
 		lcd.setCursor(0,5);
 		lcd.print("|");	
-		lcd.print(irsen2.getValue());	
+		lcd.print(irsen[2].getValue());	
 		lcd.setCursor(0,9);
 		lcd.print("|");	
-		lcd.print(irsen3.getValue());	
+		lcd.print(irsen[3].getValue());	
 		lcd.print("|");	
 		lcd.setCursor(1,0);
 		lcd.print("|");	
-		lcd.print(irsen1.detect());	
+		lcd.print(irsen[1].detect());	
 		lcd.print("|");	
-		lcd.print(irsen2.detect());	
+		lcd.print(irsen[2].detect());	
 		lcd.print("|");	
-		lcd.print(irsen3.detect());	
+		lcd.print(irsen[3].detect());	
 		lcd.print("||");	
 		lcd.print(current_heading);	
 		lcd.print("|");	
@@ -105,7 +99,7 @@ void sensorPollingFunction(int event, int param)
 {
 	int sum_lines = 0;
 	// Read sensors
-	for (int i = 0; i < senPins.size(); ++i) 
+	for (int i = 0; i < NUMPINS; ++i) 
 	{
 		irsen[i].readSensor(); 
 		// Perpendicular line detection for past cycles
@@ -114,9 +108,9 @@ void sensorPollingFunction(int event, int param)
 
 	// If all sensors have been triggered in the past n cycles,
 	// then trigger line detected
-	if (sum_lines == senPins.size())
+	if (sum_lines == NUMPINS)
 	{
-		Navigator.interrupt(nav::LINE_ISR);			
+		Navigator.interrupt(LINE_ISR);			
 	}
 
 	// Update heading
@@ -155,18 +149,16 @@ void setup()
 	// Initialize PID control
 	for (int i = 0; i < NUMMOTO; ++i)
 	{
-		motoPID.push_back(PID(current_heading, target_heading, motor_pwm));
+		motoPID[i] = PID(current_heading, target_heading, motor_pwm);
 		motoPID[i].start();		
 		motoPID[i].set_cycle(50);		
-		motoPID[i].tune(2.0, 0.5, 0.5);		
 	}
 
 	// Set threshold values for irsensor
-	irsen.reserve(senPins.size());
-	for (int i = 0; i < senPins.size(); ++i)
+	for (int i = 0; i < NUMPINS; ++i)
 	{
-		// Make new IRSensor and push onto vector
-		irsen.push_back(IRSensor(senPins(i)));
+		// Make new IRSensor
+		irsen[i] = IRSensor(senPins[i]);
 		irsen[i].setThresh(threshold_values);
 	}
 
@@ -182,13 +174,13 @@ void setup()
 void loop()
 {
 	// Check if there are any tasks left to do
-	if (Navigator.tasksLeft() == 0)
+	if (Navigator.doneTasks() == true)
 	{
 		Serial.println("DONE");
 		lcd.clear();
 		lcd.print("DONE");
 	}
-	else if (Navigator.getAction() == nav::IDLE)
+	else if (Navigator.getAction() == IDLE)
 	{
 		Navigator.startTask();
 	}
@@ -226,7 +218,7 @@ void addEvents()
 		poll_lap = millis();
 	}
 
-	if (Navigator.getAction() == nav::MOVEFORWARD)	
+	if (Navigator.getAction() == MOVEFORWARD)	
 	{
 		// TODO Toggles every 50 ms
 		if (motoPID[0].compute() == true)
@@ -234,7 +226,7 @@ void addEvents()
 		if (motoPID[1].compute() == true)
 			starboard.adjustSpeed(motor_pwm);	
 	}
-	else if (Navigator.getAction() == nav::ROTATETO)
+	else if (Navigator.getAction() == ROTATETO)
 	{
 		if ((millis() - rot_lap) > 50)
 		{
@@ -254,7 +246,7 @@ void addEvents()
 	int calRead = digitalRead(btnCalibrate);
 	if (btnCal_state == LOW && calRead == HIGH)
 	{
-		eVM.queueEvent(EventManager::kEventCalibrate, 0)
+		eVM.queueEvent(EventManager::kEventCalibrate, 0);
 	}
 	btnCal_state = calRead;
 }
@@ -263,9 +255,9 @@ void calibrate_all()
 {
 	// Middle sensor calibrates for black
 	// Right and left sensor averages calibrate for white
-	threshold_values[BLACK] = irsen2.readSensor();	
-	threshold_values[WHITE] = ( irsen1.readSensor() 
-								+ irsen3.readSensor()) / 2;
+	threshold_values[BLACK] = irsen[2].readSensor();	
+	threshold_values[WHITE] = ( irsen[1].readSensor() 
+								+ irsen[3].readSensor()) / 2;
 
 	// Set values
 	for (int i = 0; i < NUMPINS; ++i)
