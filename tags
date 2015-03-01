@@ -27,11 +27,14 @@ EventPriority	main/lib/eventmanager/EventManager.h	/^    enum EventPriority { kH
 EventQueue	main/lib/eventmanager/EventManager.cpp	/^EventManager::EventQueue::EventQueue( boolean beSafe ) :$/;"	f	class:EventManager::EventQueue
 EventQueue	main/lib/eventmanager/EventManager.h	/^    class EventQueue $/;"	c	class:EventManager
 EventType	main/lib/eventmanager/EventManager.h	/^    enum EventType $/;"	g	class:EventManager
+FLAG_DONE	main/.build/uno/src/main.cpp	/^bool FLAG_DONE = false;$/;"	v
+FLAG_NAVERR	main/.build/uno/src/main.cpp	/^bool FLAG_NAVERR = false;$/;"	v
 GREEN	main/lib/grove/rgb_lcd.h	40;"	d
 GenericCallable	main/lib/eventmanager/EventManager.h	/^    GenericCallable(F _f): f(_f) {};$/;"	f	class:GenericCallable
 GenericCallable	main/lib/eventmanager/EventManager.h	/^class GenericCallable : public EventListener$/;"	c
 IDLE	main/lib/nav/nav.h	/^	IDLE$/;"	e	enum:action
 IRSensor	main/lib/sensing/irsensor.cpp	/^IRSensor::IRSensor(int sv, int nct):Sensor(sv), numCyclesTrack(nct) {};$/;"	f	class:IRSensor
+IRSensor	main/lib/sensing/irsensor.h	/^		IRSensor() {};$/;"	f	class:IRSensor
 IRSensor	main/lib/sensing/irsensor.h	/^class IRSensor: public Sensor$/;"	c
 LCD_1LINE	main/lib/grove/rgb_lcd.h	85;"	d
 LCD_2LINE	main/lib/grove/rgb_lcd.h	84;"	d
@@ -79,16 +82,21 @@ MemberFunctionCallable	main/lib/eventmanager/EventManager.h	/^class MemberFuncti
 Motor	motor_test/src/motor.cpp	/^Motor::Motor(int pin_enable, int pin_direction)$/;"	f	class:Motor
 Motor	motor_test/src/motor.h	/^class Motor$/;"	c
 NEGATIVE	main/lib/pid/pid.h	/^const bool NEGATIVE = 0;$/;"	v
+NUMMOTO	main/.build/uno/src/main.cpp	/^const int NUMMOTO = 2;$/;"	v
+NUMPINS	main/.build/uno/src/main.cpp	/^const int NUMPINS = 4;$/;"	v
 OFF	main/lib/pid/pid.h	/^const bool OFF = 0;$/;"	v
 ON	main/lib/pid/pid.h	/^const bool ON = 1;$/;"	v
 ON_WHITE	main/lib/pid/line_pid.h	/^const int ON_WHITE = false;$/;"	v
 PID	main/lib/pid/pid.cpp	/^PID::PID(int& in, const int& set, int& out, double p, double i, double d, bool res)$/;"	f	class:PID
+PID	main/lib/pid/pid.h	/^		PID() {};$/;"	f	class:PID
 PID	main/lib/pid/pid.h	/^class PID {$/;"	c
 POSITIVE	main/lib/pid/pid.h	/^const bool POSITIVE = 1;$/;"	v
 PhotoLineDetection	main/lib/legacy/photoLineDetection.cpp	/^PhotoLineDetection::PhotoLineDetection(int newSensorPin)$/;"	f	class:PhotoLineDetection
 PhotoLineDetection	main/lib/legacy/photoLineDetection.h	/^class PhotoLineDetection$/;"	c
 PhotoLineDetection_h	main/lib/legacy/photoLineDetection.h	7;"	d
 PhotoThresholdValues	main/lib/legacy/photoLineDetection.h	/^struct PhotoThresholdValues$/;"	s
+QueueArray	main/lib/queuearray/QueueArray.h	/^QueueArray<T>::QueueArray () {$/;"	f	class:QueueArray
+QueueArray	main/lib/queuearray/QueueArray.h	/^class QueueArray {$/;"	c
 RED	main/lib/grove/rgb_lcd.h	39;"	d
 RED	main/lib/legacy/photoLineDetection.h	14;"	d
 RED	main/lib/sensing/sensor.h	14;"	d
@@ -102,12 +110,14 @@ RGB_ADDRESS	main/lib/grove/rgb_lcd.h	34;"	d
 ROTATETO	main/lib/nav/nav.h	/^	ROTATETO,$/;"	e	enum:action
 SafetyMode	main/lib/eventmanager/EventManager.h	/^    enum SafetyMode { kNotInterruptSafe, kInterruptSafe };$/;"	g	class:EventManager
 Sensor	main/lib/sensing/sensor.cpp	/^Sensor::Sensor(int pin) $/;"	f	class:Sensor
+Sensor	main/lib/sensing/sensor.h	/^		Sensor() {};$/;"	f	class:Sensor
 Sensor	main/lib/sensing/sensor.h	/^class Sensor$/;"	c
 TOUCH_ISR	main/lib/nav/nav.h	/^	TOUCH_ISR$/;"	e	enum:isr
 UNKNOWN	main/lib/sensing/sensor.h	15;"	d
 WHITE	main/lib/grove/rgb_lcd.h	38;"	d
 WHITE	main/lib/legacy/photoLineDetection.h	12;"	d
 WHITE	main/lib/sensing/sensor.h	12;"	d
+_QUEUEARRAY_H	main/lib/queuearray/QueueArray.h	54;"	d
 __RGB_LCD_H__	main/lib/grove/rgb_lcd.h	27;"	d
 _currline	main/lib/grove/rgb_lcd.h	/^  uint8_t _numlines,_currline;$/;"	m	class:rgb_lcd
 _displaycontrol	main/lib/grove/rgb_lcd.h	/^  uint8_t _displaycontrol;$/;"	m	class:rgb_lcd
@@ -116,6 +126,7 @@ _displaymode	main/lib/grove/rgb_lcd.h	/^  uint8_t _displaymode;$/;"	m	class:rgb_
 _initialized	main/lib/grove/rgb_lcd.h	/^  uint8_t _initialized;$/;"	m	class:rgb_lcd
 _numlines	main/lib/grove/rgb_lcd.h	/^  uint8_t _numlines,_currline;$/;"	m	class:rgb_lcd
 action	main/lib/nav/nav.h	/^enum action$/;"	g
+addEvents	main/.build/uno/src/main.cpp	/^void addEvents()$/;"	f
 addListener	main/lib/eventmanager/EventManager.cpp	/^boolean EventManager::ListenerList::addListener( int eventCode, EventListener* listener ) $/;"	f	class:EventManager::ListenerList
 addListener	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::addListener( int eventCode, EventListener* listener )$/;"	f	class:EventManager
 adjustSpeed	main/lib/motor/motor.cpp	/^void motor::adjustSpeed(int speed)$/;"	f	class:motor
@@ -123,8 +134,12 @@ autoscroll	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::autoscroll(void)$/;"	f	cla
 begin	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) $/;"	f	class:rgb_lcd
 black	main/lib/legacy/photoLineDetection.h	/^	int black;$/;"	m	struct:PhotoThresholdValues
 blink	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::blink()$/;"	f	class:rgb_lcd
+blink	main/lib/queuearray/QueueArray.h	/^void QueueArray<T>::blink () const {$/;"	f	class:QueueArray
+btnCalibrate	main/.build/uno/src/main.cpp	/^const int btnCalibrate = 6;$/;"	v
 calibrate	main/lib/legacy/photoLineDetection.cpp	/^void PhotoLineDetection::calibrate(int calibrate_color)$/;"	f	class:PhotoLineDetection
 calibrate	main/lib/sensing/sensor.cpp	/^void Sensor::calibrate(int color)$/;"	f	class:Sensor
+calibrateFunction	main/.build/uno/src/main.cpp	/^void calibrateFunction(int event, int param)$/;"	f
+calibrate_all	main/.build/uno/src/main.cpp	/^void calibrate_all()$/;"	f
 callback	main/lib/eventmanager/EventManager.h	/^            EventListener*	callback;		\/\/ The listener function$/;"	m	struct:EventManager::ListenerList::ListenerItem
 checkSensor	main/lib/legacy/photoLineDetection.cpp	/^int PhotoLineDetection::checkSensor()$/;"	f	class:PhotoLineDetection
 checkTaskComplete	main/lib/nav/nav.cpp	/^int nav::checkTaskComplete() $/;"	f	class:nav
@@ -136,12 +151,17 @@ color_define	main/lib/grove/rgb_lcd.cpp	/^const unsigned char color_define[4][3]
 command	main/lib/grove/rgb_lcd.cpp	/^inline void rgb_lcd::command(uint8_t value)$/;"	f	class:rgb_lcd
 compute	main/lib/pid/pid.cpp	/^bool PID::compute() {$/;"	f	class:PID
 computeRectilinearPath	main/lib/nav/nav.cpp	/^int nav::computeRectilinearPath(grid new_destination)$/;"	f	class:nav
+contents	main/lib/queuearray/QueueArray.h	/^    T * contents;    \/\/ the array of the queue.$/;"	m	class:QueueArray
+count	main/lib/queuearray/QueueArray.h	/^int QueueArray<T>::count () const {$/;"	f	class:QueueArray
+countRemaining	main/lib/nav/nav.cpp	/^int nav::countRemaining() { return tasklist.count(); }$/;"	f	class:nav
 createChar	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::createChar(uint8_t location, uint8_t charmap[])$/;"	f	class:rgb_lcd
 currentAction	main/lib/nav/nav.h	/^		action currentAction;$/;"	m	class:nav
 currentGrid	main/lib/nav/nav.h	/^		grid currentGrid;$/;"	m	class:nav
+current_heading	main/.build/uno/src/main.cpp	/^int current_heading = 0;$/;"	v
 cursor	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::cursor() {$/;"	f	class:rgb_lcd
 cycle_time	main/lib/pid/pid.h	/^		unsigned int cycle_time;	\/\/ 100ms 0.1s$/;"	m	class:PID
 d	main/lib/nav/nav.h	/^	int d;	\/\/ 0 to 359, N:0, E:90, S:180, W:270$/;"	m	struct:grid
+dequeue	main/lib/queuearray/QueueArray.h	/^T QueueArray<T>::dequeue () {$/;"	f	class:QueueArray
 destination	main/lib/nav/nav.h	/^		grid destination;$/;"	m	class:nav
 detect	main/lib/legacy/photoLineDetection.cpp	/^int PhotoLineDetection::detect()$/;"	f	class:PhotoLineDetection
 detect	main/lib/sensing/irsensor.cpp	/^int IRSensor::detect(int diffThresh)$/;"	f	class:IRSensor
@@ -150,7 +170,10 @@ direction	main/lib/motor/motor.h	/^		int direction;$/;"	m	class:motor
 direction	motor_test/src/motor.h	/^		int direction;$/;"	m	class:Motor
 directionalLineIncrement	main/lib/nav/nav.cpp	/^grid nav::directionalLineIncrement(int i)$/;"	f	class:nav
 display	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::display() {$/;"	f	class:rgb_lcd
+displayFunction	main/.build/uno/src/main.cpp	/^void displayFunction(int event, int param)$/;"	f
 do_now	main/lib/nav/nav.h	/^	action do_now;$/;"	m	struct:task
+doneTasks	main/lib/nav/nav.cpp	/^bool nav::doneTasks() { return tasklist.isEmpty(); }$/;"	f	class:nav
+eVM	main/.build/uno/src/main.cpp	/^EventManager eVM;$/;"	v
 enable	main/lib/motor/motor.h	/^		int enable;$/;"	m	class:motor
 enable	motor_test/src/motor.h	/^		int enable;$/;"	m	class:Motor
 enableDefaultListener	main/lib/eventmanager/EventManager.cpp	/^void EventManager::ListenerList::enableDefaultListener( boolean enable ) $/;"	f	class:EventManager::ListenerList
@@ -158,10 +181,14 @@ enableDefaultListener	main/lib/eventmanager/EventManager.h	/^inline void EventMa
 enableListener	main/lib/eventmanager/EventManager.cpp	/^boolean EventManager::ListenerList::enableListener( int eventCode, EventListener* listener, boolean enable ) $/;"	f	class:EventManager::ListenerList
 enableListener	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::enableListener( int eventCode, EventListener* listener, boolean enable )$/;"	f	class:EventManager
 enabled	main/lib/eventmanager/EventManager.h	/^            boolean			enabled;			\/\/ Each listener can be enabled or disabled$/;"	m	struct:EventManager::ListenerList::ListenerItem
+enqueue	main/lib/queuearray/QueueArray.h	/^void QueueArray<T>::enqueue (const T i) {$/;"	f	class:QueueArray
 eventCode	main/lib/eventmanager/EventManager.h	/^            int				eventCode;		\/\/ The event code$/;"	m	struct:EventManager::ListenerList::ListenerItem
+exit	main/lib/queuearray/QueueArray.h	/^void QueueArray<T>::exit (const char * m) const {$/;"	f	class:QueueArray
 f	main/lib/eventmanager/EventManager.h	/^    F* f;$/;"	m	class:GenericCallable
 f	main/lib/eventmanager/EventManager.h	/^    memberf_pointer f;$/;"	m	class:MemberFunctionCallable
+front	main/lib/queuearray/QueueArray.h	/^T QueueArray<T>::front () const {$/;"	f	class:QueueArray
 getAction	main/lib/nav/nav.cpp	/^action nav::getAction() { return currentAction; }$/;"	f	class:nav
+getDestination	main/lib/nav/nav.cpp	/^grid nav::getDestination() { return destination; }$/;"	f	class:nav
 getGrid	main/lib/nav/nav.cpp	/^grid nav::getGrid() { return currentGrid; }$/;"	f	class:nav
 getNumEntries	main/lib/eventmanager/EventManager.h	/^inline int EventManager::ListenerList::getNumEntries() $/;"	f	class:EventManager::ListenerList
 getNumEvents	main/lib/eventmanager/EventManager.h	/^inline int EventManager::EventQueue::getNumEvents() $/;"	f	class:EventManager::EventQueue
@@ -171,29 +198,36 @@ get_onoff	main/lib/pid/pid.cpp	/^bool PID::get_onoff() const {return on;}$/;"	f	
 get_response	main/lib/pid/pid.cpp	/^bool PID::get_response() const {return response;}$/;"	f	class:PID
 get_status	main/lib/motor/motor.cpp	/^motor_states motor::get_status() $/;"	f	class:motor
 get_status	motor_test/src/motor.cpp	/^motor_states Motor::get_status() $/;"	f	class:Motor
+grid	main/lib/nav/nav.h	/^	grid() {}$/;"	f	struct:grid
+grid	main/lib/nav/nav.h	/^	grid(int a, int b, int c) : x(a), y(b), d(c) {}$/;"	f	struct:grid
 grid	main/lib/nav/nav.h	/^struct grid$/;"	s
+head	main/lib/queuearray/QueueArray.h	/^    int head;        \/\/ the head of the queue.$/;"	m	class:QueueArray
 high	main/lib/pid/pid.h	/^		int low, high;$/;"	m	class:PID
 home	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::home()$/;"	f	class:rgb_lcd
 hopperEast	main/lib/nav/nav.h	/^		grid hopperEast;$/;"	m	class:nav
 hopperWest	main/lib/nav/nav.h	/^		grid hopperWest;$/;"	m	class:nav
 i2c_send_byte	main/lib/grove/rgb_lcd.cpp	/^void i2c_send_byte(unsigned char dta)$/;"	f
 i2c_send_byteS	main/lib/grove/rgb_lcd.cpp	/^void i2c_send_byteS(unsigned char *dta, unsigned char len)$/;"	f
+initialSize	main/lib/queuearray/QueueArray.h	/^    static const int initialSize = 2;$/;"	m	class:QueueArray
 input	main/lib/pid/pid.h	/^		const int* input;$/;"	m	class:PID
 input_prev	main/lib/pid/pid.h	/^		int integral, input_prev;$/;"	m	class:PID
 integral	main/lib/pid/pid.h	/^		int integral, input_prev;$/;"	m	class:PID
-interrupt	main/lib/nav/nav.cpp	/^int nav::interrupt(isr action)$/;"	f	class:nav
 interrupt	main/lib/nav/nav.cpp	/^int nav::interrupt(isr senInt)$/;"	f	class:nav
+irsen	main/.build/uno/src/main.cpp	/^IRSensor irsen[NUMPINS];$/;"	v
 isEmpty	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::EventQueue::isEmpty() $/;"	f	class:EventManager::EventQueue
 isEmpty	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::ListenerList::isEmpty() $/;"	f	class:EventManager::ListenerList
+isEmpty	main/lib/queuearray/QueueArray.h	/^bool QueueArray<T>::isEmpty () const {$/;"	f	class:QueueArray
 isEventQueueEmpty	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::isEventQueueEmpty( EventPriority pri )$/;"	f	class:EventManager
 isEventQueueFull	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::isEventQueueFull( EventPriority pri ) $/;"	f	class:EventManager
 isFull	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::EventQueue::isFull() $/;"	f	class:EventManager::EventQueue
 isFull	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::ListenerList::isFull() $/;"	f	class:EventManager::ListenerList
+isFull	main/lib/queuearray/QueueArray.h	/^bool QueueArray<T>::isFull () const {$/;"	f	class:QueueArray
 isListenerEnabled	main/lib/eventmanager/EventManager.cpp	/^boolean EventManager::ListenerList::isListenerEnabled( int eventCode, EventListener* listener ) $/;"	f	class:EventManager::ListenerList
 isListenerEnabled	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::isListenerEnabled( int eventCode, EventListener* listener )$/;"	f	class:EventManager
 isListenerListEmpty	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::isListenerListEmpty()$/;"	f	class:EventManager
 isListenerListFull	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::isListenerListFull()$/;"	f	class:EventManager
 isr	main/lib/nav/nav.h	/^enum isr$/;"	g
+items	main/lib/queuearray/QueueArray.h	/^    int items;       \/\/ the number of items of the queue.$/;"	m	class:QueueArray
 kEventAnalog0	main/lib/eventmanager/EventManager.h	/^        kEventAnalog0,$/;"	e	enum:EventManager::EventType
 kEventAnalog1	main/lib/eventmanager/EventManager.h	/^        kEventAnalog1,$/;"	e	enum:EventManager::EventType
 kEventAnalog2	main/lib/eventmanager/EventManager.h	/^        kEventAnalog2,$/;"	e	enum:EventManager::EventType
@@ -225,10 +259,14 @@ kMaxListeners	main/lib/eventmanager/EventManager.h	/^        static const int kM
 kNotInterruptSafe	main/lib/eventmanager/EventManager.h	/^    enum SafetyMode { kNotInterruptSafe, kInterruptSafe };$/;"	e	enum:EventManager::SafetyMode
 kd	main/lib/pid/pid.h	/^		double kp, ki, kd;$/;"	m	class:PID
 ki	main/lib/pid/pid.h	/^		double kp, ki, kd;$/;"	m	class:PID
+killMotors	main/.build/uno/src/main.cpp	/^void killMotors()$/;"	f
 kp	main/lib/pid/pid.h	/^		double kp, ki, kd;$/;"	m	class:PID
+lcd	main/.build/uno/src/main.cpp	/^rgb_lcd lcd;$/;"	v
+ledPin	main/lib/queuearray/QueueArray.h	/^    static const int ledPin = 13;$/;"	m	class:QueueArray
 left	main/lib/motor/motor.cpp	/^void motor::left(int speed)$/;"	f	class:motor
 left	motor_test/src/motor.cpp	/^void Motor::left(int speed)$/;"	f	class:Motor
 leftToRight	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::leftToRight(void)$/;"	f	class:rgb_lcd
+loop	main/.build/uno/src/main.cpp	/^void loop()$/;"	f
 low	main/lib/pid/pid.h	/^		int low, high;$/;"	m	class:PID
 mDefaultCallback	main/lib/eventmanager/EventManager.h	/^        EventListener* mDefaultCallback;$/;"	m	class:EventManager::ListenerList
 mDefaultCallbackEnabled	main/lib/eventmanager/EventManager.h	/^        boolean mDefaultCallbackEnabled;$/;"	m	class:EventManager::ListenerList
@@ -244,8 +282,10 @@ mNumEvents	main/lib/eventmanager/EventManager.h	/^        int mNumEvents;$/;"	m	
 mNumListeners	main/lib/eventmanager/EventManager.h	/^        int mNumListeners;$/;"	m	class:EventManager::ListenerList
 mapLinePid	main/lib/pid/line_pid.cpp	/^int mapLinePid(bool l, bool m, bool r) $/;"	f
 memberf_pointer	main/lib/eventmanager/EventManager.h	/^    typedef void (C::*memberf_pointer)(int, int);$/;"	t	class:MemberFunctionCallable
+motoPID	main/.build/uno/src/main.cpp	/^PID motoPID[NUMMOTO];	 \/\/ port 0, starboard 1$/;"	v
 motor	main/lib/motor/motor.cpp	/^motor::motor(int pin_enable, int pin_direction)$/;"	f	class:motor
 motor	main/lib/motor/motor.h	/^class motor$/;"	c
+motor_pwm	main/.build/uno/src/main.cpp	/^int motor_pwm = 0;$/;"	v
 motor_states	main/lib/motor/motor.h	/^enum motor_states$/;"	g
 motor_states	motor_test/src/motor.h	/^enum motor_states$/;"	g
 nav	main/lib/nav/nav.cpp	/^nav::nav(grid start_position)$/;"	f	class:nav
@@ -265,11 +305,15 @@ operator ()	main/lib/eventmanager/EventManager.h	/^    virtual void operator()( 
 operator ==	main/lib/nav/nav.h	/^	bool operator==(const grid& a) const$/;"	f	struct:grid
 output	main/lib/pid/pid.h	/^		int* output;$/;"	m	class:PID
 param	main/lib/eventmanager/EventManager.h	/^            int param;	\/\/ each event has a single integer parameter$/;"	m	struct:EventManager::EventQueue::EventElement
-pastEncounters	main/lib/sensing/irsensor.cpp	/^int pastEncounters()$/;"	f
+pastEncounters	main/lib/sensing/irsensor.cpp	/^int IRSensor::pastEncounters()$/;"	f	class:IRSensor
+peek	main/lib/queuearray/QueueArray.h	/^T QueueArray<T>::peek () const {$/;"	f	class:QueueArray
+pop	main/lib/queuearray/QueueArray.h	/^T QueueArray<T>::pop () {$/;"	f	class:QueueArray
 popEvent	main/lib/eventmanager/EventManager.cpp	/^boolean EventManager::EventQueue::popEvent( int* eventCode, int* eventParam ) $/;"	f	class:EventManager::EventQueue
 prevState	main/lib/sensing/irsensor.h	/^		int prevState;$/;"	m	class:IRSensor
+printer	main/lib/queuearray/QueueArray.h	/^    Print * printer; \/\/ the printer of the queue.$/;"	m	class:QueueArray
 processAllEvents	main/lib/eventmanager/EventManager.cpp	/^int EventManager::processAllEvents() $/;"	f	class:EventManager
 processEvent	main/lib/eventmanager/EventManager.cpp	/^int EventManager::processEvent() $/;"	f	class:EventManager
+push	main/lib/queuearray/QueueArray.h	/^void QueueArray<T>::push (const T i) {$/;"	f	class:QueueArray
 queueEvent	main/lib/eventmanager/EventManager.cpp	/^boolean EventManager::EventQueue::queueEvent( int eventCode, int eventParam ) $/;"	f	class:EventManager::EventQueue
 queueEvent	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::queueEvent( int eventCode, int eventParam, EventPriority pri ) $/;"	f	class:EventManager
 readSensor	main/lib/sensing/sensor.cpp	/^int Sensor::readSensor()$/;"	f	class:Sensor
@@ -282,6 +326,7 @@ removeListener	main/lib/eventmanager/EventManager.cpp	/^int EventManager::Listen
 removeListener	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::removeListener( int eventCode, EventListener* listener )$/;"	f	class:EventManager
 removeListener	main/lib/eventmanager/EventManager.h	/^inline int EventManager::removeListener( EventListener* listener )$/;"	f	class:EventManager
 reset	main/lib/nav/nav.cpp	/^int nav::reset(grid new_position)$/;"	f	class:nav
+resize	main/lib/queuearray/QueueArray.h	/^void QueueArray<T>::resize (const int s) {$/;"	f	class:QueueArray
 response	main/lib/pid/pid.h	/^		bool response;$/;"	m	class:PID
 rgb_lcd	main/lib/grove/rgb_lcd.cpp	/^rgb_lcd::rgb_lcd()$/;"	f	class:rgb_lcd
 rgb_lcd	main/lib/grove/rgb_lcd.h	/^class rgb_lcd : public Print $/;"	c
@@ -293,9 +338,11 @@ scrollDisplayRight	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::scrollDisplayRight
 searchEventCode	main/lib/eventmanager/EventManager.cpp	/^int EventManager::ListenerList::searchEventCode( int eventCode ) $/;"	f	class:EventManager::ListenerList
 searchListeners	main/lib/eventmanager/EventManager.cpp	/^int EventManager::ListenerList::searchListeners( EventListener* listener ) $/;"	f	class:EventManager::ListenerList
 searchListeners	main/lib/eventmanager/EventManager.cpp	/^int EventManager::ListenerList::searchListeners( int eventCode, EventListener* listener ) $/;"	f	class:EventManager::ListenerList
+senPins	main/.build/uno/src/main.cpp	/^const int senPins[NUMPINS] = {A0,A1,A2,A3};$/;"	v
 sendEvent	main/lib/eventmanager/EventManager.cpp	/^int EventManager::ListenerList::sendEvent( int eventCode, int param ) $/;"	f	class:EventManager::ListenerList
 sensorPin	main/lib/legacy/photoLineDetection.h	/^		int sensorPin;$/;"	m	class:PhotoLineDetection
 sensorPin	main/lib/sensing/sensor.h	/^		int sensorPin;$/;"	m	class:Sensor
+sensorPollingFunction	main/.build/uno/src/main.cpp	/^void sensorPollingFunction(int event, int param)$/;"	f
 sensorVal	main/lib/sensing/sensor.h	/^		int sensorVal;$/;"	m	class:Sensor
 sensor_h	main/lib/sensing/sensor.h	7;"	d
 sensor_thresh	main/lib/legacy/photoLineDetection.h	/^		int sensor_thresh;$/;"	m	class:PhotoLineDetection
@@ -307,6 +354,7 @@ setCursor	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::setCursor(uint8_t col, uint
 setDefaultListener	main/lib/eventmanager/EventManager.cpp	/^boolean EventManager::ListenerList::setDefaultListener( EventListener* listener ) $/;"	f	class:EventManager::ListenerList
 setDefaultListener	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::setDefaultListener( EventListener* listener )$/;"	f	class:EventManager
 setPWM	main/lib/grove/rgb_lcd.h	/^  void setPWM(unsigned char color, unsigned char pwm){setReg(color, pwm);}      \/\/ set pwm$/;"	f	class:rgb_lcd
+setPrinter	main/lib/queuearray/QueueArray.h	/^void QueueArray<T>::setPrinter (Print & p) {$/;"	f	class:QueueArray
 setRGB	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::setRGB(unsigned char r, unsigned char g, unsigned char b)$/;"	f	class:rgb_lcd
 setReg	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::setReg(unsigned char addr, unsigned char dta)$/;"	f	class:rgb_lcd
 setThresh	main/lib/sensing/sensor.cpp	/^void Sensor::setThresh(int* values)$/;"	f	class:Sensor
@@ -315,19 +363,23 @@ set_destination	main/lib/nav/nav.cpp	/^int nav::set_destination(grid new_destina
 set_limits	main/lib/pid/pid.cpp	/^void PID::set_limits(int l, int h) {$/;"	f	class:PID
 set_response	main/lib/pid/pid.cpp	/^void PID::set_response(bool r) {$/;"	f	class:PID
 setpoint	main/lib/pid/pid.h	/^		const int* setpoint;$/;"	m	class:PID
+setup	main/.build/uno/src/main.cpp	/^void setup()$/;"	f
+size	main/lib/queuearray/QueueArray.h	/^    int size;        \/\/ the size of the queue.$/;"	m	class:QueueArray
 start	main/lib/pid/pid.cpp	/^void PID::start() {$/;"	f	class:PID
-startTask	main/lib/nav/nav.cpp	/^void startTask()$/;"	f
+startTask	main/lib/nav/nav.cpp	/^void nav::startTask()$/;"	f	class:nav
 status	main/lib/motor/motor.h	/^		motor_states status;$/;"	m	class:motor
 status	motor_test/src/motor.h	/^		motor_states status;$/;"	m	class:Motor
 stop	main/lib/motor/motor.cpp	/^void motor::stop()$/;"	f	class:motor
 stop	main/lib/pid/pid.cpp	/^void PID::stop() {on = 0;}$/;"	f	class:PID
 stop	motor_test/src/motor.cpp	/^void Motor::stop()$/;"	f	class:Motor
+tail	main/lib/queuearray/QueueArray.h	/^    int tail;        \/\/ the tail of the queue.$/;"	m	class:QueueArray
+target_heading	main/.build/uno/src/main.cpp	/^const int target_heading = 0;$/;"	v
 task	main/lib/nav/nav.h	/^struct task$/;"	s
 taskdestination	main/lib/nav/nav.h	/^		grid taskdestination;$/;"	m	class:nav
-tasklist	main/lib/nav/nav.h	/^		std::queue<task> tasklist;$/;"	m	class:nav
-tasksLeft	main/lib/nav/nav.cpp	/^int nav::tasksLeft() { return tasklist.size(); }$/;"	f	class:nav
+tasklist	main/lib/nav/nav.h	/^		QueueArray <task> tasklist;$/;"	m	class:nav
 thresh	main/lib/legacy/photoLineDetection.h	/^		PhotoThresholdValues thresh;$/;"	m	class:PhotoLineDetection
 thresh	main/lib/sensing/sensor.h	/^		int thresh[3];$/;"	m	class:Sensor
+threshold_values	main/.build/uno/src/main.cpp	/^int threshold_values[3] = {530, 777, 0};$/;"	v
 time_prev	main/lib/pid/pid.h	/^		unsigned long time_prev;$/;"	m	class:PID
 tune	main/lib/pid/pid.cpp	/^void PID::tune(double p, double i, double d) {$/;"	f	class:PID
 value	main/lib/nav/nav.h	/^	int value;$/;"	m	struct:task
@@ -335,3 +387,4 @@ white	main/lib/legacy/photoLineDetection.h	/^	int white;$/;"	m	struct:PhotoThres
 write	main/lib/grove/rgb_lcd.cpp	/^inline size_t rgb_lcd::write(uint8_t value)$/;"	f	class:rgb_lcd
 x	main/lib/nav/nav.h	/^	int x;	\/\/ x coordinates$/;"	m	struct:grid
 y	main/lib/nav/nav.h	/^	int y;  \/\/ y coordinates$/;"	m	struct:grid
+~QueueArray	main/lib/queuearray/QueueArray.h	/^QueueArray<T>::~QueueArray () {$/;"	f	class:QueueArray
