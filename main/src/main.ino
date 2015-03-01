@@ -23,7 +23,7 @@ end_pos.y = 5;
 end_pos.d = 90;
 
 // Initialize Event Handling
-EventManager EM();
+EventManager eVM();
 
 // Initialize navigation
 nav Navigator(start_pos);
@@ -46,23 +46,111 @@ const int NUMMOTO = 2;
 std::vector<PID> motoPID;	 // port 0, starboard 1
 
 const int btnCalibrate = 6;
-int btnCal_state;
-
-// Timing loops XXX
-unsigned int display_lap = 0;
-unsigned int poll_lap = 0;
-unsigned int rot_lap = 0;
 
 // White, black, red
 int threshold_values[3] = {530, 777, 0};
+
+// Listener functions (folded)
+void displayFunction(int event, int param)
+{
+	if (event == EventManager::kEventDisplaySerial)
+	{
+		Serial.print("| ");
+		Serial.print(irsen1.getValue());
+		Serial.print(" ");
+		Serial.print(irsen1.detect());
+		Serial.print(" | ");
+		Serial.print(irsen2.getValue());
+		Serial.print(" ");
+		Serial.print(irsen2.detect());
+		Serial.print(" | ");
+		Serial.print(irsen3.getValue());
+		Serial.print(" ");
+		Serial.print(irsen3.detect());
+		Serial.println(" |");
+		Serial.print("Current heading: ");
+		Serial.println(current_heading);
+	}
+	else if (event == EventManager::kEventDisplayLCD)
+	{
+		lcd.clear();
+		lcd.print("|");	
+		lcd.print(irsen1.getValue());	
+		lcd.setCursor(0,5);
+		lcd.print("|");	
+		lcd.print(irsen2.getValue());	
+		lcd.setCursor(0,9);
+		lcd.print("|");	
+		lcd.print(irsen3.getValue());	
+		lcd.print("|");	
+		lcd.setCursor(1,0);
+		lcd.print("|");	
+		lcd.print(irsen1.detect());	
+		lcd.print("|");	
+		lcd.print(irsen2.detect());	
+		lcd.print("|");	
+		lcd.print(irsen3.detect());	
+		lcd.print("||");	
+		lcd.print(current_heading);	
+		lcd.print("|");	
+	}
+}
+void calibrateFunction(int event, int param)
+{
+	calibrate_all();
+	lcd.clear();
+	lcd.print("Calibrated");
+}
+void sensorPollingFunction(int event, int param)
+{
+	int sum_lines = 0;
+	// Read sensors
+	for (int i = 0; i < senPins.size(); ++i) 
+	{
+		irsen[i].readSensor(); 
+		// Perpendicular line detection for past cycles
+		sum_lines += irsen[i].pastEncounters();	
+	}
+
+	// If all sensors have been triggered in the past n cycles,
+	// then trigger line detected
+	if (sum_lines == senPins.size())
+	{
+		Navigator.interrupt(nav::LINE_ISR);			
+	}
+
+	// Update heading
+	current_heading = mapLinePid(
+		irsen[1].detect(),
+		irsen[2].detect(),
+		irsen[3].detect()
+	);
+} // end fold
+
+// Call listeners
+GenericCallable<void(int,int)> display(displayFunction);
+GenericCallable<void(int,int)> calibrate(calibrateFunction);
+GenericCallable<void(int,int)> sensorPolling(calibrateFunction);
+
+void killMotors()
+{
+	port.stop();
+	starboard.stop();
+}
 
 void setup()
 {
 	Serial.begin(9600);
 	lcd.begin(16,2);
 
+	// Event handling
+	eVM.addListener( EventManager::kEventDisplaySerial, &display);
+	eVM.addListener( EventManager::kEventDisplayLCD, &display);
+	eVM.addListener( EventManager::kEventCalibrate, &calibrate);
+	eVM.addListener( EventManager::kEventSensorPolling, &sensorPolling);
+
+	// Pins
 	pinMode(btnCalibrate, INPUT);
-	btnCal_state = digitalRead(btnCalibrate);
 
 	// Initialize PID control
 	for (int i = 0; i < NUMMOTO; ++i)
@@ -77,123 +165,98 @@ void setup()
 	irsen.reserve(senPins.size());
 	for (int i = 0; i < senPins.size(); ++i)
 	{
-		// Push new irsensor onto vector
+		// Make new IRSensor and push onto vector
 		irsen.push_back(IRSensor(senPins(i)));
 		irsen[i].setThresh(threshold_values);
 	}
 
-	// Navigation
-	Navigation.computeRectilinearPath(end_pos);
+	// Check for navigation error
+	if (Navigator.computeRectilinearPath(end_pos) == -1);
+	{
+		Serial.println("NAV ERROR");
+		lcd.clear();
+		lcd.print("NAV ERROR");
+	}
 }
 
 void loop()
 {
-	// Display event	
+	// Check if there are any tasks left to do
+	if (Navigator.tasksLeft() == 0)
+	{
+		Serial.println("DONE");
+		lcd.clear();
+		lcd.print("DONE");
+	}
+	else if (Navigator.getAction() == nav::IDLE)
+	{
+		Navigator.startTask();
+	}
+	else if (Navigator.checkTaskComplete() == 0)
+	{
+		killMotors();		
+	}	
+	
+	// Event manager processing
+	eVM.processEvent();
+	addEvents();
+
+}
+
+void addEvents()
+{
+	// Button state declarations
+	static int btnCal_state = digitalRead(btnCalibrate);
+	// Timing loops 
+	static unsigned int display_lap = 0;
+	static unsigned int poll_lap = 0;
+	static unsigned int rot_lap = 0;
+
+	// Display event
 	if ((millis() - display_lap) > 500)
 	{
-		display();
+		eVM.queueEvent(EventManager::kEventDisplayLCD, 0);
 		display_lap = millis();
-	}	
-
-	// Check for button press
-	if (btnCal_state == LOW && digitalRead(btnCalibrate) == HIGH)
-	{
-		calibrate_all();	
-		lcd.clear();
-		lcd.print("Calibrated");
 	}
-	btnCal_state = digitalRead(btnCalibrate);
 
+	// Poll sensors
 	if ((millis() - poll_lap) > 20)
 	{
-		// Read sensors
-		for (int i = 0; i < senPins.size(); ++i) 
-		{
-			irsen[i].readSensor(); 
-		}
-
-		// Update heading
-		current_heading = mapLinePid(
-			irsen[1].detect(),
-			irsen[2].detect(),
-			irsen[3].detect()
-		);
-
+		eVM.queueEvent(EventManager::kEventSensorPolling, 0);
 		poll_lap = millis();
 	}
-		
-	// Toggles every 50 ms
-	if (motoPID[0].compute() == true)
-		port.adjustSpeed(motor_pwm);	
-	if (motoPID[1].compute() == true)
-		starboard.adjustSpeed(motor_pwm);	
 
-	if ((millis() - rot_lap) > 50)
+	if (Navigator.getAction() == nav::MOVEFORWARD)	
 	{
-		// Rotate will trigger when irsenL and irsenR
-		// Turn left
+		// TODO Toggles every 50 ms
+		if (motoPID[0].compute() == true)
+			port.adjustSpeed(motor_pwm);	
+		if (motoPID[1].compute() == true)
+			starboard.adjustSpeed(motor_pwm);	
+	}
+	else if (Navigator.getAction() == nav::ROTATETO)
+	{
+		if ((millis() - rot_lap) > 50)
+		{
+			// Rotate will trigger when irsenL and irsenR
+			// Turn left
+			if (starboard.get_status() != MOTOR_RIGHT 
+				&& port.get_status() != MOTOR_RIGHT)
+			{
+				starboard.right(255);
+				port.right(255);
+			}
 			rot_lap = millis();
+		}
 	}
-}
 
-void display()
-{
-	Serial.print("| ");
-	Serial.print(irsen1.getValue());
-	Serial.print(" ");
-	Serial.print(irsen1.detect());
-	Serial.print(" | ");
-	Serial.print(irsen2.getValue());
-	Serial.print(" ");
-	Serial.print(irsen2.detect());
-	Serial.print(" | ");
-	Serial.print(irsen3.getValue());
-	Serial.print(" ");
-	Serial.print(irsen3.detect());
-	Serial.println(" |");
-	Serial.print("Current heading: ");
-	Serial.println(current_heading);
-}
-
-void display_lcd()
-{
-	lcd.clear();
-	lcd.print("|");	
-	lcd.print(irsen1.getValue());	
-	lcd.setCursor(0,5);
-	lcd.print("|");	
-	lcd.print(irsen2.getValue());	
-	lcd.setCursor(0,9);
-	lcd.print("|");	
-	lcd.print(irsen3.getValue());	
-	lcd.print("|");	
-	lcd.setCursor(1,0);
-	lcd.print("|");	
-	lcd.print(irsen1.detect());	
-	lcd.print("|");	
-	lcd.print(irsen2.detect());	
-	lcd.print("|");	
-	lcd.print(irsen3.detect());	
-	lcd.print("||");	
-	lcd.print(current_heading);	
-	lcd.print("|");	
-}
-
-void rotate()
-{
-	if (starboard.get_status() != MOTOR_RIGHT && port.get_status() != MOTOR_RIGHT)
+	// Check for button press
+	int calRead = digitalRead(btnCalibrate);
+	if (btnCal_state == LOW && calRead == HIGH)
 	{
-		starboard.right(255);
-		port.right(255);
+		eVM.queueEvent(EventManager::kEventCalibrate, 0)
 	}
-	
-	if (irsenLval == LOW && irsenLval == HIGH)
-		irsenLval = HIGH;
-	if (irsenRval == LOW && irsenRval == HIGH)
-		irsenRval = HIGH;
-
-	if (irsenLval == HIGH && irsenRval == HIGH)
-		return;
+	btnCal_state = calRead;
 }
 
 void calibrate_all()
@@ -201,7 +264,8 @@ void calibrate_all()
 	// Middle sensor calibrates for black
 	// Right and left sensor averages calibrate for white
 	threshold_values[BLACK] = irsen2.readSensor();	
-	threshold_values[WHITE] = (irsen1.readSensor() + irsen3.readSensor()) / 2;
+	threshold_values[WHITE] = ( irsen1.readSensor() 
+								+ irsen3.readSensor()) / 2;
 
 	// Set values
 	for (int i = 0; i < NUMPINS; ++i)
