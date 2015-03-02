@@ -29,9 +29,9 @@ const int senPins[NUMPINS] = {A0,A1,A2,A3};
 IRSensor irsen[NUMPINS];
 
 // Initialize motors (en, dir)
-motor port(3,2);
-motor starboard(5,4);
-motor wheel(9,8);
+motor port(3,4);
+motor starboard(5,6);
+//motor wheel(9,8);
 
 // PID values
 const int target_heading = 0;
@@ -148,7 +148,7 @@ void killMotors()
 {
 	port.stop();
 	starboard.stop();
-	wheel.stop();
+	//wheel.stop();
 }
 
 void setup()
@@ -156,7 +156,7 @@ void setup()
 	Serial.begin(9600);
 	lcd.begin(16,2);
 
-	wheel.left(125);	
+	//wheel.left(125);	
 
 	// Event handling
 
