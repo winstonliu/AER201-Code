@@ -40,6 +40,12 @@ void loop()
 		if (key == '*')
 		{
 			lcd.clear();
+			lcd.print("X: ");
+			lcd.print(bsnumbers[0]);
+			lcd.print("y: ");
+			lcd.print(bsnumbers[1]);
+			lcd.print("Z: ");
+			lcd.print(bsnumbers[2]);
 		}
 	}
 }
