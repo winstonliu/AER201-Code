@@ -21,18 +21,18 @@ void motor::stop()
 void motor::right()
 {
 	status = RIGHT;
-    digitalWrite(enable, HIGH);
+    analogWrite(enable, 75);
     digitalWrite(direction, LOW);
 }
 
 void motor::left()
 {
 	status = LEFT;
-    digitalWrite(enable, HIGH);
+    analogWrite(enable, 75);
     digitalWrite(direction, HIGH);    
 }
 
-motor_states get_status() 
+motor_states motor::get_status() 
 { 
 	return status; 
 }

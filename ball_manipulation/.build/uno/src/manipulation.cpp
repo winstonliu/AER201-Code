@@ -1,3 +1,15 @@
+#include <Arduino.h>
+#include <Wire.h>
+#include "rgb_lcd.h"
+#include "motor.h"
+void set_bools();
+void setup();
+void loop();
+void blink_led();
+boolean turn_motor(boolean left);
+void toggle_motor();
+void kill_all();
+#line 1 "src/manipulation.ino"
 // test_Feb2.ino
 // Use this code to test your motor with the Arduino board:
 // if you need PWM, just use the PWM outputs on the Arduino
@@ -5,9 +17,9 @@
 
 // 0 implies using optical encoder, 1 implies breakbeam
 
-#include <Wire.h>
-#include "rgb_lcd.h"
-#include "motor.h"
+//#include <Wire.h>
+//#include "rgb_lcd.h"
+//#include "motor.h"
 
 // --------------------------------------------------------------------------- Motors
 // [enable, direction]
@@ -118,10 +130,10 @@ void loop()
 		if (arm_retracting == true && motor_on == true)
 		{
 			//detachInterrupt(0);
-			lcd.clear();
+			lcd.clear();	
 			lcd.print("Stopped");
 			delay(2000);
-			lcd.clear();
+			lcd.clear();	
 			lcd.print("Retracting");
 			arm.right();	
 			delay(1000);

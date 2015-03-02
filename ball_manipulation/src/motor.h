@@ -5,7 +5,7 @@ enum motor_states
 	RIGHT,
 	LEFT,
 	OFF
-}
+};
 
 class motor
 {
@@ -21,4 +21,4 @@ class motor
 		// HIGH direction pin implies leftward rotation
 		void left();
 		motor_states get_status();
-}
+};
