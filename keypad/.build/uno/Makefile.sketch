@@ -1,0 +1,14 @@
+
+
+
+
+
+.build/uno/src/keypad.cpp : src/keypad.ino
+	@mkdir -p .build/uno/src
+	@echo [93msrc/keypad.ino[0m
+	@/usr/bin/ino preproc  -o $@ $^
+
+
+all : .build/uno/src/keypad.cpp
+	@true
+

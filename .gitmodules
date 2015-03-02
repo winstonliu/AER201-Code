@@ -1,0 +1,3 @@
+[submodule "keypad/lib"]
+	path = keypad/lib
+	url = git@github.com:winstonliu/AER201-Ref.git
