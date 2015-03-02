@@ -1,6 +1,5 @@
 #include <Wire.h>
 #include <rgb_lcd.h>
-#include <EventManager.h>
 
 #include <pid.h>
 #include <line_pid.h>
@@ -19,15 +18,13 @@ rgb_lcd lcd;
 grid start_pos(4, 1, 0);
 grid end_pos(6, 5, 90);
 
-// Initialize Event Handling
-EventManager eVM;
-
 // Initialize navigation
 nav Navigator(start_pos);
 
 // Initialize irsensors
 const int NUMPINS = 4;
 //const int senPins[NUMPINS] = {A0,A1,A2,A3,A4};
+// Left: A0, middle: A1, right A2
 const int senPins[NUMPINS] = {A0,A1,A2,A3};
 IRSensor irsen[NUMPINS];
 
@@ -47,15 +44,15 @@ PID motoPID[NUMMOTO];	 // port 0, starboard 1
 
 const int btnCalibrate = 6;
 
-// White, black, red
-int threshold_values[3] = {220, 800, 0};
+// Black, white, red
+int threshold_values[3] = {2000, 0, 0};
 
 // Listener functions (folded)
-void displayFunction(int event, int param)
+void displayFunction()
 {
 	grid temp_grid = Navigator.getGrid();
-	if (event == EventManager::kEventDisplaySerial)
-	{
+	//if (event == EventManager::kEventDisplaySerial)
+	//{
 		Serial.print(irsen[1].getValue());
 		Serial.print(" ");
 		Serial.print(irsen[1].detect());
@@ -77,6 +74,7 @@ void displayFunction(int event, int param)
 		Serial.println(temp_grid.d);
 		Serial.print("# Tasks: ");
 		Serial.println(Navigator.countRemaining());
+	/*
 	}
 	else if (event == EventManager::kEventDisplayLCD)
 	{
@@ -101,14 +99,15 @@ void displayFunction(int event, int param)
 		lcd.print(current_heading);	
 		lcd.print("|");	
 	}
+	*/
 }
-void calibrateFunction(int event, int param)
+void calibrateFunction()
 {
 	calibrate_all();
 	lcd.clear();
 	lcd.print("Calibrated");
 }
-void sensorPollingFunction(int event, int param)
+void sensorPollingFunction()
 {
 	int sum_lines = 0;
 	// Read sensors
@@ -121,7 +120,7 @@ void sensorPollingFunction(int event, int param)
 
 	// If all sensors have been triggered in the past n cycles,
 	// then trigger line detected
-	Serial.print("Sum pins");
+	Serial.print("Sum pins ");
 	Serial.println(sum_lines);
 	if (sum_lines == NUMPINS)
 	{
@@ -135,19 +134,13 @@ void sensorPollingFunction(int event, int param)
 		irsen[3].detect()
 	);
 } // end fold
-void doneFunction(int event, int param)
+void doneFunction()
 {
 	Serial.println("DONE");
 	lcd.clear();
 	lcd.print("DONE");
 	FLAG_DONE = true;
 }
-
-// Call listeners
-GenericCallable<void(int,int)> display(displayFunction);
-GenericCallable<void(int,int)> calibrate(calibrateFunction);
-GenericCallable<void(int,int)> sensorPolling(calibrateFunction);
-GenericCallable<void(int,int)> doneNow(doneFunction);
 
 void killMotors()
 {
@@ -164,11 +157,6 @@ void setup()
 	wheel.left(125);	
 
 	// Event handling
-	eVM.addListener( EventManager::kEventDisplaySerial, &display);
-	eVM.addListener( EventManager::kEventDisplayLCD, &display);
-	eVM.addListener( EventManager::kEventCalibrate, &calibrate);
-	eVM.addListener( EventManager::kEventSensorPolling, &sensorPolling);
-	eVM.addListener( EventManager::kEventDone, &doneNow);
 
 	// Pins
 	pinMode(btnCalibrate, INPUT);
@@ -217,7 +205,7 @@ void setup()
 void loop()
 {
 	static int main_lap = 0;
-
+	
 	if (FLAG_NAVERR == true || FLAG_DONE == true)
 		return;
 
@@ -231,7 +219,7 @@ void loop()
 		Serial.println(temp_ret);
 		if (temp_ret == true)
 		{
-			eVM.queueEvent(EventManager::kEventDone, 0);
+			doneFunction();
 		}
 		else if (Navigator.getAction() == IDLE)
 		{
@@ -239,15 +227,22 @@ void loop()
 		}
 		else if (Navigator.checkTaskComplete() == 0)
 		{
+			grid temp_grid = Navigator.taskdestination;
+			Serial.print("Task destination: ");
+			Serial.print(" x: ");
+			Serial.print(temp_grid.x);
+			Serial.print(" y: ");
+			Serial.print(temp_grid.y);
+			Serial.print(" d: ");
+			Serial.println(temp_grid.d);
+			Serial.println("Task Complete");
 			killMotors();		
 		}	
-
 		Serial.print("Current action: ");
 		Serial.println(Navigator.getAction());
 	}
 	
 	// Event manager processing
-	eVM.processEvent();
 	addEvents();
 
 }
@@ -260,14 +255,14 @@ void addEvents()
 	static unsigned int display_lap = 0;
 	static unsigned int poll_lap = 0;
 	static unsigned int rot_lap = 0;
+	static unsigned int pauseCounter = 0;
 
 	// Display event
-	if ((millis() - display_lap) > 500)
+	if ((millis() - display_lap) > 100)
 	{
 		// DEBUG
 		Serial.println("Display");
-
-		eVM.queueEvent(EventManager::kEventDisplaySerial, 0);
+		displayFunction();
 		display_lap = millis();
 	}
 
@@ -276,12 +271,18 @@ void addEvents()
 	{
 		// DEBUG
 		Serial.println("Sensor Poll");
-
-		eVM.queueEvent(EventManager::kEventSensorPolling, 0);
+		sensorPollingFunction();	
 		poll_lap = millis();
 	}
 
-	if (Navigator.getAction() == MOVEFORWARD)	
+	if (Navigator.getAction() == PAUSE)
+	{
+		if (pauseCounter > 100)
+			Navigator.FLAG_unpause = true;	
+		Serial.println(pauseCounter);
+		++pauseCounter;
+	}
+	else if (Navigator.getAction() == MOVEFORWARD)	
 	{
 		// DEBUG
 		Serial.println("Moving Forward");
@@ -315,7 +316,7 @@ void addEvents()
 	int calRead = digitalRead(btnCalibrate);
 	if (btnCal_state == LOW && calRead == HIGH)
 	{
-		eVM.queueEvent(EventManager::kEventCalibrate, 0);
+		calibrateFunction();
 	}
 	btnCal_state = calRead;
 }
