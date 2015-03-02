@@ -13,9 +13,8 @@
 // [enable, direction]
 
 const int START_BTN = 10;
-const int ARM_SENSOR = 2;
+const int ARM_SENSOR = 13;
 //const int KILL_SWITCH = 2;
-const int LED = 13;
 const int retract_time = 1000;
 
 const int BREAKBEAM = 1;
@@ -26,6 +25,7 @@ int print_cnt = 0;
 rgb_lcd lcd;
 // en, dir
 motor arm(9,8);
+motor wheel(11, 12);
 
 boolean claw_dir = true;
 boolean motor_on = false;
@@ -50,7 +50,8 @@ void setup()
 	lcd.begin(16,2);
 	pinMode(START_BTN, INPUT);
 	pinMode(ARM_SENSOR, INPUT);
-
+	
+	wheel.left();
 
 	//attachInterrupt(0, kill_all, RISING);
 
@@ -60,6 +61,11 @@ void setup()
 
 void loop()
 {    
+	if (motor_on == true)
+		wheel.stop();
+	else
+		wheel.left();
+
 	int buttonstate = digitalRead(START_BTN);
     //Triggers the motor
     if(buttonstate == HIGH && !motor_on)
@@ -99,7 +105,6 @@ void loop()
 				Serial.println("Motor Reversing");
 				lcd.clear();
 				lcd.print("Motor Reversing");
-				blink_led();
 				lcd.clear();	
 				lcd.print("Mission");
 				lcd.setCursor(0,1);
@@ -123,7 +128,7 @@ void loop()
 			delay(2000);
 			lcd.clear();
 			lcd.print("Retracting");
-			arm.right();	
+			arm.right();
 			delay(1000);
 			arm.stop(); 
 			lcd.clear();	
@@ -170,13 +175,6 @@ int read_val(int pin){
     return sensorValue;
 }
 */
-
-void blink_led(){
-	Serial.println("Blinking LED");
-	digitalWrite(LED, HIGH);
-	delay(500);
-	digitalWrite(LED, LOW);
-}
 
 //-----Drive
 //--------------------
