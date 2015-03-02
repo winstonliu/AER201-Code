@@ -32,6 +32,8 @@ boolean motor_on = false;
 boolean engaged = false;
 
 boolean arm_retracting = false;
+const int wheel_speed = 50;
+const int claw_pwm = 100;
 
 // --------------------------------------------------------------------------- Setup
 
@@ -51,12 +53,10 @@ void setup()
 	pinMode(START_BTN, INPUT);
 	pinMode(ARM_SENSOR, INPUT);
 	
-	wheel.left();
+	wheel.left(wheel_speed);
 
 	//attachInterrupt(0, kill_all, RISING);
-
-	if (BREAKBEAM == 1)
-		attachInterrupt(0, toggle_motor, RISING);
+	attachInterrupt(0, toggle_motor, RISING);
 }
 
 void loop()
@@ -64,7 +64,7 @@ void loop()
 	if (motor_on == true)
 		wheel.stop();
 	else
-		wheel.left();
+		wheel.left(wheel_speed);
 
 	int buttonstate = digitalRead(START_BTN);
     //Triggers the motor
@@ -77,7 +77,7 @@ void loop()
 	
 		if (BREAKBEAM == 1)
 		{
-			arm.left(); 
+			arm.left(claw_pwm); 
 			lcd.setCursor(0,1);
 			lcd.print("BREAKBEAM");
 		}
@@ -128,7 +128,7 @@ void loop()
 			delay(2000);
 			lcd.clear();
 			lcd.print("Retracting");
-			arm.right();
+			arm.right(claw_pwm);
 			delay(1000);
 			arm.stop(); 
 			lcd.clear();	
@@ -204,11 +204,11 @@ boolean turn_motor(boolean left)
     //Output of FSM
     if(left)
 	{
-		arm.left();
+		arm.left(claw_pwm);
     }
     else
 	{
-		arm.right();
+		arm.right(claw_pwm);
     }
     
     return false;

@@ -17,8 +17,8 @@ class motor
 		motor(int pin_enable, int pin_direction);	
 		void stop();
 		// LOW direction pin implies rightward rotation
-		void right();
+		void right(int pwm);
 		// HIGH direction pin implies leftward rotation
-		void left();
+		void left(int pwm);
 		motor_states get_status();
 };

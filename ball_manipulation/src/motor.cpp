@@ -18,17 +18,17 @@ void motor::stop()
     digitalWrite(direction, LOW);    
 }
 
-void motor::right()
+void motor::right(int pwm)
 {
 	status = RIGHT;
-    analogWrite(enable, 75);
+    analogWrite(enable, pwm);
     digitalWrite(direction, LOW);
 }
 
-void motor::left()
+void motor::left(int pwm)
 {
 	status = LEFT;
-    analogWrite(enable, 75);
+    analogWrite(enable, pwm);
     digitalWrite(direction, HIGH);    
 }
 
