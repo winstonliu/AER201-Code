@@ -6,7 +6,7 @@ Motor starboard(5,4);
 
 void setup()
 {
-	starboard.right(255);
+	starboard.left(255);
 	port.left(255);
 }
 

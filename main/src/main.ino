@@ -50,9 +50,10 @@ int threshold_values[3] = {2000, 0, 0};
 // Listener functions (folded)
 void displayFunction()
 {
-	grid temp_grid = Navigator.getGrid();
+	//grid temp_grid = Navigator.getGrid();
 	//if (event == EventManager::kEventDisplaySerial)
 	//{
+/*
 		Serial.print(irsen[1].getValue());
 		Serial.print(" ");
 		Serial.print(irsen[1].detect());
@@ -74,6 +75,7 @@ void displayFunction()
 		Serial.println(temp_grid.d);
 		Serial.print("# Tasks: ");
 		Serial.println(Navigator.countRemaining());
+*/
 	/*
 	}
 	else if (event == EventManager::kEventDisplayLCD)
@@ -166,6 +168,7 @@ void setup()
 	{
 		motoPID[i] = PID(current_heading, target_heading, motor_pwm);
 		motoPID[i].start();		
+		motoPID[i].tune(0.5, 0, 0);
 		motoPID[i].set_cycle(50);		
 	}
 
@@ -177,6 +180,7 @@ void setup()
 		irsen[i].setThresh(threshold_values);
 	}
 
+/*
 	// Check for navigation error
 	int ret_err = Navigator.computeRectilinearPath(end_pos);
 	Serial.print("Computation result: ");
@@ -200,6 +204,7 @@ void setup()
 		lcd.print("NAV ERROR");
 		FLAG_NAVERR = true;
 	}
+*/
 }
 
 void loop()
@@ -209,6 +214,7 @@ void loop()
 	if (FLAG_NAVERR == true || FLAG_DONE == true)
 		return;
 
+/*
 	// Check if there are any tasks left to do
 	if ((millis() - main_lap) > 20)
 	{
@@ -241,7 +247,7 @@ void loop()
 		Serial.print("Current action: ");
 		Serial.println(Navigator.getAction());
 	}
-	
+*/	
 	// Event manager processing
 	addEvents();
 
@@ -258,11 +264,21 @@ void addEvents()
 	static unsigned int pauseCounter = 0;
 
 	// Display event
-	if ((millis() - display_lap) > 100)
+	if ((millis() - display_lap) > 200)
 	{
 		// DEBUG
-		Serial.println("Display");
-		displayFunction();
+		lcd.clear();
+		lcd.print(irsen[1].readSensor());
+		lcd.print(" ");
+		lcd.print(irsen[2].readSensor());
+		lcd.print(" ");
+		lcd.print(irsen[3].readSensor());
+		lcd.setCursor(0,1);
+		lcd.print(irsen[1].detect());
+		lcd.print(" ");
+		lcd.print(irsen[2].detect());
+		lcd.print(" ");
+		lcd.print(irsen[3].detect());
 		display_lap = millis();
 	}
 
@@ -273,8 +289,12 @@ void addEvents()
 		Serial.println("Sensor Poll");
 		sensorPollingFunction();	
 		poll_lap = millis();
+		Serial.print("White ");
+		Serial.println(threshold_values[WHITE]);
+		Serial.print("Black ");
+		Serial.println(threshold_values[BLACK]);
 	}
-
+/*
 	if (Navigator.getAction() == PAUSE)
 	{
 		if (pauseCounter > 100)
@@ -311,6 +331,11 @@ void addEvents()
 			rot_lap = millis();
 		}
 	}
+*/
+	if (motoPID[0].compute() == true)
+		port.adjustSpeed(motor_pwm);	
+	if (motoPID[1].compute() == true)
+		starboard.adjustSpeed(motor_pwm);	
 
 	// Check for button press
 	int calRead = digitalRead(btnCalibrate);
