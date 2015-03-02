@@ -36,21 +36,21 @@ motor starboard(5,6);
 // PID values
 const int target_heading = 0;
 int current_heading = 0;
-int motor_pwm = 0;
+int motor_pwm[2] = {0, 0};
 
 // PID Control initialize
 const int NUMMOTO = 2;
 PID motoPID[NUMMOTO];	 // port 0, starboard 1
 
-const int btnCalibrate = 6;
+const int btnCalibrate = 10;
 
 // Black, white, red
-int threshold_values[3] = {2000, 0, 0};
+int threshold_values[3] = {0, 800, 0};
 
 // Listener functions (folded)
 void displayFunction()
 {
-	//grid temp_grid = Navigator.getGrid();
+
 	//if (event == EventManager::kEventDisplaySerial)
 	//{
 /*
@@ -162,11 +162,13 @@ void setup()
 
 	// Pins
 	pinMode(btnCalibrate, INPUT);
+	port.left();
+	starboard.right();
 
 	// Initialize PID control
 	for (int i = 0; i < NUMMOTO; ++i)
 	{
-		motoPID[i] = PID(current_heading, target_heading, motor_pwm);
+		motoPID[i] = PID(current_heading, target_heading, motor_pwm[i]);
 		motoPID[i].start();		
 		motoPID[i].tune(0.5, 0, 0);
 		motoPID[i].set_cycle(50);		
@@ -279,6 +281,8 @@ void addEvents()
 		lcd.print(irsen[2].detect());
 		lcd.print(" ");
 		lcd.print(irsen[3].detect());
+		lcd.print(" ");
+		lcd.print(current_heading);
 		display_lap = millis();
 	}
 
@@ -333,9 +337,17 @@ void addEvents()
 	}
 */
 	if (motoPID[0].compute() == true)
-		port.adjustSpeed(motor_pwm);	
+	{
+		port.adjustSpeed(motor_pwm[0]);	
+		Serial.print("Port pwm: ");
+		Serial.print(motor_pwm[0]);
+	}
 	if (motoPID[1].compute() == true)
-		starboard.adjustSpeed(motor_pwm);	
+	{
+		Serial.print("Starboard pwm: ");
+		Serial.print(motor_pwm[1]);
+		starboard.adjustSpeed(motor_pwm[1]);	
+	}
 
 	// Check for button press
 	int calRead = digitalRead(btnCalibrate);
@@ -350,7 +362,7 @@ void calibrate_all()
 {
 	// Middle sensor calibrates for black
 	// Right and left sensor averages calibrate for white
-	threshold_values[BLACK] = irsen[2].readSensor();	
+	//threshold_values[BLACK] = irsen[2].readSensor();	
 	threshold_values[WHITE] = ( irsen[1].readSensor() 
 								+ irsen[3].readSensor()) / 2;
 
