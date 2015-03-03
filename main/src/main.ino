@@ -1,81 +1,81 @@
 #include <Wire.h>
 #include <rgb_lcd.h>
 
-#include <pid.h>
-#include <line_pid.h>
 #include <irsensor.h>
 #include <motor.h>
 #include <nav.h>
 
-// Flags
-bool FLAG_NAVERR = false;
-bool FLAG_DONE = false;
+#include "drivemotor.h"
 
-// Initialize lcd 
-rgb_lcd lcd;
+// ================================================================ //
+// ADJUSTABLE PARAMETERS
+
+const int btnCalibrate = 10;
+const int NUMPINS = 4; // Initialize irsensors
+const int senPins[NUMPINS] = {A0,A1,A2,A3}; 
+// Left: A0, middle: A1, right A2
 
 // Initialize nav x,y,d
 grid start_pos(4, 1, 0);
 grid end_pos(6, 5, 90);
 
-// Initialize navigation
-nav Navigator(start_pos);
+int threshold_values[3] = {0, 800, 0};
 
-// Initialize irsensors
-const int NUMPINS = 4;
-//const int senPins[NUMPINS] = {A0,A1,A2,A3,A4};
-// Left: A0, middle: A1, right A2
-const int senPins[NUMPINS] = {A0,A1,A2,A3};
+// Heading motor proportional scaling factor:
+const int dmotor_scaling = 4; 
+// Initial change
+const int dmotor_initial = 10;
+
+// ================================================================ //
+
+// Flags
+bool FLAG_NAVERR = false;
+bool FLAG_DONE = false;
+
+rgb_lcd lcd;
+nav Navigator(start_pos);
 IRSensor irsen[NUMPINS];
+
+// ================================================================ //
+// MOTOR initialization
 
 // Initialize motors (en, dir)
 motor port(3,4);
 motor starboard(5,6);
-//motor wheel(9,8);
+motor wheel(9,8);
 
-// PID values
-const int target_heading = 0;
-int current_heading = 0;
-int motor_pwm[2] = {125, 125};
+int current_heading;
 
-// PID Control initialize
-const int NUMMOTO = 2;
-PID motoPID[NUMMOTO];	 // port 0, starboard 1
+DriveMotor Driver(port, starboard, dmotor_scaling, dmotor_initial);
 
-const int btnCalibrate = 10;
-
-// Black, white, red
-int threshold_values[3] = {0, 800, 0};
+// ================================================================ //
 
 // Listener functions (folded)
 void displayFunction()
 {
+	grid temp_grid = Navigator.currentGrid;
 
-	//if (event == EventManager::kEventDisplaySerial)
-	//{
-/*
-		Serial.print(irsen[1].getValue());
-		Serial.print(" ");
-		Serial.print(irsen[1].detect());
-		Serial.print(" | ");
-		Serial.print(irsen[2].getValue());
-		Serial.print(" ");
-		Serial.print(irsen[2].detect());
-		Serial.print(" | ");
-		Serial.print(irsen[3].getValue());
-		Serial.print(" ");
-		Serial.println(irsen[3].detect());
-		Serial.print("Current heading: ");
-		Serial.println(current_heading);
-		Serial.print(" x: ");
-		Serial.print(temp_grid.x);
-		Serial.print(" y: ");
-		Serial.print(temp_grid.y);
-		Serial.print(" d: ");
-		Serial.println(temp_grid.d);
-		Serial.print("# Tasks: ");
-		Serial.println(Navigator.countRemaining());
-*/
+	Serial.print(irsen[1].getValue());
+	Serial.print(" ");
+	Serial.print(irsen[1].detect());
+	Serial.print(" | ");
+	Serial.print(irsen[2].getValue());
+	Serial.print(" ");
+	Serial.print(irsen[2].detect());
+	Serial.print(" | ");
+	Serial.print(irsen[3].getValue());
+	Serial.print(" ");
+	Serial.println(irsen[3].detect());
+	Serial.print("Current heading: ");
+	Serial.println(current_heading);
+	Serial.print(" x: ");
+	Serial.print(temp_grid.x);
+	Serial.print(" y: ");
+	Serial.print(temp_grid.y);
+	Serial.print(" d: ");
+	Serial.println(temp_grid.d);
+	Serial.print("# Tasks: ");
+	Serial.println(Navigator.countRemaining());
 	/*
 	}
 	else if (event == EventManager::kEventDisplayLCD)
@@ -130,12 +130,12 @@ void sensorPollingFunction()
 	}
 
 	// Update heading
-	current_heading = mapLinePid(
+	current_heading = Driver.mapLine(
 		irsen[1].detect(),
 		irsen[2].detect(),
 		irsen[3].detect()
 	);
-} // end fold
+}
 void doneFunction()
 {
 	Serial.println("DONE");
@@ -164,15 +164,6 @@ void setup()
 	pinMode(btnCalibrate, INPUT);
 	port.left();
 	starboard.right();
-
-	// Initialize PID control
-	for (int i = 0; i < NUMMOTO; ++i)
-	{
-		motoPID[i] = PID(current_heading, target_heading, motor_pwm[i]);
-		motoPID[i].start();		
-		motoPID[i].tune(0.5, 0, 0);
-		motoPID[i].set_cycle(50);		
-	}
 
 	// Set threshold values for irsensor
 	for (int i = 0; i < NUMPINS; ++i)
@@ -216,7 +207,6 @@ void loop()
 	if (FLAG_NAVERR == true || FLAG_DONE == true)
 		return;
 
-/*
 	// Check if there are any tasks left to do
 	if ((millis() - main_lap) > 20)
 	{
@@ -249,7 +239,7 @@ void loop()
 		Serial.print("Current action: ");
 		Serial.println(Navigator.getAction());
 	}
-*/	
+
 	// Event manager processing
 	addEvents();
 
@@ -298,7 +288,7 @@ void addEvents()
 		Serial.print("Black ");
 		Serial.println(threshold_values[BLACK]);
 	}
-/*
+
 	if (Navigator.getAction() == PAUSE)
 	{
 		if (pauseCounter > 100)
@@ -312,10 +302,7 @@ void addEvents()
 		Serial.println("Moving Forward");
 
 		// TODO Toggles every 50 ms
-		if (motoPID[0].compute() == true)
-			port.adjustSpeed(motor_pwm);	
-		if (motoPID[1].compute() == true)
-			starboard.adjustSpeed(motor_pwm);	
+		current_heading = Driver.lineMotorScaling();
 	}
 	else if (Navigator.getAction() == ROTATETO)
 	{
@@ -334,19 +321,6 @@ void addEvents()
 			}
 			rot_lap = millis();
 		}
-	}
-*/
-	if (motoPID[0].compute() == true)
-	{
-		port.adjustSpeed(motor_pwm[0]);	
-		Serial.print("Port pwm: ");
-		Serial.print(motor_pwm[0]);
-	}
-	if (motoPID[1].compute() == true)
-	{
-		Serial.print("Starboard pwm: ");
-		Serial.print(motor_pwm[1]);
-		starboard.adjustSpeed(motor_pwm[1]);	
 	}
 
 	// Check for button press
