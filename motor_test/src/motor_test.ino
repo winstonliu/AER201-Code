@@ -1,12 +1,12 @@
 #include "motor.h"
 
 // Initialize motors (en, dir)
-Motor port(3,2);
-Motor starboard(5,4);
+Motor port(3,4);
+Motor starboard(5,6);
 
 void setup()
 {
-	starboard.right(255);
+	starboard.left(255);
 	port.left(255);
 }
 
