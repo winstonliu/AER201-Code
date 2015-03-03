@@ -36,7 +36,7 @@ motor starboard(5,6);
 // PID values
 const int target_heading = 0;
 int current_heading = 0;
-int motor_pwm[2] = {0, 0};
+int motor_pwm[2] = {125, 125};
 
 // PID Control initialize
 const int NUMMOTO = 2;
