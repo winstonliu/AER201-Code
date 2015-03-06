@@ -167,7 +167,7 @@ void setup()
 	starboard.right();
 
 	// DEBUG
-	Navigator.currentAction = MOVEFORWARD;
+	Navigator.currentAction = MOVEONGRID;
 
 	// Set threshold values for irsensor
 	for (int i = 0; i < NUMPINS; ++i)
@@ -302,7 +302,7 @@ void addEvents()
 		//Serial.println(pauseCounter);
 		++pauseCounter;
 	}
-	else if (Navigator.getAction() == MOVEFORWARD)	
+	else if (Navigator.getAction() == MOVEONGRID)	
 	{
 		int adjustSpeed;
 		// DEBUG
