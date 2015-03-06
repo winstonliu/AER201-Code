@@ -38,19 +38,26 @@ int DriveMotor::lineMotorScaling()
 {
 	// If the heading is less than zero, then PWM the port (left) wheel and
 	// v.v. If the heading is zero, then full steam ahead.
+	// DEBUG
+	int adjustedSpeed;
 	if (current_heading < 0)
 	{
-		port.adjustSpeed(255 - initial - (-1)*current_heading*scaling); 
+		adjustedSpeed = 255 - initial - (-1)*current_heading*scaling;
+		//port.adjustSpeed(adjustedSpeed); 
+		port.left(adjustedSpeed);
 	}
 	else if (current_heading > 0)
 	{
-		starboard.adjustSpeed(255 - initial - current_heading*scaling); 
+		adjustedSpeed = 255 - initial - current_heading*scaling;
+		//starboard.adjustSpeed(adjustedSpeed); 
+		starboard.right(adjustedSpeed);
 	}
 	else
 	{
-		port.adjustSpeed(255);
-		starboard.adjustSpeed(255);
+		adjustedSpeed = 255;
+		port.adjustSpeed(adjustedSpeed);
+		starboard.adjustSpeed(adjustedSpeed);
 	}
-	return current_heading;
+	return adjustedSpeed;
 }
 

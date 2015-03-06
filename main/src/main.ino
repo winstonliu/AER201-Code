@@ -22,9 +22,9 @@ grid end_pos(6, 5, 90);
 int threshold_values[3] = {0, 800, 0};
 
 // Heading motor proportional scaling factor:
-const int dmotor_scaling = 4; 
+const int dmotor_scaling = 50; 
 // Initial change
-const int dmotor_initial = 10;
+const int dmotor_initial = 2;
 
 // ================================================================ //
 
@@ -54,7 +54,7 @@ DriveMotor Driver(port, starboard, dmotor_scaling, dmotor_initial);
 void displayFunction()
 {
 	grid temp_grid = Navigator.currentGrid;
-
+/*
 	Serial.print(irsen[1].getValue());
 	Serial.print(" ");
 	Serial.print(irsen[1].detect());
@@ -76,6 +76,7 @@ void displayFunction()
 	Serial.println(temp_grid.d);
 	Serial.print("# Tasks: ");
 	Serial.println(Navigator.countRemaining());
+*/
 	/*
 	}
 	else if (event == EventManager::kEventDisplayLCD)
@@ -122,8 +123,8 @@ void sensorPollingFunction()
 
 	// If all sensors have been triggered in the past n cycles,
 	// then trigger line detected
-	Serial.print("Sum pins ");
-	Serial.println(sum_lines);
+	//Serial.print("Sum pins ");
+	//Serial.println(sum_lines);
 	if (sum_lines == NUMPINS)
 	{
 		Navigator.interrupt(LINE_ISR);			
@@ -138,7 +139,7 @@ void sensorPollingFunction()
 }
 void doneFunction()
 {
-	Serial.println("DONE");
+	//Serial.println("DONE");
 	lcd.clear();
 	lcd.print("DONE");
 	FLAG_DONE = true;
@@ -164,6 +165,9 @@ void setup()
 	pinMode(btnCalibrate, INPUT);
 	port.left();
 	starboard.right();
+
+	// DEBUG
+	Navigator.currentAction = MOVEFORWARD;
 
 	// Set threshold values for irsensor
 	for (int i = 0; i < NUMPINS; ++i)
@@ -204,6 +208,7 @@ void loop()
 {
 	static int main_lap = 0;
 	
+	/*
 	if (FLAG_NAVERR == true || FLAG_DONE == true)
 		return;
 
@@ -239,6 +244,7 @@ void loop()
 		Serial.print("Current action: ");
 		Serial.println(Navigator.getAction());
 	}
+	*/
 
 	// Event manager processing
 	addEvents();
@@ -293,21 +299,24 @@ void addEvents()
 	{
 		if (pauseCounter > 100)
 			Navigator.FLAG_unpause = true;	
-		Serial.println(pauseCounter);
+		//Serial.println(pauseCounter);
 		++pauseCounter;
 	}
 	else if (Navigator.getAction() == MOVEFORWARD)	
 	{
+		int adjustSpeed;
 		// DEBUG
-		Serial.println("Moving Forward");
-
+		//Serial.println("Moving Forward");
+		Serial.print("Adjust to Speed: ");
+		
 		// TODO Toggles every 50 ms
-		current_heading = Driver.lineMotorScaling();
+		adjustSpeed = Driver.lineMotorScaling();
+		Serial.println(adjustSpeed);
 	}
 	else if (Navigator.getAction() == ROTATETO)
 	{
 		// DEBUG
-		Serial.println("Rotating");
+		//Serial.println("Rotating");
 
 		if ((millis() - rot_lap) > 50)
 		{
