@@ -61,3 +61,19 @@ int DriveMotor::lineMotorScaling()
 	return adjustedSpeed;
 }
 
+void DriveMotor::driveStraight()
+{
+	port.left(255);
+	starboard.right(255);
+}
+
+void DriveMotor::driveInCircles()
+{
+	// Turn left
+	if (starboard.get_status() != MOTOR_RIGHT 
+		&& port.get_status() != MOTOR_RIGHT)
+	{
+		starboard.right(255);
+		port.right(255);
+	}
+}

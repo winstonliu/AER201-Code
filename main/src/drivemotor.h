@@ -14,5 +14,7 @@ class DriveMotor
 				int scaling = 4, int initial = 10);
 		int mapLine(bool left, bool middle, bool right);
 		int lineMotorScaling();
+		void driveStraight();
+		void driveInCircles();
 };
 
