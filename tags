@@ -11,6 +11,9 @@ CLAWEXTEND	main/src/nav.h	/^	CLAWEXTEND,$/;"	e	enum:motions
 CLAWRETRACT	main/src/nav.h	/^	CLAWRETRACT,$/;"	e	enum:motions
 CLOSED	main/lib/keypad/Keypad.h	63;"	d
 CLOSED	main/lib/keypad/utility/Key.h	43;"	d
+DEBUG	main/.build/uno/src/main.cpp	31;"	d	file:
+DEBUG	main/.build/uno/src/main.cpp	33;"	d	file:
+DRIVINGFORWARD	main/src/drivemotor.h	/^	DRIVINGFORWARD,$/;"	e	enum:drive_status
 DriveMotor	main/src/drivemotor.cpp	/^DriveMotor::DriveMotor(motor& p, motor& s, int ds, int di) : $/;"	f	class:DriveMotor
 DriveMotor	main/src/drivemotor.h	/^class DriveMotor$/;"	c
 Driver	main/src/nav.h	/^		DriveMotor Driver;$/;"	m	class:nav
@@ -36,7 +39,6 @@ EventType	main/lib/eventmanager/EventManager.h	/^    enum EventType $/;"	g	class
 FLAG_DONE	main/.build/uno/src/main.cpp	/^bool FLAG_DONE = false;$/;"	v
 FLAG_NAVERR	main/.build/uno/src/main.cpp	/^bool FLAG_NAVERR = false;$/;"	v
 FLAG_extended	main/src/nav.h	/^		bool FLAG_extended;$/;"	m	class:nav
-FLAG_unpause	main/src/nav.h	/^		bool FLAG_unpause;$/;"	m	class:nav
 GenericCallable	main/lib/eventmanager/EventManager.h	/^    GenericCallable(F _f): f(_f) {};$/;"	f	class:GenericCallable
 GenericCallable	main/lib/eventmanager/EventManager.h	/^class GenericCallable : public EventListener$/;"	c
 HOLD	main/lib/keypad/utility/Key.h	/^typedef enum{ IDLE, PRESSED, HOLD, RELEASED } KeyState;$/;"	e	enum:__anon1
@@ -137,11 +139,15 @@ REG_RED	main/lib/grove/rgb_lcd.h	43;"	d
 RELEASED	main/lib/keypad/utility/Key.h	/^typedef enum{ IDLE, PRESSED, HOLD, RELEASED } KeyState;$/;"	e	enum:__anon1
 RGB_ADDRESS	main/lib/grove/rgb_lcd.h	34;"	d
 ROTATETO	main/src/nav.h	/^	ROTATETO,$/;"	e	enum:motions
+SERIALDEBUG	main/.build/uno/src/main.cpp	28;"	d	file:
+STOPPED	main/src/drivemotor.h	/^	STOPPED$/;"	e	enum:drive_status
 SafetyMode	main/lib/eventmanager/EventManager.h	/^    enum SafetyMode { kNotInterruptSafe, kInterruptSafe };$/;"	g	class:EventManager
 Sensor	main/lib/sensing/sensor.cpp	/^Sensor::Sensor(int pin) $/;"	f	class:Sensor
 Sensor	main/lib/sensing/sensor.h	/^		Sensor() {};$/;"	f	class:Sensor
 Sensor	main/lib/sensing/sensor.h	/^class Sensor$/;"	c
 TOUCH_ISR	main/src/nav.h	/^	TOUCH_ISR$/;"	e	enum:isr
+TURNINGLEFT	main/src/drivemotor.h	/^	TURNINGLEFT,$/;"	e	enum:drive_status
+TURNINGRIGHT	main/src/drivemotor.h	/^	TURNINGRIGHT,$/;"	e	enum:drive_status
 UNKNOWN	main/lib/sensing/sensor.h	15;"	d
 WHITE	main/lib/legacy/photoLineDetection.h	12;"	d
 WHITE	main/lib/sensing/sensor.h	12;"	d
@@ -154,7 +160,6 @@ _displaymode	main/lib/grove/rgb_lcd.h	/^  uint8_t _displaymode;$/;"	m	class:rgb_
 _initialized	main/lib/grove/rgb_lcd.h	/^  uint8_t _initialized;$/;"	m	class:rgb_lcd
 _mypinMode	main/lib/keypad/Keypad.h	51;"	d
 _numlines	main/lib/grove/rgb_lcd.h	/^  uint8_t _numlines,_currline;$/;"	m	class:rgb_lcd
-action	main/src/actions.h	/^namespace action$/;"	n
 addEventListener	main/lib/keypad/Keypad.cpp	/^void Keypad::addEventListener(void (*listener)(char)){$/;"	f	class:Keypad
 addEvents	main/.build/uno/src/main.cpp	/^void addEvents()$/;"	f
 addListener	main/lib/eventmanager/EventManager.cpp	/^boolean EventManager::ListenerList::addListener( int eventCode, EventListener* listener ) $/;"	f	class:EventManager::ListenerList
@@ -174,7 +179,7 @@ calibrateFunction	main/.build/uno/src/main.cpp	/^void calibrateFunction()$/;"	f
 calibrate_all	main/.build/uno/src/main.cpp	/^void calibrate_all()$/;"	f
 callback	main/lib/eventmanager/EventManager.h	/^            EventListener*	callback;		\/\/ The listener function$/;"	m	struct:EventManager::ListenerList::ListenerItem
 checkSensor	main/lib/legacy/photoLineDetection.cpp	/^int PhotoLineDetection::checkSensor()$/;"	f	class:PhotoLineDetection
-checkTaskComplete	main/src/nav.cpp	/^int nav::checkTaskComplete() $/;"	f	class:nav
+checkTaskComplete	main/src/nav.cpp	/^bool nav::checkTaskComplete() $/;"	f	class:nav
 check_validity	main/src/nav.cpp	/^bool nav::check_validity(grid coordinates)$/;"	f	class:nav
 clamp	main/lib/pid/pid.cpp	/^void PID::clamp(int& parameter) {$/;"	f	class:PID
 clear	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::clear()$/;"	f	class:rgb_lcd
@@ -191,9 +196,11 @@ countRemaining	main/src/nav.cpp	/^int nav::countRemaining() { return tasklist.co
 createChar	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::createChar(uint8_t location, uint8_t charmap[])$/;"	f	class:rgb_lcd
 currentGrid	main/src/nav.h	/^		grid currentGrid;$/;"	m	class:nav
 currentMotion	main/src/nav.h	/^		motions currentMotion;$/;"	m	class:nav
+currentStatus	main/src/drivemotor.h	/^		drive_status currentStatus;$/;"	m	class:DriveMotor
 current_heading	main/.build/uno/src/main.cpp	/^int current_heading;$/;"	v
 current_heading	main/src/drivemotor.h	/^		int current_heading;	$/;"	m	class:DriveMotor
 cursor	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::cursor() {$/;"	f	class:rgb_lcd
+cycle_count	main/src/nav.h	/^		int cycle_count;$/;"	m	class:nav
 cycle_time	main/lib/pid/pid.h	/^		unsigned int cycle_time;	\/\/ 100ms 0.1s$/;"	m	class:PID
 d	main/src/nav.h	/^	int d;	\/\/ 0 to 359, N:0, E:90, S:180, W:270$/;"	m	struct:grid
 debounceTime	main/lib/keypad/Keypad.h	/^	uint debounceTime;$/;"	m	class:Keypad
@@ -214,6 +221,7 @@ doneFunction	main/.build/uno/src/main.cpp	/^void doneFunction()$/;"	f
 doneTasks	main/src/nav.cpp	/^bool nav::doneTasks() { return tasklist.isEmpty(); }$/;"	f	class:nav
 driveInCircles	main/src/drivemotor.cpp	/^void DriveMotor::driveInCircles()$/;"	f	class:DriveMotor
 driveStraight	main/src/drivemotor.cpp	/^void DriveMotor::driveStraight()$/;"	f	class:DriveMotor
+drive_status	main/src/drivemotor.h	/^enum drive_status$/;"	g
 enable	main/lib/motor/motor.h	/^		int enable;$/;"	m	class:motor
 enable	motor_test/src/motor.h	/^		int enable;$/;"	m	class:Motor
 enableDefaultListener	main/lib/eventmanager/EventManager.cpp	/^void EventManager::ListenerList::enableDefaultListener( boolean enable ) $/;"	f	class:EventManager::ListenerList
@@ -242,6 +250,7 @@ getValue	main/lib/sensing/sensor.cpp	/^int Sensor::getValue()$/;"	f	class:Sensor
 get_onoff	main/lib/pid/pid.cpp	/^bool PID::get_onoff() const {return on;}$/;"	f	class:PID
 get_response	main/lib/pid/pid.cpp	/^bool PID::get_response() const {return response;}$/;"	f	class:PID
 get_status	main/lib/motor/motor.cpp	/^motor_states motor::get_status() $/;"	f	class:motor
+get_status	main/src/drivemotor.cpp	/^drive_status DriveMotor::get_status() { return currentStatus; } $/;"	f	class:DriveMotor
 get_status	motor_test/src/motor.cpp	/^motor_states Motor::get_status() $/;"	f	class:Motor
 grid	main/src/nav.h	/^	grid() {}$/;"	f	struct:grid
 grid	main/src/nav.h	/^	grid(int a, int b, int c) : x(a), y(b), d(c) {}$/;"	f	struct:grid
@@ -348,7 +357,6 @@ motor	main/lib/motor/motor.cpp	/^motor::motor(int pin_enable, int pin_direction)
 motor	main/lib/motor/motor.h	/^class motor$/;"	c
 motor_states	main/lib/motor/motor.h	/^enum motor_states$/;"	g
 motor_states	motor_test/src/motor.h	/^enum motor_states$/;"	g
-moveongrid	main/src/actions.cpp	/^int action::moveongrid()$/;"	f	class:action
 nav	main/src/nav.cpp	/^nav::nav(grid sp, DriveMotor& d) : Driver(d)$/;"	f	class:nav
 nav	main/src/nav.h	/^class nav$/;"	c
 nextKeyState	main/lib/keypad/Keypad.cpp	/^void Keypad::nextKeyState(byte idx, boolean button) {$/;"	f	class:Keypad
@@ -370,6 +378,7 @@ operator ==	main/src/nav.h	/^	bool operator==(const grid& a) const$/;"	f	struct:
 output	main/lib/pid/pid.h	/^		int* output;$/;"	m	class:PID
 param	main/lib/eventmanager/EventManager.h	/^            int param;	\/\/ each event has a single integer parameter$/;"	m	struct:EventManager::EventQueue::EventElement
 pastEncounters	main/lib/sensing/irsensor.cpp	/^int IRSensor::pastEncounters()$/;"	f	class:IRSensor
+pause_counter	main/src/nav.h	/^		int pause_counter;$/;"	m	class:nav
 peek	main/lib/queuearray/QueueArray.h	/^T QueueArray<T>::peek () const {$/;"	f	class:QueueArray
 pinMode	main/lib/keypad/Keypad.h	50;"	d
 pin_mode	main/lib/keypad/Keypad.h	/^	virtual void pin_mode(byte pinNum, byte mode) { pinMode(pinNum, mode); }$/;"	f	class:Keypad
@@ -452,6 +461,7 @@ status	main/lib/motor/motor.h	/^		motor_states status;$/;"	m	class:motor
 status	motor_test/src/motor.h	/^		motor_states status;$/;"	m	class:Motor
 stop	main/lib/motor/motor.cpp	/^void motor::stop()$/;"	f	class:motor
 stop	main/lib/pid/pid.cpp	/^void PID::stop() {on = 0;}$/;"	f	class:PID
+stop	main/src/drivemotor.cpp	/^void DriveMotor::stop()$/;"	f	class:DriveMotor
 stop	motor_test/src/motor.cpp	/^void Motor::stop()$/;"	f	class:Motor
 tail	main/lib/queuearray/QueueArray.h	/^    int tail;        \/\/ the tail of the queue.$/;"	m	class:QueueArray
 task	main/src/nav.h	/^	task(motions a, int v) : do_now(a), value(v) {}$/;"	f	struct:task
