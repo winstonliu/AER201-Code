@@ -8,7 +8,7 @@ enum isr
 	TOUCH_ISR
 };
 
-enum action
+enum motions
 {
 	MOVEONGRID,
 	MOVEOFFGRID,
@@ -23,10 +23,10 @@ enum action
 
 struct task
 {
-	action do_now;
+	motions do_now;
 	int value;
 
-	task(action a, int v) : do_now(a), value(v) {}
+	task(motions a, int v) : do_now(a), value(v) {}
 };
 
 struct grid
@@ -56,12 +56,14 @@ class nav
 {
 	// Navigation class with event-driven interrupts
 	private:
-		QueueArray <task> tasklist;
 		DriveMotor Driver;
+		int pause_counter;
 	// DEBUG make stuff to private after
 	public:
+		QueueArray <task> tasklist;
+		int cycle_count;
 		bool on_grid;
-		action currentAction;
+		motions currentMotion;
 		grid currentGrid;
 		grid destination;
 		grid hopperEast;
@@ -71,22 +73,22 @@ class nav
 		grid directionalLineIncrement(int i);
 
 		grid taskdestination;
-		bool FLAG_unpause;
 		bool FLAG_extended;
 
 		nav(grid start_position, DriveMotor& Driver);
 		int interrupt(isr sensor_interrupt);	
 		int computeRectilinearPath(grid new_destination);
+		int hopperBerthing();
 
 		void startTask();
 		void processTask();
-		int checkTaskComplete();
+		bool checkTaskComplete();
 
 		int reset(grid);
 		int set_destination(grid new_destination);
 		bool doneTasks();
 		int countRemaining();
-		action getAction();
+		motions getMotion();
 		grid getGrid();
 		grid getDestination();
 };

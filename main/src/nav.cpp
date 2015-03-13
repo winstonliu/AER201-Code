@@ -1,11 +1,11 @@
 #include "nav.h"
 
-nav::nav(grid sp, DriveMotor& d) : DriveMotor(d)
+nav::nav(grid sp, DriveMotor& d) : Driver(d)
 {
+	cycle_count = 0;
 	currentGrid = sp;	
 	destination = sp;
-	currentAction = IDLE;
-	FLAG_unpause = false;
+	currentMotion = IDLE;
 }
 
 bool nav::check_validity(grid coordinates)
@@ -111,44 +111,50 @@ int nav::computeRectilinearPath(grid new_destination)
 
 int nav::hopperBerthing()
 {
-	tasklist.push(task(CLAWMOVE, 1)); // Extend claw
-	tasklist.push(task(MOVEOFFGRID, 1)); // Keep moving until interrupt
+	tasklist.push(task(CLAWEXTEND, 0)); // Extend claw
+	tasklist.push(task(MOVEOFFGRID, 0)); // Keep moving until interrupt
 	tasklist.push(task(HOPPERALIGN, 0)); // Align with hopper
-	tasklist.push(task(CLAWMOVE, 0)); // Retract claw
+	tasklist.push(task(CLAWRETRACT, 0)); // Retract claw
 	tasklist.push(task(MOVEOFFGRID, 0)); // Reverse
 }
 
 void nav::startTask()
 {
 	// Initialize tasks
-	currentAction = tasklist.peek().do_now;
-	if (currentAction == MOVEONGRID)
+	currentMotion = tasklist.peek().do_now;
+	switch (currentMotion)
 	{
-		Driver.driveStraight();
-		taskdestination = directionalLineIncrement(tasklist.peek().value);
+		case PAUSE:
+			// Pause for 40 cycles (2 seconds)
+			pause_counter = 40;
+			Driver.stop();
+			break;
+		case MOVEONGRID:
+			Driver.driveStraight();
+			taskdestination = directionalLineIncrement(tasklist.peek().value);
+			break;
+		case ROTATETO:
+			taskdestination = currentGrid;
+			taskdestination.d = tasklist.peek().value;
+			Driver.driveInCircles();
+			break;
 	}
-	else if (currentAction == ROTATETO)
-	{
-		taskdestination = currentGrid;
-		taskdestination.d = tasklist.peek().value;
-		Driver.driveInCircles();
-	}
-
 }
 
 void nav::processTask()
 {
 	// Things that need to be done in the loop
-	switch (currentAction)
+	switch (currentMotion)
 	{
+		case PAUSE:
+			--pause_counter;
+			break;
 		case MOVEONGRID:
 			Driver.lineMotorScaling();	
 			break;
 		case ROTATETO:
 			Driver.driveInCircles();
 			break;
-			
-
 	}
 }
 
@@ -158,36 +164,38 @@ int nav::interrupt(isr senInt)
 	switch(senInt)
 	{
 		case LINE_ISR:
-			if (currentAction == MOVEONGRID)
+			if (currentMotion == MOVEONGRID)
 			{
 				grid new_grid = directionalLineIncrement(1);
 				if (check_validity(new_grid) == true) currentGrid = new_grid;
 			}
-			else if (currentAction == ROTATETO)
+			else if (currentMotion == ROTATETO)
 			{
 				// XXX Assuming that the robot only turns to the left
-				currentGrid.d = (currentGrid.d - 90) % 360;
+				currentGrid.d = (360 + currentGrid.d - 90) % 360;
 			}
+			break;
 		case TOUCH_ISR:
-			if (currentAction == CLAWRETRACT)
+			if (currentMotion == CLAWRETRACT)
 			{
 				// kill claw motor		
 			}
+			break;
 	}
 }
 
-int nav::checkTaskComplete() 
+bool nav::checkTaskComplete() 
 { 
 	bool advance = false;
 	// Checks for task completion
-	switch (currentAction)
+	switch (currentMotion)
 	{
 		case PAUSE:
-			if (FLAG_unpause == true) advance = true;	
+			if (pause_counter <= 0) advance = true;	
 			break;
 		case MOVEONGRID:
 		case ROTATETO:
-			if (currentGrid == destination) advance = true;
+			if (currentGrid == taskdestination) advance = true;
 			break;
 		case CLAWEXTEND: 
 			if (FLAG_extended == true) advance = true;
@@ -200,14 +208,13 @@ int nav::checkTaskComplete()
 	if (advance == true)
 	{
 		tasklist.pop(); 
-		currentAction = IDLE;
-		return 0;
+		currentMotion = IDLE;
 	}
-	return -1;
+	return advance;
 }
 
 bool nav::doneTasks() { return tasklist.isEmpty(); }
 int nav::countRemaining() { return tasklist.count(); }
-action nav::getAction() { return currentAction; }
+motions nav::getMotion() { return currentMotion; }
 grid nav::getGrid() { return currentGrid; }
 grid nav::getDestination() { return destination; }
