@@ -86,4 +86,4 @@ void DriveMotor::stop()
 	starboard.stop();
 }
 
-drive_status get_status() { return currentStatus; } 
+drive_status DriveMotor::get_status() { return currentStatus; } 

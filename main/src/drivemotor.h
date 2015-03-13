@@ -9,12 +9,12 @@ enum drive_status
 	TURNINGLEFT,
 	TURNINGRIGHT,
 	STOPPED
-}
+};
 
 class DriveMotor
 {
 	private:
-		int current_heading;	
+		int current_heading;
 		int scaling, initial;
 		motor port, starboard;
 		drive_status currentStatus;
@@ -25,7 +25,7 @@ class DriveMotor
 		int lineMotorScaling();
 		void driveStraight();
 		void driveInCircles();
-		drive_status get_status();			
+		drive_status get_status();
 		void stop();
 };
 

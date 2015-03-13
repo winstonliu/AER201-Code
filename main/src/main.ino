@@ -7,6 +7,15 @@
 #include "nav.h"
 #include "drivemotor.h"
 
+// Enable debug messages through serial
+#define SERIALDEBUG
+
+#ifdef SERIALDEBUG
+#define DEBUG( x ) Serial.print( x )
+#else
+#define DEBUG( x )
+#endif
+
 // ================================================================ //
 // ADJUSTABLE PARAMETERS
 
@@ -55,27 +64,30 @@ void displayFunction()
 {
 	grid temp_grid = Navigator.currentGrid;
 /*
-	Serial.print(irsen[1].getValue());
-	Serial.print(" ");
-	Serial.print(irsen[1].detect());
-	Serial.print(" | ");
-	Serial.print(irsen[2].getValue());
-	Serial.print(" ");
-	Serial.print(irsen[2].detect());
-	Serial.print(" | ");
-	Serial.print(irsen[3].getValue());
-	Serial.print(" ");
-	Serial.println(irsen[3].detect());
-	Serial.print("Current heading: ");
-	Serial.println(current_heading);
-	Serial.print(" x: ");
-	Serial.print(temp_grid.x);
-	Serial.print(" y: ");
-	Serial.print(temp_grid.y);
-	Serial.print(" d: ");
-	Serial.println(temp_grid.d);
-	Serial.print("# Tasks: ");
-	Serial.println(Navigator.countRemaining());
+	DEBUG(irsen[1].getValue());
+	DEBUG(" ");
+	DEBUG(irsen[1].detect());
+	DEBUG(" | ");
+	DEBUG(irsen[2].getValue());
+	DEBUG(" ");
+	DEBUG(irsen[2].detect());
+	DEBUG(" | ");
+	DEBUG(irsen[3].getValue());
+	DEBUG(" ");
+	DEBUG(irsen[3].detect());
+	DEBUG('\n');
+	DEBUG("Current heading: ");
+	DEBUG(current_heading);
+	DEBUG('\n');
+	DEBUG(" x: ");
+	DEBUG(temp_grid.x);
+	DEBUG(" y: ");
+	DEBUG(temp_grid.y);
+	DEBUG(" d: ");
+	DEBUG(temp_grid.d);
+	DEBUG('\n');
+	DEBUG("# Tasks: ");
+	DEBUG(Navigator.countRemaining());
 */
 	/*
 	}
@@ -123,14 +135,17 @@ void sensorPollingFunction()
 
 	// If all sensors have been triggered in the past n cycles,
 	// then trigger line detected
-	Serial.print("Sum pins ");
-	Serial.println(sum_lines);
+	DEBUG("Sum pins ");
+	DEBUG(sum_lines);
+	DEBUG('\n');
+
 	if (sum_lines == NUMPINS && Driver.get_status() != STOPPED)
 	{
 		Navigator.interrupt(LINE_ISR);			
 	}
 
 	// Update heading
+	// DEBUG current_heading variable
 	current_heading = Driver.mapLine(
 		irsen[1].detect(),
 		irsen[2].detect(),
@@ -139,7 +154,7 @@ void sensorPollingFunction()
 }
 void doneFunction()
 {
-	//Serial.println("DONE");
+	//DEBUG("DONE");
 	lcd.clear();
 	lcd.print("DONE");
 	FLAG_DONE = true;
@@ -181,23 +196,25 @@ void setup()
 /*
 	// Check for navigation error
 	int ret_err = Navigator.computeRectilinearPath(end_pos);
-	Serial.print("Computation result: ");
-	Serial.println(ret_err);
+	DEBUG("Computation result: ");
+	DEBUG(ret_err);
+	DEBUG('\n');
 	if (ret_err < 0)
 	{
 		grid temp_grid = Navigator.getDestination(); 
 
 		// DEBUG
-		Serial.print(" x: ");
-		Serial.print(temp_grid.x);
-		Serial.print(" y: ");
-		Serial.print(temp_grid.y);
-		Serial.print(" d: ");
-		Serial.println(temp_grid.d);
-		Serial.print("# Tasks: ");
-		Serial.println(Navigator.countRemaining());
+		DEBUG(" x: ");
+		DEBUG(temp_grid.x);
+		DEBUG(" y: ");
+		DEBUG(temp_grid.y);
+		DEBUG(" d: ");
+		DEBUG(temp_grid.d);
+		DEBUG('\n');
+		DEBUG("# Tasks: ");
+		DEBUG(Navigator.countRemaining());
 
-		Serial.println("NAV ERROR");
+		DEBUG("NAV ERROR");
 		lcd.clear();
 		lcd.print("NAV ERROR");
 		FLAG_NAVERR = true;
@@ -216,17 +233,19 @@ void loop()
 	{
 		// DEBUG
 		grid temp_grid = Navigator.currentGrid;
-		Serial.print("Current location: ");
-		Serial.print(" x: ");
-		Serial.print(temp_grid.x);
-		Serial.print(" y: ");
-		Serial.print(temp_grid.y);
-		Serial.print(" d: ");
-		Serial.println(temp_grid.d);
+		DEBUG("Current location: ");
+		DEBUG(" x: ");
+		DEBUG(temp_grid.x);
+		DEBUG(" y: ");
+		DEBUG(temp_grid.y);
+		DEBUG(" d: ");
+		DEBUG(temp_grid.d);
+		DEBUG('\n');
 
 		bool temp_ret = Navigator.doneTasks();
-		Serial.print("Is done: ");
-		Serial.println(temp_ret);
+		DEBUG("Is done: ");
+		DEBUG(temp_ret);
+		DEBUG('\n');
 		if (temp_ret == true)
 		{
 			doneFunction();
@@ -238,18 +257,21 @@ void loop()
 		else if (Navigator.checkTaskComplete() == true)
 		{
 			grid temp_grid = Navigator.taskdestination;
-			Serial.print("Task destination: ");
-			Serial.print(" x: ");
-			Serial.print(temp_grid.x);
-			Serial.print(" y: ");
-			Serial.print(temp_grid.y);
-			Serial.print(" d: ");
-			Serial.println(temp_grid.d);
-			Serial.println("Task Complete");
+			DEBUG("Task destination: ");
+			DEBUG(" x: ");
+			DEBUG(temp_grid.x);
+			DEBUG(" y: ");
+			DEBUG(temp_grid.y);
+			DEBUG(" d: ");
+			DEBUG(temp_grid.d);
+			DEBUG('\n');
+			DEBUG("Task Complete");
+			DEBUG('\n');
 			killMotors();		
 		}	
-		Serial.print(">> Current action: ");
-		Serial.println(Navigator.getMotion());
+		DEBUG(">> Current action: ");
+		DEBUG(Navigator.getMotion());
+		DEBUG('\n');
 	}
 
 	// Event manager processing
@@ -291,14 +313,14 @@ void addEvents()
 	if ((millis() - poll_lap) > 20)
 	{
 		// DEBUG
-		Serial.println("Sensor Poll");
+		DEBUG("Sensor Poll");
 		sensorPollingFunction();	
 		poll_lap = millis();
 		/*
-		Serial.print("White ");
-		Serial.println(threshold_values[WHITE]);
-		Serial.print("Black ");
-		Serial.println(threshold_values[BLACK]);
+		DEBUG("White ");
+		DEBUG(threshold_values[WHITE]);
+		DEBUG("Black ");
+		DEBUG(threshold_values[BLACK]);
 		*/
 	}
 
