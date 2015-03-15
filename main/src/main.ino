@@ -7,9 +7,6 @@
 #include "nav.h"
 #include "drivemotor.h"
 
-// TODO
-// * move non-nav stuff to an taskprocessing class
-
 // Enable debug messages through serial
 #define SERIALDEBUG
 
@@ -85,17 +82,17 @@ void displayFunction()
 	DEBUG(irsen[3].getValue());
 	DEBUG(" ");
 	DEBUG(irsen[3].detect());
-	DEBUG('\n');
+	DEBUG("\r\n");
 	DEBUG("Current heading: ");
 	DEBUG(current_heading);
-	DEBUG('\n');
+	DEBUG("\r\n");
 	DEBUG(" x: ");
 	DEBUG(temp_grid.x);
 	DEBUG(" y: ");
 	DEBUG(temp_grid.y);
 	DEBUG(" d: ");
 	DEBUG(temp_grid.d);
-	DEBUG('\n');
+	DEBUG("\r\n");
 	DEBUG("# Tasks: ");
 	DEBUG(Navigator.countRemaining());
 */
@@ -139,9 +136,11 @@ void sensorPollingFunction()
 
 	// If all sensors have been triggered in the past n cycles,
 	// then trigger line detected
+	/*
 	DEBUG("Sum pins ");
 	DEBUG(sum_lines);
-	DEBUG('\n');
+	DEBUG("\r\n");
+	*/
 
 	if (sum_lines == NUMPINS && Driver.get_status() != STOPPED)
 	{
@@ -186,14 +185,14 @@ void setup()
 	}
 
 	// DEBUG
-	Navigator.tasklist.push(task(PAUSE, 0));
+	Navigator.tasklist.push(task(PAUSE, 2000));
 	Navigator.tasklist.push(task(ROTATETO, 270));
 
 /* // Check for navigation error
 	int ret_err = Navigator.computeRectilinearPath(end_pos);
 	DEBUG("Computation result: ");
 	DEBUG(ret_err);
-	DEBUG('\n');
+	DEBUG("\r\n");
 	if (ret_err < 0)
 	{
 		grid temp_grid = Navigator.getDestination(); 
@@ -205,7 +204,7 @@ void setup()
 		DEBUG(temp_grid.y);
 		DEBUG(" d: ");
 		DEBUG(temp_grid.d);
-		DEBUG('\n');
+		DEBUG("\r\n");
 		DEBUG("# Tasks: ");
 		DEBUG(Navigator.countRemaining());
 
@@ -231,7 +230,13 @@ void loop()
 	intpin_last = intpin_now;
 
 	// Check for nav_timer expiration
-	if (nav_timer > 0) --nav_timer;
+	if (nav_timer > 0) 
+	{
+		--nav_timer;
+		DEBUG("Nav Timer: ");
+		DEBUG(nav_timer);
+		DEBUG("\r\n");
+	}
 	else if (nav_timer <= 0 && nav_timer != -42)
 	{
 		Navigator.interrupt(TIMER);
@@ -244,6 +249,7 @@ void loop()
 		// DEBUG
 		grid temp_grid = Navigator.currentGrid;
 
+		/*
 		DEBUG("Current location: ");
 		DEBUG(" x: ");
 		DEBUG(temp_grid.x);
@@ -251,12 +257,15 @@ void loop()
 		DEBUG(temp_grid.y);
 		DEBUG(" d: ");
 		DEBUG(temp_grid.d);
-		DEBUG('\n');
+		DEBUG("\r\n");
+		*/
 
 		bool temp_ret = Navigator.doneTasks();
+		/*
 		DEBUG("Is done: ");
 		DEBUG(temp_ret);
-		DEBUG('\n');
+		DEBUG("\r\n");
+		*/
 		if (temp_ret == true)
 		{
 			doneFunction();
@@ -267,8 +276,9 @@ void loop()
 		}
 		else if (Navigator.checkTaskComplete() == true)
 		{
-			grid temp_grid = Navigator.taskdestination;
 			Driver.stop();
+			/*
+			grid temp_grid = Navigator.taskdestination;
 			DEBUG("Task destination: ");
 			DEBUG(" x: ");
 			DEBUG(temp_grid.x);
@@ -276,13 +286,11 @@ void loop()
 			DEBUG(temp_grid.y);
 			DEBUG(" d: ");
 			DEBUG(temp_grid.d);
-			DEBUG('\n');
+			DEBUG("\r\n");
 			DEBUG("Task Complete");
-			DEBUG('\n');
+			DEBUG("\r\n");
+			*/
 		}	
-		DEBUG(">> Current action: ");
-		DEBUG(Navigator.getMotion());
-		DEBUG('\n');
 	}
 
 	// Event manager processing
@@ -305,6 +313,10 @@ void addEvents()
 	// Display event
 	if ((millis() - display_lap) > 200)
 	{
+		DEBUG(">> Current action: ");
+		DEBUG(Navigator.getMotion());
+		DEBUG("\r\n");
+
 		// DEBUG
 		lcd.clear();
 		lcd.print(irsen[1].readSensor());
@@ -324,10 +336,9 @@ void addEvents()
 	}
 
 	// Poll sensors
-	if ((millis() - poll_lap) > 20)
+	if ((millis() - poll_lap) > 20) // 20
 	{
 		// DEBUG
-		DEBUG("Sensor Poll");
 		sensorPollingFunction();	
 		poll_lap = millis();
 		/*

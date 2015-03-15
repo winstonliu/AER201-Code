@@ -100,7 +100,7 @@ int nav::computeRectilinearPath(grid new_destination)
 		next_yd = 0;
 	}
 
-	tasklist.push(task(PAUSE, 0));
+	tasklist.push(task(PAUSE, 2000));
 	tasklist.push(task(ROTATETO, next_xd)); // Rotate to face x
 	tasklist.push(task(MOVEONGRID, difference.x)); // Move x
 	tasklist.push(task(ROTATETO, next_yd)); // Rotate to face y
@@ -126,7 +126,7 @@ void nav::startTask(int& timer)
 	switch (currentMotion)
 	{
 		case PAUSE:
-			timer = 2000;
+			timer = tasklist.peek().value;
 			FLAG_pause = true;
 			Driver.stop();
 			break;
@@ -206,7 +206,7 @@ bool nav::checkTaskComplete()
 	switch (currentMotion)
 	{
 		case PAUSE:
-			if (FLAG_pause == true) advance = true;	
+			if (FLAG_pause == false) advance = true;	
 			break;
 		case MOVEONGRID:
 		case ROTATETO:
