@@ -2,10 +2,11 @@
 #include <QueueArray.h>
 #include "drivemotor.h"
 
-enum isr
+enum sensors
 {
 	LINE_ISR,
-	TOUCH_ISR
+	CLAW_TOUCH,
+	TIMER	
 };
 
 enum motions
@@ -57,7 +58,11 @@ class nav
 	// Navigation class with event-driven interrupts
 	private:
 		DriveMotor Driver;
-		int pause_counter;
+		motor clarm;
+		
+		// Flags
+		bool FLAG_clawextended;
+		bool FLAG_pause;
 	// DEBUG make stuff to private after
 	public:
 		QueueArray <task> tasklist;
@@ -73,15 +78,14 @@ class nav
 		grid directionalLineIncrement(int i);
 
 		grid taskdestination;
-		bool FLAG_extended;
 
-		nav(grid start_position, DriveMotor& Driver);
-		int interrupt(isr sensor_interrupt);	
+		nav(grid start_position, DriveMotor& Driver, motor& clarm);
 		int computeRectilinearPath(grid new_destination);
 		int hopperBerthing();
 
-		void startTask();
+		void startTask(int& timer);
 		void processTask();
+		int interrupt(sensors sensor_interrupt);	
 		bool checkTaskComplete();
 
 		int reset(grid);

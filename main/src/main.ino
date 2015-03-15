@@ -7,6 +7,9 @@
 #include "nav.h"
 #include "drivemotor.h"
 
+// TODO
+// * move non-nav stuff to an taskprocessing class
+
 // Enable debug messages through serial
 #define SERIALDEBUG
 
@@ -23,6 +26,7 @@ const int btnCalibrate = 10;
 const int NUMPINS = 4; // Initialize irsensors
 const int senPins[NUMPINS] = {A0,A1,A2,A3}; 
 // Left: A0, middle: A1, right A2
+const int intpin_claw = 0;
 
 // Initialize nav x,y,d
 grid start_pos(4, 1, 0);
@@ -37,11 +41,14 @@ const int dmotor_initial = 2;
 
 // ================================================================ //
 // MOTOR initialization
+const int wheel_pwm = 125;
+const int claw_pwm = 100;
 
 // Initialize motors (en, dir)
 motor port(3,4);
 motor starboard(5,6);
-motor wheel(9,8);
+motor wheel(9,8, wheel_pwm);
+motor clarm(11, 12, claw_pwm); // Claw arm
 
 int current_heading;
 
@@ -54,9 +61,12 @@ bool FLAG_NAVERR = false;
 bool FLAG_DONE = false;
 
 rgb_lcd lcd;
-nav Navigator(start_pos, Driver);
+nav Navigator(start_pos, Driver, clarm);
 IRSensor irsen[NUMPINS];
+// ================================================================ //
+// Timers
 
+int nav_timer = -42;
 // ================================================================ //
 
 // Listener functions (folded)
@@ -116,12 +126,6 @@ void displayFunction()
 	}
 	*/
 }
-void calibrateFunction()
-{
-	calibrate_all();
-	lcd.clear();
-	lcd.print("Calibrated");
-}
 void sensorPollingFunction()
 {
 	int sum_lines = 0;
@@ -160,30 +164,18 @@ void doneFunction()
 	FLAG_DONE = true;
 }
 
-void killMotors()
-{
-	port.stop();
-	starboard.stop();
-	//wheel.stop();
-}
+// ================================================================ //
 
 void setup()
 {
 	Serial.begin(9600);
 	lcd.begin(16,2);
 
-	//wheel.left(125);	
+	//wheel.left();	
 
 	// Pins
 	pinMode(btnCalibrate, INPUT);
-	port.left();
-	starboard.right();
-	Driver.stop();
-
-
-	// DEBUG
-	Navigator.tasklist.push(task(PAUSE, 0));
-	Navigator.tasklist.push(task(ROTATETO, 270));
+	pinMode(intpin_claw, INPUT);
 
 	// Set threshold values for irsensor
 	for (int i = 0; i < NUMPINS; ++i)
@@ -193,8 +185,11 @@ void setup()
 		irsen[i].setThresh(threshold_values);
 	}
 
-/*
-	// Check for navigation error
+	// DEBUG
+	Navigator.tasklist.push(task(PAUSE, 0));
+	Navigator.tasklist.push(task(ROTATETO, 270));
+
+/* // Check for navigation error
 	int ret_err = Navigator.computeRectilinearPath(end_pos);
 	DEBUG("Computation result: ");
 	DEBUG(ret_err);
@@ -228,11 +223,27 @@ void loop()
 	if (FLAG_NAVERR == true || FLAG_DONE == true)
 		return;
 
+	// Check for rising claw interrupt
+	static int intpin_last = LOW;
+	int intpin_now = digitalRead(intpin_claw);
+	if (intpin_now == HIGH && intpin_last == LOW)
+		Navigator.interrupt(CLAW_TOUCH);	
+	intpin_last = intpin_now;
+
+	// Check for nav_timer expiration
+	if (nav_timer > 0) --nav_timer;
+	else if (nav_timer <= 0 && nav_timer != -42)
+	{
+		Navigator.interrupt(TIMER);
+		nav_timer = -42;
+	}	
+
 	// Check if there are any tasks left to do
 	if ((millis() - main_lap) > 20)
 	{
 		// DEBUG
 		grid temp_grid = Navigator.currentGrid;
+
 		DEBUG("Current location: ");
 		DEBUG(" x: ");
 		DEBUG(temp_grid.x);
@@ -252,11 +263,12 @@ void loop()
 		}
 		else if (Navigator.getMotion() == IDLE)
 		{
-			Navigator.startTask();
+			Navigator.startTask(nav_timer);
 		}
 		else if (Navigator.checkTaskComplete() == true)
 		{
 			grid temp_grid = Navigator.taskdestination;
+			Driver.stop();
 			DEBUG("Task destination: ");
 			DEBUG(" x: ");
 			DEBUG(temp_grid.x);
@@ -267,7 +279,6 @@ void loop()
 			DEBUG('\n');
 			DEBUG("Task Complete");
 			DEBUG('\n');
-			killMotors();		
 		}	
 		DEBUG(">> Current action: ");
 		DEBUG(Navigator.getMotion());
@@ -278,6 +289,9 @@ void loop()
 	addEvents();
 
 }
+
+
+// ================================================================ //
 
 void addEvents()
 {
@@ -335,12 +349,14 @@ void addEvents()
 	int calRead = digitalRead(btnCalibrate);
 	if (btnCal_state == LOW && calRead == HIGH)
 	{
-		calibrateFunction();
+		calibrate_all();
+		lcd.clear();
+		lcd.print("Calibrated");
 	}
 	btnCal_state = calRead;
 }
 
-void calibrate_all()
+void calibrate_all() // TODO terrible hack
 {
 	// Middle sensor calibrates for black
 	// Right and left sensor averages calibrate for white

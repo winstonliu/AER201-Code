@@ -1,11 +1,12 @@
 #include "nav.h"
 
-nav::nav(grid sp, DriveMotor& d) : Driver(d)
+nav::nav(grid sp, DriveMotor& d, motor& c) : Driver(d), clarm(c)
 {
 	cycle_count = 0;
 	currentGrid = sp;	
 	destination = sp;
 	currentMotion = IDLE;
+	FLAG_clawextended = true;
 }
 
 bool nav::check_validity(grid coordinates)
@@ -111,22 +112,22 @@ int nav::computeRectilinearPath(grid new_destination)
 
 int nav::hopperBerthing()
 {
-	tasklist.push(task(CLAWEXTEND, 0)); // Extend claw
 	tasklist.push(task(MOVEOFFGRID, 0)); // Keep moving until interrupt
 	tasklist.push(task(HOPPERALIGN, 0)); // Align with hopper
 	tasklist.push(task(CLAWRETRACT, 0)); // Retract claw
 	tasklist.push(task(MOVEOFFGRID, 0)); // Reverse
+	tasklist.push(task(CLAWEXTEND, 0)); // Extend claw
 }
 
-void nav::startTask()
+void nav::startTask(int& timer)
 {
 	// Initialize tasks
 	currentMotion = tasklist.peek().do_now;
 	switch (currentMotion)
 	{
 		case PAUSE:
-			// Pause for 40 cycles (2 seconds)
-			pause_counter = 40;
+			timer = 2000;
+			FLAG_pause = true;
 			Driver.stop();
 			break;
 		case MOVEONGRID:
@@ -138,17 +139,21 @@ void nav::startTask()
 			taskdestination.d = tasklist.peek().value;
 			Driver.driveInCircles();
 			break;
+		case CLAWRETRACT:
+			clarm.right();
+			break;
+		case CLAWEXTEND:
+			clarm.left();
+			timer = 1000;
+			break;
 	}
 }
 
 void nav::processTask()
 {
-	// Things that need to be done in the loop
+	// Non-time critical things that need to be done in the loop
 	switch (currentMotion)
 	{
-		case PAUSE:
-			--pause_counter;
-			break;
 		case MOVEONGRID:
 			Driver.lineMotorScaling();	
 			break;
@@ -158,7 +163,7 @@ void nav::processTask()
 	}
 }
 
-int nav::interrupt(isr senInt)
+int nav::interrupt(sensors senInt)
 {
 	// Forward drive intersects line
 	switch(senInt)
@@ -175,10 +180,20 @@ int nav::interrupt(isr senInt)
 				currentGrid.d = (360 + currentGrid.d - 90) % 360;
 			}
 			break;
-		case TOUCH_ISR:
+		case CLAW_TOUCH:
 			if (currentMotion == CLAWRETRACT)
 			{
 				// kill claw motor		
+				clarm.stop();
+				FLAG_clawextended = false;
+			}
+			break;
+		case TIMER:
+			if (currentMotion == PAUSE) FLAG_pause = false;
+			else if (currentMotion == CLAWEXTEND)
+			{
+				clarm.stop();
+				FLAG_clawextended = true;
 			}
 			break;
 	}
@@ -191,17 +206,17 @@ bool nav::checkTaskComplete()
 	switch (currentMotion)
 	{
 		case PAUSE:
-			if (pause_counter <= 0) advance = true;	
+			if (FLAG_pause == true) advance = true;	
 			break;
 		case MOVEONGRID:
 		case ROTATETO:
 			if (currentGrid == taskdestination) advance = true;
 			break;
 		case CLAWEXTEND: 
-			if (FLAG_extended == true) advance = true;
+			if (FLAG_clawextended == true) { advance = true; }
 			break;
 		case CLAWRETRACT:
-			// See ISR
+			if (FLAG_clawextended == false) { advance = true; }
 			break;
 	}
 

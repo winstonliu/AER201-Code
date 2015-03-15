@@ -16,7 +16,7 @@ class DriveMotor
 	private:
 		int current_heading;
 		int scaling, initial;
-		motor port, starboard;
+		motor port, starboard, clarm;
 		drive_status currentStatus;
 	public:
 		DriveMotor(motor& port, motor& starboard, 
