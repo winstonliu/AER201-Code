@@ -9,38 +9,38 @@ BLACK	main/lib/sensing/sensor.h	13;"	d
 CALIBRATED	main/lib/legacy/photoLineDetection.h	15;"	d
 CLAWEXTEND	main/src/nav.h	/^	CLAWEXTEND,$/;"	e	enum:motions
 CLAWRETRACT	main/src/nav.h	/^	CLAWRETRACT,$/;"	e	enum:motions
+CLAW_TOUCH	main/src/nav.h	/^	CLAW_TOUCH,$/;"	e	enum:sensors
 CLOSED	main/lib/keypad/Keypad.h	63;"	d
 CLOSED	main/lib/keypad/utility/Key.h	43;"	d
-DEBUG	main/.build/uno/src/main.cpp	31;"	d	file:
-DEBUG	main/.build/uno/src/main.cpp	33;"	d	file:
 DRIVINGFORWARD	main/src/drivemotor.h	/^	DRIVINGFORWARD,$/;"	e	enum:drive_status
 DriveMotor	main/src/drivemotor.cpp	/^DriveMotor::DriveMotor(motor& p, motor& s, int ds, int di) : $/;"	f	class:DriveMotor
 DriveMotor	main/src/drivemotor.h	/^class DriveMotor$/;"	c
 Driver	main/src/nav.h	/^		DriveMotor Driver;$/;"	m	class:nav
-EVENTMANAGER_EVENT_QUEUE_SIZE	main/lib/eventmanager/EventManager.h	49;"	d
-EVENTMANAGER_LISTENER_LIST_SIZE	main/lib/eventmanager/EventManager.h	43;"	d
-EVTMGR_DEBUG_PRINT	main/lib/eventmanager/EventManager.cpp	40;"	d	file:
-EVTMGR_DEBUG_PRINT	main/lib/eventmanager/EventManager.cpp	45;"	d	file:
-EVTMGR_DEBUG_PRINTLN	main/lib/eventmanager/EventManager.cpp	41;"	d	file:
-EVTMGR_DEBUG_PRINTLN	main/lib/eventmanager/EventManager.cpp	46;"	d	file:
-EVTMGR_DEBUG_PRINTLN_PTR	main/lib/eventmanager/EventManager.cpp	43;"	d	file:
-EVTMGR_DEBUG_PRINTLN_PTR	main/lib/eventmanager/EventManager.cpp	48;"	d	file:
-EVTMGR_DEBUG_PRINT_PTR	main/lib/eventmanager/EventManager.cpp	42;"	d	file:
-EVTMGR_DEBUG_PRINT_PTR	main/lib/eventmanager/EventManager.cpp	47;"	d	file:
-EventElement	main/lib/eventmanager/EventManager.h	/^        struct EventElement$/;"	s	class:EventManager::EventQueue
-EventListener	main/lib/eventmanager/EventManager.h	/^class EventListener{$/;"	c
-EventManager	main/lib/eventmanager/EventManager.cpp	/^EventManager::EventManager( SafetyMode safety ) : $/;"	f	class:EventManager
-EventManager	main/lib/eventmanager/EventManager.h	/^class EventManager $/;"	c
-EventManager_h	main/lib/eventmanager/EventManager.h	36;"	d
-EventPriority	main/lib/eventmanager/EventManager.h	/^    enum EventPriority { kHighPriority, kLowPriority };$/;"	g	class:EventManager
-EventQueue	main/lib/eventmanager/EventManager.cpp	/^EventManager::EventQueue::EventQueue( boolean beSafe ) :$/;"	f	class:EventManager::EventQueue
-EventQueue	main/lib/eventmanager/EventManager.h	/^    class EventQueue $/;"	c	class:EventManager
-EventType	main/lib/eventmanager/EventManager.h	/^    enum EventType $/;"	g	class:EventManager
-FLAG_DONE	main/.build/uno/src/main.cpp	/^bool FLAG_DONE = false;$/;"	v
-FLAG_NAVERR	main/.build/uno/src/main.cpp	/^bool FLAG_NAVERR = false;$/;"	v
-FLAG_extended	main/src/nav.h	/^		bool FLAG_extended;$/;"	m	class:nav
-GenericCallable	main/lib/eventmanager/EventManager.h	/^    GenericCallable(F _f): f(_f) {};$/;"	f	class:GenericCallable
-GenericCallable	main/lib/eventmanager/EventManager.h	/^class GenericCallable : public EventListener$/;"	c
+EVENTMANAGER_EVENT_QUEUE_SIZE	main/lib/EventManager/EventManager.h	49;"	d
+EVENTMANAGER_LISTENER_LIST_SIZE	main/lib/EventManager/EventManager.h	43;"	d
+EVTMGR_DEBUG_PRINT	main/lib/EventManager/EventManager.cpp	40;"	d	file:
+EVTMGR_DEBUG_PRINT	main/lib/EventManager/EventManager.cpp	45;"	d	file:
+EVTMGR_DEBUG_PRINTLN	main/lib/EventManager/EventManager.cpp	41;"	d	file:
+EVTMGR_DEBUG_PRINTLN	main/lib/EventManager/EventManager.cpp	46;"	d	file:
+EVTMGR_DEBUG_PRINTLN_PTR	main/lib/EventManager/EventManager.cpp	43;"	d	file:
+EVTMGR_DEBUG_PRINTLN_PTR	main/lib/EventManager/EventManager.cpp	48;"	d	file:
+EVTMGR_DEBUG_PRINT_PTR	main/lib/EventManager/EventManager.cpp	42;"	d	file:
+EVTMGR_DEBUG_PRINT_PTR	main/lib/EventManager/EventManager.cpp	47;"	d	file:
+EventElement	main/lib/EventManager/EventManager.h	/^        struct EventElement$/;"	s	class:EventManager::EventQueue
+EventListener	main/lib/EventManager/EventManager.h	/^class EventListener{$/;"	c
+EventManager	main/lib/EventManager/EventManager.cpp	/^EventManager::EventManager( SafetyMode safety ) : $/;"	f	class:EventManager
+EventManager	main/lib/EventManager/EventManager.h	/^class EventManager $/;"	c
+EventManager_h	main/lib/EventManager/EventManager.h	36;"	d
+EventPriority	main/lib/EventManager/EventManager.h	/^    enum EventPriority { kHighPriority, kLowPriority };$/;"	g	class:EventManager
+EventQueue	main/lib/EventManager/EventManager.cpp	/^EventManager::EventQueue::EventQueue( boolean beSafe ) :$/;"	f	class:EventManager::EventQueue
+EventQueue	main/lib/EventManager/EventManager.h	/^    class EventQueue $/;"	c	class:EventManager
+EventType	main/lib/EventManager/EventManager.h	/^    enum EventType $/;"	g	class:EventManager
+FLAG_clawextended	main/src/nav.h	/^		bool FLAG_clawextended;$/;"	m	class:nav
+FLAG_pause	main/src/nav.h	/^		bool FLAG_pause;$/;"	m	class:nav
+FlexiTimer2	main/lib/FlexiTimer2/FlexiTimer2.h	/^namespace FlexiTimer2 {$/;"	n
+FlexiTimer2_h	main/lib/FlexiTimer2/FlexiTimer2.h	2;"	d
+GenericCallable	main/lib/EventManager/EventManager.h	/^    GenericCallable(F _f): f(_f) {};$/;"	f	class:GenericCallable
+GenericCallable	main/lib/EventManager/EventManager.h	/^class GenericCallable : public EventListener$/;"	c
 HOLD	main/lib/keypad/utility/Key.h	/^typedef enum{ IDLE, PRESSED, HOLD, RELEASED } KeyState;$/;"	e	enum:__anon1
 HOPPERALIGN	main/src/nav.h	/^	HOPPERALIGN,$/;"	e	enum:motions
 IDLE	main/lib/keypad/utility/Key.h	/^typedef enum{ IDLE, PRESSED, HOLD, RELEASED } KeyState;$/;"	e	enum:__anon1
@@ -49,6 +49,7 @@ INPUT_PULLUP	main/lib/keypad/Keypad.h	49;"	d
 IRSensor	main/lib/sensing/irsensor.cpp	/^IRSensor::IRSensor(int sv, int nct):Sensor(sv), numCyclesTrack(nct) {};$/;"	f	class:IRSensor
 IRSensor	main/lib/sensing/irsensor.h	/^		IRSensor() {};$/;"	f	class:IRSensor
 IRSensor	main/lib/sensing/irsensor.h	/^class IRSensor: public Sensor$/;"	c
+ISR	main/lib/FlexiTimer2/FlexiTimer2.cpp	/^ISR(TIMER4_OVF_vect) {$/;"	f
 KEYPAD_H	main/lib/keypad/Keypad.h	34;"	d
 KEY_H	main/lib/keypad/utility/Key.h	33;"	d
 Key	main/lib/keypad/utility/Key.cpp	/^Key::Key() {$/;"	f	class:Key
@@ -88,29 +89,29 @@ LCD_MOVERIGHT	main/lib/grove/rgb_lcd.h	78;"	d
 LCD_RETURNHOME	main/lib/grove/rgb_lcd.h	53;"	d
 LCD_SETCGRAMADDR	main/lib/grove/rgb_lcd.h	58;"	d
 LCD_SETDDRAMADDR	main/lib/grove/rgb_lcd.h	59;"	d
-LINE_ISR	main/src/nav.h	/^	LINE_ISR,$/;"	e	enum:isr
+LINE_ISR	main/src/nav.h	/^	LINE_ISR,$/;"	e	enum:sensors
 LIST_MAX	main/lib/keypad/Keypad.h	76;"	d
-ListenerItem	main/lib/eventmanager/EventManager.h	/^        struct ListenerItem$/;"	s	class:EventManager::ListenerList
-ListenerList	main/lib/eventmanager/EventManager.cpp	/^EventManager::ListenerList::ListenerList() : $/;"	f	class:EventManager::ListenerList
-ListenerList	main/lib/eventmanager/EventManager.h	/^    class ListenerList $/;"	c	class:EventManager
+ListenerItem	main/lib/EventManager/EventManager.h	/^        struct ListenerItem$/;"	s	class:EventManager::ListenerList
+ListenerList	main/lib/EventManager/EventManager.cpp	/^EventManager::ListenerList::ListenerList() : $/;"	f	class:EventManager::ListenerList
+ListenerList	main/lib/EventManager/EventManager.h	/^    class ListenerList $/;"	c	class:EventManager
 MAPSIZE	main/lib/keypad/Keypad.h	77;"	d
 MOTOR_LEFT	main/lib/motor/motor.h	/^	MOTOR_LEFT,$/;"	e	enum:motor_states
+MOTOR_LEFT	motor_test/motor.h	/^	MOTOR_LEFT,$/;"	e	enum:motor_states
 MOTOR_LEFT	motor_test/src/motor.h	/^	MOTOR_LEFT,$/;"	e	enum:motor_states
 MOTOR_OFF	main/lib/motor/motor.h	/^	MOTOR_OFF$/;"	e	enum:motor_states
+MOTOR_OFF	motor_test/motor.h	/^	MOTOR_OFF$/;"	e	enum:motor_states
 MOTOR_OFF	motor_test/src/motor.h	/^	MOTOR_OFF$/;"	e	enum:motor_states
 MOTOR_RIGHT	main/lib/motor/motor.h	/^	MOTOR_RIGHT,$/;"	e	enum:motor_states
+MOTOR_RIGHT	motor_test/motor.h	/^	MOTOR_RIGHT,$/;"	e	enum:motor_states
 MOTOR_RIGHT	motor_test/src/motor.h	/^	MOTOR_RIGHT,$/;"	e	enum:motor_states
 MOVEOFFGRID	main/src/nav.h	/^	MOVEOFFGRID,$/;"	e	enum:motions
 MOVEOFFGRIDREV	main/src/nav.h	/^	MOVEOFFGRIDREV,$/;"	e	enum:motions
 MOVEONGRID	main/src/nav.h	/^	MOVEONGRID,$/;"	e	enum:motions
-MemberFunctionCallable	main/lib/eventmanager/EventManager.h	/^    MemberFunctionCallable() {};$/;"	f	class:MemberFunctionCallable
-MemberFunctionCallable	main/lib/eventmanager/EventManager.h	/^    MemberFunctionCallable(C* _obj,memberf_pointer _f):obj(_obj),f(_f) {};$/;"	f	class:MemberFunctionCallable
-MemberFunctionCallable	main/lib/eventmanager/EventManager.h	/^class MemberFunctionCallable : public EventListener$/;"	c
-Motor	motor_test/src/motor.cpp	/^Motor::Motor(int pin_enable, int pin_direction)$/;"	f	class:Motor
-Motor	motor_test/src/motor.h	/^class Motor$/;"	c
+MemberFunctionCallable	main/lib/EventManager/EventManager.h	/^    MemberFunctionCallable() {};$/;"	f	class:MemberFunctionCallable
+MemberFunctionCallable	main/lib/EventManager/EventManager.h	/^    MemberFunctionCallable(C* _obj,memberf_pointer _f):obj(_obj),f(_f) {};$/;"	f	class:MemberFunctionCallable
+MemberFunctionCallable	main/lib/EventManager/EventManager.h	/^class MemberFunctionCallable : public EventListener$/;"	c
 NEGATIVE	main/lib/pid/pid.h	/^const bool NEGATIVE = 0;$/;"	v
 NO_KEY	main/lib/keypad/utility/Key.h	/^const char NO_KEY = '\\0';$/;"	v
-NUMPINS	main/.build/uno/src/main.cpp	/^const int NUMPINS = 4; \/\/ Initialize irsensors$/;"	v
 OFF	main/lib/pid/pid.h	/^const bool OFF = 0;$/;"	v
 ON	main/lib/pid/pid.h	/^const bool ON = 1;$/;"	v
 ON_WHITE	main/src/drivemotor.h	/^const int ON_WHITE = false;$/;"	v
@@ -139,13 +140,12 @@ REG_RED	main/lib/grove/rgb_lcd.h	43;"	d
 RELEASED	main/lib/keypad/utility/Key.h	/^typedef enum{ IDLE, PRESSED, HOLD, RELEASED } KeyState;$/;"	e	enum:__anon1
 RGB_ADDRESS	main/lib/grove/rgb_lcd.h	34;"	d
 ROTATETO	main/src/nav.h	/^	ROTATETO,$/;"	e	enum:motions
-SERIALDEBUG	main/.build/uno/src/main.cpp	28;"	d	file:
 STOPPED	main/src/drivemotor.h	/^	STOPPED$/;"	e	enum:drive_status
-SafetyMode	main/lib/eventmanager/EventManager.h	/^    enum SafetyMode { kNotInterruptSafe, kInterruptSafe };$/;"	g	class:EventManager
+SafetyMode	main/lib/EventManager/EventManager.h	/^    enum SafetyMode { kNotInterruptSafe, kInterruptSafe };$/;"	g	class:EventManager
 Sensor	main/lib/sensing/sensor.cpp	/^Sensor::Sensor(int pin) $/;"	f	class:Sensor
 Sensor	main/lib/sensing/sensor.h	/^		Sensor() {};$/;"	f	class:Sensor
 Sensor	main/lib/sensing/sensor.h	/^class Sensor$/;"	c
-TOUCH_ISR	main/src/nav.h	/^	TOUCH_ISR$/;"	e	enum:isr
+TIMER	main/src/nav.h	/^	TIMER	$/;"	e	enum:sensors
 TURNINGLEFT	main/src/drivemotor.h	/^	TURNINGLEFT,$/;"	e	enum:drive_status
 TURNINGRIGHT	main/src/drivemotor.h	/^	TURNINGRIGHT,$/;"	e	enum:drive_status
 UNKNOWN	main/lib/sensing/sensor.h	15;"	d
@@ -160,11 +160,13 @@ _displaymode	main/lib/grove/rgb_lcd.h	/^  uint8_t _displaymode;$/;"	m	class:rgb_
 _initialized	main/lib/grove/rgb_lcd.h	/^  uint8_t _initialized;$/;"	m	class:rgb_lcd
 _mypinMode	main/lib/keypad/Keypad.h	51;"	d
 _numlines	main/lib/grove/rgb_lcd.h	/^  uint8_t _numlines,_currline;$/;"	m	class:rgb_lcd
+_overflow	main/lib/FlexiTimer2/FlexiTimer2.cpp	/^void FlexiTimer2::_overflow() {$/;"	f	class:FlexiTimer2
 addEventListener	main/lib/keypad/Keypad.cpp	/^void Keypad::addEventListener(void (*listener)(char)){$/;"	f	class:Keypad
-addEvents	main/.build/uno/src/main.cpp	/^void addEvents()$/;"	f
-addListener	main/lib/eventmanager/EventManager.cpp	/^boolean EventManager::ListenerList::addListener( int eventCode, EventListener* listener ) $/;"	f	class:EventManager::ListenerList
-addListener	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::addListener( int eventCode, EventListener* listener )$/;"	f	class:EventManager
+addListener	main/lib/EventManager/EventManager.cpp	/^boolean EventManager::ListenerList::addListener( int eventCode, EventListener* listener ) $/;"	f	class:EventManager::ListenerList
+addListener	main/lib/EventManager/EventManager.h	/^inline boolean EventManager::addListener( int eventCode, EventListener* listener )$/;"	f	class:EventManager
 adjustSpeed	main/lib/motor/motor.cpp	/^void motor::adjustSpeed(int speed)$/;"	f	class:motor
+adjustSpeed	motor_test/motor.cpp	/^void motor::adjustSpeed(int speed)$/;"	f	class:motor
+adjustSpeed	motor_test/src/motor.cpp	/^void motor::adjustSpeed(int speed)$/;"	f	class:motor
 autoscroll	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::autoscroll(void)$/;"	f	class:rgb_lcd
 begin	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) $/;"	f	class:rgb_lcd
 begin	main/lib/keypad/Keypad.cpp	/^void Keypad::begin(char *userKeymap) {$/;"	f	class:Keypad
@@ -172,18 +174,17 @@ bitMap	main/lib/keypad/Keypad.h	/^	uint bitMap[MAPSIZE];	\/\/ 10 row x 16 column
 black	main/lib/legacy/photoLineDetection.h	/^	int black;$/;"	m	struct:PhotoThresholdValues
 blink	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::blink()$/;"	f	class:rgb_lcd
 blink	main/lib/queuearray/QueueArray.h	/^void QueueArray<T>::blink () const {$/;"	f	class:QueueArray
-btnCalibrate	main/.build/uno/src/main.cpp	/^const int btnCalibrate = 10;$/;"	v
 calibrate	main/lib/legacy/photoLineDetection.cpp	/^void PhotoLineDetection::calibrate(int calibrate_color)$/;"	f	class:PhotoLineDetection
 calibrate	main/lib/sensing/sensor.cpp	/^void Sensor::calibrate(int color)$/;"	f	class:Sensor
-calibrateFunction	main/.build/uno/src/main.cpp	/^void calibrateFunction()$/;"	f
-calibrate_all	main/.build/uno/src/main.cpp	/^void calibrate_all()$/;"	f
-callback	main/lib/eventmanager/EventManager.h	/^            EventListener*	callback;		\/\/ The listener function$/;"	m	struct:EventManager::ListenerList::ListenerItem
+callback	main/lib/EventManager/EventManager.h	/^            EventListener*	callback;		\/\/ The listener function$/;"	m	struct:EventManager::ListenerList::ListenerItem
 checkSensor	main/lib/legacy/photoLineDetection.cpp	/^int PhotoLineDetection::checkSensor()$/;"	f	class:PhotoLineDetection
 checkTaskComplete	main/src/nav.cpp	/^bool nav::checkTaskComplete() $/;"	f	class:nav
 check_validity	main/src/nav.cpp	/^bool nav::check_validity(grid coordinates)$/;"	f	class:nav
 clamp	main/lib/pid/pid.cpp	/^void PID::clamp(int& parameter) {$/;"	f	class:PID
+clarm	main/src/drivemotor.h	/^		motor port, starboard, clarm;$/;"	m	class:DriveMotor
+clarm	main/src/nav.h	/^		motor clarm;$/;"	m	class:nav
 clear	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::clear()$/;"	f	class:rgb_lcd
-code	main/lib/eventmanager/EventManager.h	/^            int code;	\/\/ each event is represented by an integer code$/;"	m	struct:EventManager::EventQueue::EventElement
+code	main/lib/EventManager/EventManager.h	/^            int code;	\/\/ each event is represented by an integer code$/;"	m	struct:EventManager::EventQueue::EventElement
 color_define	main/lib/grove/rgb_lcd.cpp	/^const unsigned char color_define[4][3] = $/;"	v
 columnPins	main/lib/keypad/Keypad.h	/^    byte *columnPins;$/;"	m	class:Keypad
 columns	main/lib/keypad/Keypad.h	/^    byte columns;$/;"	m	struct:__anon2
@@ -191,14 +192,14 @@ command	main/lib/grove/rgb_lcd.cpp	/^inline void rgb_lcd::command(uint8_t value)
 compute	main/lib/pid/pid.cpp	/^bool PID::compute() {$/;"	f	class:PID
 computeRectilinearPath	main/src/nav.cpp	/^int nav::computeRectilinearPath(grid new_destination)$/;"	f	class:nav
 contents	main/lib/queuearray/QueueArray.h	/^    T * contents;    \/\/ the array of the queue.$/;"	m	class:QueueArray
+count	main/lib/FlexiTimer2/FlexiTimer2.cpp	/^volatile unsigned long FlexiTimer2::count;$/;"	m	class:FlexiTimer2	file:
 count	main/lib/queuearray/QueueArray.h	/^int QueueArray<T>::count () const {$/;"	f	class:QueueArray
 countRemaining	main/src/nav.cpp	/^int nav::countRemaining() { return tasklist.count(); }$/;"	f	class:nav
 createChar	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::createChar(uint8_t location, uint8_t charmap[])$/;"	f	class:rgb_lcd
 currentGrid	main/src/nav.h	/^		grid currentGrid;$/;"	m	class:nav
 currentMotion	main/src/nav.h	/^		motions currentMotion;$/;"	m	class:nav
 currentStatus	main/src/drivemotor.h	/^		drive_status currentStatus;$/;"	m	class:DriveMotor
-current_heading	main/.build/uno/src/main.cpp	/^int current_heading;$/;"	v
-current_heading	main/src/drivemotor.h	/^		int current_heading;	$/;"	m	class:DriveMotor
+current_heading	main/src/drivemotor.h	/^		int current_heading;$/;"	m	class:DriveMotor
 cursor	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::cursor() {$/;"	f	class:rgb_lcd
 cycle_count	main/src/nav.h	/^		int cycle_count;$/;"	m	class:nav
 cycle_time	main/lib/pid/pid.h	/^		unsigned int cycle_time;	\/\/ 100ms 0.1s$/;"	m	class:PID
@@ -210,48 +211,48 @@ detect	main/lib/legacy/photoLineDetection.cpp	/^int PhotoLineDetection::detect()
 detect	main/lib/sensing/irsensor.cpp	/^int IRSensor::detect(int diffThresh)$/;"	f	class:IRSensor
 detect	main/lib/sensing/sensor.cpp	/^int Sensor::detect()$/;"	f	class:Sensor
 direction	main/lib/motor/motor.h	/^		int direction;$/;"	m	class:motor
-direction	motor_test/src/motor.h	/^		int direction;$/;"	m	class:Motor
+direction	motor_test/motor.h	/^		int direction;$/;"	m	class:motor
+direction	motor_test/src/motor.h	/^		int direction;$/;"	m	class:motor
 directionalLineIncrement	main/src/nav.cpp	/^grid nav::directionalLineIncrement(int i)$/;"	f	class:nav
 display	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::display() {$/;"	f	class:rgb_lcd
-displayFunction	main/.build/uno/src/main.cpp	/^void displayFunction()$/;"	f
-dmotor_initial	main/.build/uno/src/main.cpp	/^const int dmotor_initial = 2;$/;"	v
-dmotor_scaling	main/.build/uno/src/main.cpp	/^const int dmotor_scaling = 50; $/;"	v
 do_now	main/src/nav.h	/^	motions do_now;$/;"	m	struct:task
-doneFunction	main/.build/uno/src/main.cpp	/^void doneFunction()$/;"	f
 doneTasks	main/src/nav.cpp	/^bool nav::doneTasks() { return tasklist.isEmpty(); }$/;"	f	class:nav
 driveInCircles	main/src/drivemotor.cpp	/^void DriveMotor::driveInCircles()$/;"	f	class:DriveMotor
 driveStraight	main/src/drivemotor.cpp	/^void DriveMotor::driveStraight()$/;"	f	class:DriveMotor
 drive_status	main/src/drivemotor.h	/^enum drive_status$/;"	g
 enable	main/lib/motor/motor.h	/^		int enable;$/;"	m	class:motor
-enable	motor_test/src/motor.h	/^		int enable;$/;"	m	class:Motor
-enableDefaultListener	main/lib/eventmanager/EventManager.cpp	/^void EventManager::ListenerList::enableDefaultListener( boolean enable ) $/;"	f	class:EventManager::ListenerList
-enableDefaultListener	main/lib/eventmanager/EventManager.h	/^inline void EventManager::enableDefaultListener( boolean enable )$/;"	f	class:EventManager
-enableListener	main/lib/eventmanager/EventManager.cpp	/^boolean EventManager::ListenerList::enableListener( int eventCode, EventListener* listener, boolean enable ) $/;"	f	class:EventManager::ListenerList
-enableListener	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::enableListener( int eventCode, EventListener* listener, boolean enable )$/;"	f	class:EventManager
-enabled	main/lib/eventmanager/EventManager.h	/^            boolean			enabled;			\/\/ Each listener can be enabled or disabled$/;"	m	struct:EventManager::ListenerList::ListenerItem
+enable	motor_test/motor.h	/^		int enable;$/;"	m	class:motor
+enable	motor_test/src/motor.h	/^		int enable;$/;"	m	class:motor
+enableDefaultListener	main/lib/EventManager/EventManager.cpp	/^void EventManager::ListenerList::enableDefaultListener( boolean enable ) $/;"	f	class:EventManager::ListenerList
+enableDefaultListener	main/lib/EventManager/EventManager.h	/^inline void EventManager::enableDefaultListener( boolean enable )$/;"	f	class:EventManager
+enableListener	main/lib/EventManager/EventManager.cpp	/^boolean EventManager::ListenerList::enableListener( int eventCode, EventListener* listener, boolean enable ) $/;"	f	class:EventManager::ListenerList
+enableListener	main/lib/EventManager/EventManager.h	/^inline boolean EventManager::enableListener( int eventCode, EventListener* listener, boolean enable )$/;"	f	class:EventManager
+enabled	main/lib/EventManager/EventManager.h	/^            boolean			enabled;			\/\/ Each listener can be enabled or disabled$/;"	m	struct:EventManager::ListenerList::ListenerItem
 enqueue	main/lib/queuearray/QueueArray.h	/^void QueueArray<T>::enqueue (const T i) {$/;"	f	class:QueueArray
-eventCode	main/lib/eventmanager/EventManager.h	/^            int				eventCode;		\/\/ The event code$/;"	m	struct:EventManager::ListenerList::ListenerItem
+eventCode	main/lib/EventManager/EventManager.h	/^            int				eventCode;		\/\/ The event code$/;"	m	struct:EventManager::ListenerList::ListenerItem
 exit	main/lib/queuearray/QueueArray.h	/^void QueueArray<T>::exit (const char * m) const {$/;"	f	class:QueueArray
-f	main/lib/eventmanager/EventManager.h	/^    F* f;$/;"	m	class:GenericCallable
-f	main/lib/eventmanager/EventManager.h	/^    memberf_pointer f;$/;"	m	class:MemberFunctionCallable
+f	main/lib/EventManager/EventManager.h	/^    F* f;$/;"	m	class:GenericCallable
+f	main/lib/EventManager/EventManager.h	/^    memberf_pointer f;$/;"	m	class:MemberFunctionCallable
 findInList	main/lib/keypad/Keypad.cpp	/^int Keypad::findInList (char keyChar) {$/;"	f	class:Keypad
 findInList	main/lib/keypad/Keypad.cpp	/^int Keypad::findInList (int keyCode) {$/;"	f	class:Keypad
 front	main/lib/queuearray/QueueArray.h	/^T QueueArray<T>::front () const {$/;"	f	class:QueueArray
+func	main/lib/FlexiTimer2/FlexiTimer2.cpp	/^void (*FlexiTimer2::func)();$/;"	v
 getDestination	main/src/nav.cpp	/^grid nav::getDestination() { return destination; }$/;"	f	class:nav
 getGrid	main/src/nav.cpp	/^grid nav::getGrid() { return currentGrid; }$/;"	f	class:nav
 getKey	main/lib/keypad/Keypad.cpp	/^char Keypad::getKey() {$/;"	f	class:Keypad
 getKeys	main/lib/keypad/Keypad.cpp	/^bool Keypad::getKeys() {$/;"	f	class:Keypad
 getMotion	main/src/nav.cpp	/^motions nav::getMotion() { return currentMotion; }$/;"	f	class:nav
-getNumEntries	main/lib/eventmanager/EventManager.h	/^inline int EventManager::ListenerList::getNumEntries() $/;"	f	class:EventManager::ListenerList
-getNumEvents	main/lib/eventmanager/EventManager.h	/^inline int EventManager::EventQueue::getNumEvents() $/;"	f	class:EventManager::EventQueue
-getNumEventsInQueue	main/lib/eventmanager/EventManager.h	/^inline int EventManager::getNumEventsInQueue( EventPriority pri ) $/;"	f	class:EventManager
+getNumEntries	main/lib/EventManager/EventManager.h	/^inline int EventManager::ListenerList::getNumEntries() $/;"	f	class:EventManager::ListenerList
+getNumEvents	main/lib/EventManager/EventManager.h	/^inline int EventManager::EventQueue::getNumEvents() $/;"	f	class:EventManager::EventQueue
+getNumEventsInQueue	main/lib/EventManager/EventManager.h	/^inline int EventManager::getNumEventsInQueue( EventPriority pri ) $/;"	f	class:EventManager
 getState	main/lib/keypad/Keypad.cpp	/^KeyState Keypad::getState() {$/;"	f	class:Keypad
 getValue	main/lib/sensing/sensor.cpp	/^int Sensor::getValue()$/;"	f	class:Sensor
 get_onoff	main/lib/pid/pid.cpp	/^bool PID::get_onoff() const {return on;}$/;"	f	class:PID
 get_response	main/lib/pid/pid.cpp	/^bool PID::get_response() const {return response;}$/;"	f	class:PID
 get_status	main/lib/motor/motor.cpp	/^motor_states motor::get_status() $/;"	f	class:motor
 get_status	main/src/drivemotor.cpp	/^drive_status DriveMotor::get_status() { return currentStatus; } $/;"	f	class:DriveMotor
-get_status	motor_test/src/motor.cpp	/^motor_states Motor::get_status() $/;"	f	class:Motor
+get_status	motor_test/motor.cpp	/^motor_states motor::get_status() $/;"	f	class:motor
+get_status	motor_test/src/motor.cpp	/^motor_states motor::get_status() $/;"	f	class:motor
 grid	main/src/nav.h	/^	grid() {}$/;"	f	struct:grid
 grid	main/src/nav.h	/^	grid(int a, int b, int c) : x(a), y(b), d(c) {}$/;"	f	struct:grid
 grid	main/src/nav.h	/^struct grid$/;"	s
@@ -270,53 +271,52 @@ initialSize	main/lib/queuearray/QueueArray.h	/^    static const int initialSize 
 input	main/lib/pid/pid.h	/^		const int* input;$/;"	m	class:PID
 input_prev	main/lib/pid/pid.h	/^		int integral, input_prev;$/;"	m	class:PID
 integral	main/lib/pid/pid.h	/^		int integral, input_prev;$/;"	m	class:PID
-interrupt	main/src/nav.cpp	/^int nav::interrupt(isr senInt)$/;"	f	class:nav
-irsen	main/.build/uno/src/main.cpp	/^IRSensor irsen[NUMPINS];$/;"	v
-isEmpty	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::EventQueue::isEmpty() $/;"	f	class:EventManager::EventQueue
-isEmpty	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::ListenerList::isEmpty() $/;"	f	class:EventManager::ListenerList
+interrupt	main/src/nav.cpp	/^int nav::interrupt(sensors senInt)$/;"	f	class:nav
+isEmpty	main/lib/EventManager/EventManager.h	/^inline boolean EventManager::EventQueue::isEmpty() $/;"	f	class:EventManager::EventQueue
+isEmpty	main/lib/EventManager/EventManager.h	/^inline boolean EventManager::ListenerList::isEmpty() $/;"	f	class:EventManager::ListenerList
 isEmpty	main/lib/queuearray/QueueArray.h	/^bool QueueArray<T>::isEmpty () const {$/;"	f	class:QueueArray
-isEventQueueEmpty	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::isEventQueueEmpty( EventPriority pri )$/;"	f	class:EventManager
-isEventQueueFull	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::isEventQueueFull( EventPriority pri ) $/;"	f	class:EventManager
-isFull	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::EventQueue::isFull() $/;"	f	class:EventManager::EventQueue
-isFull	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::ListenerList::isFull() $/;"	f	class:EventManager::ListenerList
+isEventQueueEmpty	main/lib/EventManager/EventManager.h	/^inline boolean EventManager::isEventQueueEmpty( EventPriority pri )$/;"	f	class:EventManager
+isEventQueueFull	main/lib/EventManager/EventManager.h	/^inline boolean EventManager::isEventQueueFull( EventPriority pri ) $/;"	f	class:EventManager
+isFull	main/lib/EventManager/EventManager.h	/^inline boolean EventManager::EventQueue::isFull() $/;"	f	class:EventManager::EventQueue
+isFull	main/lib/EventManager/EventManager.h	/^inline boolean EventManager::ListenerList::isFull() $/;"	f	class:EventManager::ListenerList
 isFull	main/lib/queuearray/QueueArray.h	/^bool QueueArray<T>::isFull () const {$/;"	f	class:QueueArray
-isListenerEnabled	main/lib/eventmanager/EventManager.cpp	/^boolean EventManager::ListenerList::isListenerEnabled( int eventCode, EventListener* listener ) $/;"	f	class:EventManager::ListenerList
-isListenerEnabled	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::isListenerEnabled( int eventCode, EventListener* listener )$/;"	f	class:EventManager
-isListenerListEmpty	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::isListenerListEmpty()$/;"	f	class:EventManager
-isListenerListFull	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::isListenerListFull()$/;"	f	class:EventManager
+isListenerEnabled	main/lib/EventManager/EventManager.cpp	/^boolean EventManager::ListenerList::isListenerEnabled( int eventCode, EventListener* listener ) $/;"	f	class:EventManager::ListenerList
+isListenerEnabled	main/lib/EventManager/EventManager.h	/^inline boolean EventManager::isListenerEnabled( int eventCode, EventListener* listener )$/;"	f	class:EventManager
+isListenerListEmpty	main/lib/EventManager/EventManager.h	/^inline boolean EventManager::isListenerListEmpty()$/;"	f	class:EventManager
+isListenerListFull	main/lib/EventManager/EventManager.h	/^inline boolean EventManager::isListenerListFull()$/;"	f	class:EventManager
 isPressed	main/lib/keypad/Keypad.cpp	/^bool Keypad::isPressed(char keyChar) {$/;"	f	class:Keypad
-isr	main/src/nav.h	/^enum isr$/;"	g
 items	main/lib/queuearray/QueueArray.h	/^    int items;       \/\/ the number of items of the queue.$/;"	m	class:QueueArray
-kEventAnalog0	main/lib/eventmanager/EventManager.h	/^        kEventAnalog0,$/;"	e	enum:EventManager::EventType
-kEventAnalog1	main/lib/eventmanager/EventManager.h	/^        kEventAnalog1,$/;"	e	enum:EventManager::EventType
-kEventAnalog2	main/lib/eventmanager/EventManager.h	/^        kEventAnalog2,$/;"	e	enum:EventManager::EventType
-kEventAnalog3	main/lib/eventmanager/EventManager.h	/^        kEventAnalog3,$/;"	e	enum:EventManager::EventType
-kEventAnalog4	main/lib/eventmanager/EventManager.h	/^        kEventAnalog4,$/;"	e	enum:EventManager::EventType
-kEventAnalog5	main/lib/eventmanager/EventManager.h	/^        kEventAnalog5,$/;"	e	enum:EventManager::EventType
-kEventCalibrate	main/lib/eventmanager/EventManager.h	/^		kEventCalibrate,$/;"	e	enum:EventManager::EventType
-kEventChar	main/lib/eventmanager/EventManager.h	/^        kEventChar,$/;"	e	enum:EventManager::EventType
-kEventDisplayLCD	main/lib/eventmanager/EventManager.h	/^		kEventDisplayLCD,$/;"	e	enum:EventManager::EventType
-kEventDisplaySerial	main/lib/eventmanager/EventManager.h	/^		kEventDisplaySerial,$/;"	e	enum:EventManager::EventType
-kEventDone	main/lib/eventmanager/EventManager.h	/^		kEventDone,$/;"	e	enum:EventManager::EventType
-kEventKeyPress	main/lib/eventmanager/EventManager.h	/^        kEventKeyPress,$/;"	e	enum:EventManager::EventType
-kEventKeyRelease	main/lib/eventmanager/EventManager.h	/^        kEventKeyRelease,$/;"	e	enum:EventManager::EventType
-kEventLineISR	main/lib/eventmanager/EventManager.h	/^		kEventLineISR,$/;"	e	enum:EventManager::EventType
-kEventMoveForward	main/lib/eventmanager/EventManager.h	/^		kEventMoveForward$/;"	e	enum:EventManager::EventType
-kEventNone	main/lib/eventmanager/EventManager.h	/^        kEventNone = 200,$/;"	e	enum:EventManager::EventType
-kEventPaint	main/lib/eventmanager/EventManager.h	/^        kEventPaint,$/;"	e	enum:EventManager::EventType
-kEventQueueSize	main/lib/eventmanager/EventManager.h	/^        static const int kEventQueueSize = EVENTMANAGER_EVENT_QUEUE_SIZE;$/;"	m	class:EventManager::EventQueue
-kEventSensorPolling	main/lib/eventmanager/EventManager.h	/^		kEventSensorPolling,$/;"	e	enum:EventManager::EventType
-kEventSerial	main/lib/eventmanager/EventManager.h	/^        kEventSerial,$/;"	e	enum:EventManager::EventType
-kEventTime	main/lib/eventmanager/EventManager.h	/^        kEventTime,$/;"	e	enum:EventManager::EventType
-kEventTimer0	main/lib/eventmanager/EventManager.h	/^        kEventTimer0,$/;"	e	enum:EventManager::EventType
-kEventTimer1	main/lib/eventmanager/EventManager.h	/^        kEventTimer1,$/;"	e	enum:EventManager::EventType
-kEventTimer2	main/lib/eventmanager/EventManager.h	/^        kEventTimer2,$/;"	e	enum:EventManager::EventType
-kEventTimer3	main/lib/eventmanager/EventManager.h	/^        kEventTimer3,$/;"	e	enum:EventManager::EventType
-kHighPriority	main/lib/eventmanager/EventManager.h	/^    enum EventPriority { kHighPriority, kLowPriority };$/;"	e	enum:EventManager::EventPriority
-kInterruptSafe	main/lib/eventmanager/EventManager.h	/^    enum SafetyMode { kNotInterruptSafe, kInterruptSafe };$/;"	e	enum:EventManager::SafetyMode
-kLowPriority	main/lib/eventmanager/EventManager.h	/^    enum EventPriority { kHighPriority, kLowPriority };$/;"	e	enum:EventManager::EventPriority
-kMaxListeners	main/lib/eventmanager/EventManager.h	/^        static const int kMaxListeners = EVENTMANAGER_LISTENER_LIST_SIZE;$/;"	m	class:EventManager::ListenerList
-kNotInterruptSafe	main/lib/eventmanager/EventManager.h	/^    enum SafetyMode { kNotInterruptSafe, kInterruptSafe };$/;"	e	enum:EventManager::SafetyMode
+itimer	main/lib/FlexiTimer2/FlexiTimer2.cpp	/^static IntervalTimer itimer;$/;"	v	file:
+kEventAnalog0	main/lib/EventManager/EventManager.h	/^        kEventAnalog0,$/;"	e	enum:EventManager::EventType
+kEventAnalog1	main/lib/EventManager/EventManager.h	/^        kEventAnalog1,$/;"	e	enum:EventManager::EventType
+kEventAnalog2	main/lib/EventManager/EventManager.h	/^        kEventAnalog2,$/;"	e	enum:EventManager::EventType
+kEventAnalog3	main/lib/EventManager/EventManager.h	/^        kEventAnalog3,$/;"	e	enum:EventManager::EventType
+kEventAnalog4	main/lib/EventManager/EventManager.h	/^        kEventAnalog4,$/;"	e	enum:EventManager::EventType
+kEventAnalog5	main/lib/EventManager/EventManager.h	/^        kEventAnalog5,$/;"	e	enum:EventManager::EventType
+kEventCalibrate	main/lib/EventManager/EventManager.h	/^		kEventCalibrate,$/;"	e	enum:EventManager::EventType
+kEventChar	main/lib/EventManager/EventManager.h	/^        kEventChar,$/;"	e	enum:EventManager::EventType
+kEventDisplayLCD	main/lib/EventManager/EventManager.h	/^		kEventDisplayLCD,$/;"	e	enum:EventManager::EventType
+kEventDisplaySerial	main/lib/EventManager/EventManager.h	/^		kEventDisplaySerial,$/;"	e	enum:EventManager::EventType
+kEventDone	main/lib/EventManager/EventManager.h	/^		kEventDone,$/;"	e	enum:EventManager::EventType
+kEventKeyPress	main/lib/EventManager/EventManager.h	/^        kEventKeyPress,$/;"	e	enum:EventManager::EventType
+kEventKeyRelease	main/lib/EventManager/EventManager.h	/^        kEventKeyRelease,$/;"	e	enum:EventManager::EventType
+kEventLineISR	main/lib/EventManager/EventManager.h	/^		kEventLineISR,$/;"	e	enum:EventManager::EventType
+kEventMoveForward	main/lib/EventManager/EventManager.h	/^		kEventMoveForward$/;"	e	enum:EventManager::EventType
+kEventNone	main/lib/EventManager/EventManager.h	/^        kEventNone = 200,$/;"	e	enum:EventManager::EventType
+kEventPaint	main/lib/EventManager/EventManager.h	/^        kEventPaint,$/;"	e	enum:EventManager::EventType
+kEventQueueSize	main/lib/EventManager/EventManager.h	/^        static const int kEventQueueSize = EVENTMANAGER_EVENT_QUEUE_SIZE;$/;"	m	class:EventManager::EventQueue
+kEventSensorPolling	main/lib/EventManager/EventManager.h	/^		kEventSensorPolling,$/;"	e	enum:EventManager::EventType
+kEventSerial	main/lib/EventManager/EventManager.h	/^        kEventSerial,$/;"	e	enum:EventManager::EventType
+kEventTime	main/lib/EventManager/EventManager.h	/^        kEventTime,$/;"	e	enum:EventManager::EventType
+kEventTimer0	main/lib/EventManager/EventManager.h	/^        kEventTimer0,$/;"	e	enum:EventManager::EventType
+kEventTimer1	main/lib/EventManager/EventManager.h	/^        kEventTimer1,$/;"	e	enum:EventManager::EventType
+kEventTimer2	main/lib/EventManager/EventManager.h	/^        kEventTimer2,$/;"	e	enum:EventManager::EventType
+kEventTimer3	main/lib/EventManager/EventManager.h	/^        kEventTimer3,$/;"	e	enum:EventManager::EventType
+kHighPriority	main/lib/EventManager/EventManager.h	/^    enum EventPriority { kHighPriority, kLowPriority };$/;"	e	enum:EventManager::EventPriority
+kInterruptSafe	main/lib/EventManager/EventManager.h	/^    enum SafetyMode { kNotInterruptSafe, kInterruptSafe };$/;"	e	enum:EventManager::SafetyMode
+kLowPriority	main/lib/EventManager/EventManager.h	/^    enum EventPriority { kHighPriority, kLowPriority };$/;"	e	enum:EventManager::EventPriority
+kMaxListeners	main/lib/EventManager/EventManager.h	/^        static const int kMaxListeners = EVENTMANAGER_LISTENER_LIST_SIZE;$/;"	m	class:EventManager::ListenerList
+kNotInterruptSafe	main/lib/EventManager/EventManager.h	/^    enum SafetyMode { kNotInterruptSafe, kInterruptSafe };$/;"	e	enum:EventManager::SafetyMode
 kchar	main/lib/keypad/utility/Key.h	/^	char kchar;$/;"	m	class:Key
 kcode	main/lib/keypad/utility/Key.h	/^	int kcode;$/;"	m	class:Key
 kd	main/lib/pid/pid.h	/^		double kp, ki, kd;$/;"	m	class:PID
@@ -326,38 +326,48 @@ key_update	main/lib/keypad/utility/Key.cpp	/^void Key::key_update (char userKeyC
 keymap	main/lib/keypad/Keypad.h	/^	char *keymap;$/;"	m	class:Keypad
 keypadEventListener	main/lib/keypad/Keypad.h	/^	void (*keypadEventListener)(char);$/;"	m	class:Keypad
 ki	main/lib/pid/pid.h	/^		double kp, ki, kd;$/;"	m	class:PID
-killMotors	main/.build/uno/src/main.cpp	/^void killMotors()$/;"	f
 kp	main/lib/pid/pid.h	/^		double kp, ki, kd;$/;"	m	class:PID
 kstate	main/lib/keypad/utility/Key.h	/^	KeyState kstate;$/;"	m	class:Key
-lcd	main/.build/uno/src/main.cpp	/^rgb_lcd lcd;$/;"	v
 ledPin	main/lib/queuearray/QueueArray.h	/^    static const int ledPin = 13;$/;"	m	class:QueueArray
 left	main/lib/motor/motor.cpp	/^void motor::left(int speed)$/;"	f	class:motor
-left	motor_test/src/motor.cpp	/^void Motor::left(int speed)$/;"	f	class:Motor
+left	motor_test/motor.cpp	/^void motor::left(int speed)$/;"	f	class:motor
+left	motor_test/src/motor.cpp	/^void motor::left(int speed)$/;"	f	class:motor
 leftToRight	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::leftToRight(void)$/;"	f	class:rgb_lcd
 lineMotorScaling	main/src/drivemotor.cpp	/^int DriveMotor::lineMotorScaling()$/;"	f	class:DriveMotor
-loop	main/.build/uno/src/main.cpp	/^void loop()$/;"	f
+loop	motor_test/.build/uno/src/test.cpp	/^void loop()$/;"	f
 low	main/lib/pid/pid.h	/^		int low, high;$/;"	m	class:PID
-mDefaultCallback	main/lib/eventmanager/EventManager.h	/^        EventListener* mDefaultCallback;$/;"	m	class:EventManager::ListenerList
-mDefaultCallbackEnabled	main/lib/eventmanager/EventManager.h	/^        boolean mDefaultCallbackEnabled;$/;"	m	class:EventManager::ListenerList
-mEventQueue	main/lib/eventmanager/EventManager.h	/^        EventElement mEventQueue[ kEventQueueSize ];$/;"	m	class:EventManager::EventQueue
-mEventQueueHead	main/lib/eventmanager/EventManager.h	/^        int mEventQueueHead;$/;"	m	class:EventManager::EventQueue
-mEventQueueTail	main/lib/eventmanager/EventManager.h	/^        int mEventQueueTail;$/;"	m	class:EventManager::EventQueue
-mHighPriorityQueue	main/lib/eventmanager/EventManager.h	/^    EventQueue 	mHighPriorityQueue;$/;"	m	class:EventManager
-mInterruptSafeMode	main/lib/eventmanager/EventManager.h	/^        boolean mInterruptSafeMode;$/;"	m	class:EventManager::EventQueue
-mListeners	main/lib/eventmanager/EventManager.h	/^        ListenerItem mListeners[ kMaxListeners ];$/;"	m	class:EventManager::ListenerList
-mListeners	main/lib/eventmanager/EventManager.h	/^    ListenerList		mListeners;$/;"	m	class:EventManager
-mLowPriorityQueue	main/lib/eventmanager/EventManager.h	/^    EventQueue 	mLowPriorityQueue;$/;"	m	class:EventManager
-mNumEvents	main/lib/eventmanager/EventManager.h	/^        int mNumEvents;$/;"	m	class:EventManager::EventQueue
-mNumListeners	main/lib/eventmanager/EventManager.h	/^        int mNumListeners;$/;"	m	class:EventManager::ListenerList
+mDefaultCallback	main/lib/EventManager/EventManager.h	/^        EventListener* mDefaultCallback;$/;"	m	class:EventManager::ListenerList
+mDefaultCallbackEnabled	main/lib/EventManager/EventManager.h	/^        boolean mDefaultCallbackEnabled;$/;"	m	class:EventManager::ListenerList
+mEventQueue	main/lib/EventManager/EventManager.h	/^        EventElement mEventQueue[ kEventQueueSize ];$/;"	m	class:EventManager::EventQueue
+mEventQueueHead	main/lib/EventManager/EventManager.h	/^        int mEventQueueHead;$/;"	m	class:EventManager::EventQueue
+mEventQueueTail	main/lib/EventManager/EventManager.h	/^        int mEventQueueTail;$/;"	m	class:EventManager::EventQueue
+mHighPriorityQueue	main/lib/EventManager/EventManager.h	/^    EventQueue 	mHighPriorityQueue;$/;"	m	class:EventManager
+mInterruptSafeMode	main/lib/EventManager/EventManager.h	/^        boolean mInterruptSafeMode;$/;"	m	class:EventManager::EventQueue
+mListeners	main/lib/EventManager/EventManager.h	/^        ListenerItem mListeners[ kMaxListeners ];$/;"	m	class:EventManager::ListenerList
+mListeners	main/lib/EventManager/EventManager.h	/^    ListenerList		mListeners;$/;"	m	class:EventManager
+mLowPriorityQueue	main/lib/EventManager/EventManager.h	/^    EventQueue 	mLowPriorityQueue;$/;"	m	class:EventManager
+mNumEvents	main/lib/EventManager/EventManager.h	/^        int mNumEvents;$/;"	m	class:EventManager::EventQueue
+mNumListeners	main/lib/EventManager/EventManager.h	/^        int mNumListeners;$/;"	m	class:EventManager::ListenerList
 makeKeymap	main/lib/keypad/Keypad.h	78;"	d
 mapLine	main/src/drivemotor.cpp	/^int DriveMotor::mapLine(bool l, bool m, bool r) $/;"	f	class:DriveMotor
-memberf_pointer	main/lib/eventmanager/EventManager.h	/^    typedef void (C::*memberf_pointer)(int, int);$/;"	t	class:MemberFunctionCallable
+memberf_pointer	main/lib/EventManager/EventManager.h	/^    typedef void (C::*memberf_pointer)(int, int);$/;"	t	class:MemberFunctionCallable
 motions	main/src/nav.h	/^enum motions$/;"	g
-motor	main/lib/motor/motor.cpp	/^motor::motor(int pin_enable, int pin_direction)$/;"	f	class:motor
+motor	main/lib/motor/motor.cpp	/^motor::motor(int pin_enable, int pin_direction, int speed)$/;"	f	class:motor
+motor	main/lib/motor/motor.h	/^		motor() {}$/;"	f	class:motor
 motor	main/lib/motor/motor.h	/^class motor$/;"	c
+motor	motor_test/motor.cpp	/^motor::motor(int pin_enable, int pin_direction, int speed)$/;"	f	class:motor
+motor	motor_test/motor.h	/^		motor() {}$/;"	f	class:motor
+motor	motor_test/motor.h	/^class motor$/;"	c
+motor	motor_test/src/motor.cpp	/^motor::motor(int pin_enable, int pin_direction, int speed)$/;"	f	class:motor
+motor	motor_test/src/motor.h	/^		motor() {}$/;"	f	class:motor
+motor	motor_test/src/motor.h	/^class motor$/;"	c
 motor_states	main/lib/motor/motor.h	/^enum motor_states$/;"	g
+motor_states	motor_test/motor.h	/^enum motor_states$/;"	g
 motor_states	motor_test/src/motor.h	/^enum motor_states$/;"	g
-nav	main/src/nav.cpp	/^nav::nav(grid sp, DriveMotor& d) : Driver(d)$/;"	f	class:nav
+motorspeed	main/lib/motor/motor.h	/^		int motorspeed;$/;"	m	class:motor
+motorspeed	motor_test/motor.h	/^		int motorspeed;$/;"	m	class:motor
+motorspeed	motor_test/src/motor.h	/^		int motorspeed;$/;"	m	class:motor
+nav	main/src/nav.cpp	/^nav::nav(grid sp, DriveMotor& d, motor& c) : Driver(d), clarm(c)$/;"	f	class:nav
 nav	main/src/nav.h	/^class nav$/;"	c
 nextKeyState	main/lib/keypad/Keypad.cpp	/^void Keypad::nextKeyState(byte idx, boolean button) {$/;"	f	class:Keypad
 noAutoscroll	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::noAutoscroll(void)$/;"	f	class:rgb_lcd
@@ -366,51 +376,55 @@ noCursor	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::noCursor()$/;"	f	class:rgb_l
 noDisplay	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::noDisplay()$/;"	f	class:rgb_lcd
 numCyclesTrack	main/lib/sensing/irsensor.h	/^		int numCyclesTrack;$/;"	m	class:IRSensor
 numKeys	main/lib/keypad/Keypad.cpp	/^byte Keypad::numKeys() {$/;"	f	class:Keypad
-numListeners	main/lib/eventmanager/EventManager.cpp	/^int EventManager::ListenerList::numListeners()$/;"	f	class:EventManager::ListenerList
-numListeners	main/lib/eventmanager/EventManager.cpp	/^int EventManager::numListeners()$/;"	f	class:EventManager
-obj	main/lib/eventmanager/EventManager.h	/^    C* obj;$/;"	m	class:MemberFunctionCallable
+numListeners	main/lib/EventManager/EventManager.cpp	/^int EventManager::ListenerList::numListeners()$/;"	f	class:EventManager::ListenerList
+numListeners	main/lib/EventManager/EventManager.cpp	/^int EventManager::numListeners()$/;"	f	class:EventManager
+obj	main/lib/EventManager/EventManager.h	/^    C* obj;$/;"	m	class:MemberFunctionCallable
 on	main/lib/pid/pid.h	/^		bool on;$/;"	m	class:PID
 on_grid	main/src/nav.h	/^		bool on_grid;$/;"	m	class:nav
-operator ()	main/lib/eventmanager/EventManager.h	/^    virtual void operator()( int eventCode, int eventParam )$/;"	f	class:GenericCallable
-operator ()	main/lib/eventmanager/EventManager.h	/^    virtual void operator()( int eventCode, int eventParam )$/;"	f	class:MemberFunctionCallable
+operator ()	main/lib/EventManager/EventManager.h	/^    virtual void operator()( int eventCode, int eventParam )$/;"	f	class:GenericCallable
+operator ()	main/lib/EventManager/EventManager.h	/^    virtual void operator()( int eventCode, int eventParam )$/;"	f	class:MemberFunctionCallable
 operator =	main/src/nav.h	/^	grid& operator=(const grid& a)$/;"	f	struct:grid
 operator ==	main/src/nav.h	/^	bool operator==(const grid& a) const$/;"	f	struct:grid
 output	main/lib/pid/pid.h	/^		int* output;$/;"	m	class:PID
-param	main/lib/eventmanager/EventManager.h	/^            int param;	\/\/ each event has a single integer parameter$/;"	m	struct:EventManager::EventQueue::EventElement
+overflowing	main/lib/FlexiTimer2/FlexiTimer2.cpp	/^volatile char FlexiTimer2::overflowing;$/;"	m	class:FlexiTimer2	file:
+param	main/lib/EventManager/EventManager.h	/^            int param;	\/\/ each event has a single integer parameter$/;"	m	struct:EventManager::EventQueue::EventElement
 pastEncounters	main/lib/sensing/irsensor.cpp	/^int IRSensor::pastEncounters()$/;"	f	class:IRSensor
-pause_counter	main/src/nav.h	/^		int pause_counter;$/;"	m	class:nav
 peek	main/lib/queuearray/QueueArray.h	/^T QueueArray<T>::peek () const {$/;"	f	class:QueueArray
 pinMode	main/lib/keypad/Keypad.h	50;"	d
 pin_mode	main/lib/keypad/Keypad.h	/^	virtual void pin_mode(byte pinNum, byte mode) { pinMode(pinNum, mode); }$/;"	f	class:Keypad
 pin_read	main/lib/keypad/Keypad.h	/^	virtual int  pin_read(byte pinNum) { return digitalRead(pinNum); }$/;"	f	class:Keypad
 pin_write	main/lib/keypad/Keypad.h	/^	virtual void pin_write(byte pinNum, boolean level) { digitalWrite(pinNum, level); }$/;"	f	class:Keypad
 pop	main/lib/queuearray/QueueArray.h	/^T QueueArray<T>::pop () {$/;"	f	class:QueueArray
-popEvent	main/lib/eventmanager/EventManager.cpp	/^boolean EventManager::EventQueue::popEvent( int* eventCode, int* eventParam ) $/;"	f	class:EventManager::EventQueue
-port	main/src/drivemotor.h	/^		motor port, starboard;$/;"	m	class:DriveMotor
+popEvent	main/lib/EventManager/EventManager.cpp	/^boolean EventManager::EventQueue::popEvent( int* eventCode, int* eventParam ) $/;"	f	class:EventManager::EventQueue
+port	main/src/drivemotor.h	/^		motor port, starboard, clarm;$/;"	m	class:DriveMotor
 prevState	main/lib/sensing/irsensor.h	/^		int prevState;$/;"	m	class:IRSensor
 printer	main/lib/queuearray/QueueArray.h	/^    Print * printer; \/\/ the printer of the queue.$/;"	m	class:QueueArray
-processAllEvents	main/lib/eventmanager/EventManager.cpp	/^int EventManager::processAllEvents() $/;"	f	class:EventManager
-processEvent	main/lib/eventmanager/EventManager.cpp	/^int EventManager::processEvent() $/;"	f	class:EventManager
+processAllEvents	main/lib/EventManager/EventManager.cpp	/^int EventManager::processAllEvents() $/;"	f	class:EventManager
+processEvent	main/lib/EventManager/EventManager.cpp	/^int EventManager::processEvent() $/;"	f	class:EventManager
 processTask	main/src/nav.cpp	/^void nav::processTask()$/;"	f	class:nav
 push	main/lib/queuearray/QueueArray.h	/^void QueueArray<T>::push (const T i) {$/;"	f	class:QueueArray
-queueEvent	main/lib/eventmanager/EventManager.cpp	/^boolean EventManager::EventQueue::queueEvent( int eventCode, int eventParam ) $/;"	f	class:EventManager::EventQueue
-queueEvent	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::queueEvent( int eventCode, int eventParam, EventPriority pri ) $/;"	f	class:EventManager
+queueEvent	main/lib/EventManager/EventManager.cpp	/^boolean EventManager::EventQueue::queueEvent( int eventCode, int eventParam ) $/;"	f	class:EventManager::EventQueue
+queueEvent	main/lib/EventManager/EventManager.h	/^inline boolean EventManager::queueEvent( int eventCode, int eventParam, EventPriority pri ) $/;"	f	class:EventManager
 readSensor	main/lib/sensing/sensor.cpp	/^int Sensor::readSensor()$/;"	f	class:Sensor
 red	main/lib/legacy/photoLineDetection.h	/^	int red;$/;"	m	struct:PhotoThresholdValues
 reinitialize	main/lib/pid/pid.cpp	/^void PID::reinitialize() {$/;"	f	class:PID
-removeDefaultListener	main/lib/eventmanager/EventManager.cpp	/^void EventManager::ListenerList::removeDefaultListener() $/;"	f	class:EventManager::ListenerList
-removeDefaultListener	main/lib/eventmanager/EventManager.h	/^inline void EventManager::removeDefaultListener()$/;"	f	class:EventManager
-removeListener	main/lib/eventmanager/EventManager.cpp	/^boolean EventManager::ListenerList::removeListener( int eventCode, EventListener* listener ) $/;"	f	class:EventManager::ListenerList
-removeListener	main/lib/eventmanager/EventManager.cpp	/^int EventManager::ListenerList::removeListener( EventListener* listener ) $/;"	f	class:EventManager::ListenerList
-removeListener	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::removeListener( int eventCode, EventListener* listener )$/;"	f	class:EventManager
-removeListener	main/lib/eventmanager/EventManager.h	/^inline int EventManager::removeListener( EventListener* listener )$/;"	f	class:EventManager
+removeDefaultListener	main/lib/EventManager/EventManager.cpp	/^void EventManager::ListenerList::removeDefaultListener() $/;"	f	class:EventManager::ListenerList
+removeDefaultListener	main/lib/EventManager/EventManager.h	/^inline void EventManager::removeDefaultListener()$/;"	f	class:EventManager
+removeListener	main/lib/EventManager/EventManager.cpp	/^boolean EventManager::ListenerList::removeListener( int eventCode, EventListener* listener ) $/;"	f	class:EventManager::ListenerList
+removeListener	main/lib/EventManager/EventManager.cpp	/^int EventManager::ListenerList::removeListener( EventListener* listener ) $/;"	f	class:EventManager::ListenerList
+removeListener	main/lib/EventManager/EventManager.h	/^inline boolean EventManager::removeListener( int eventCode, EventListener* listener )$/;"	f	class:EventManager
+removeListener	main/lib/EventManager/EventManager.h	/^inline int EventManager::removeListener( EventListener* listener )$/;"	f	class:EventManager
 reset	main/src/nav.cpp	/^int nav::reset(grid new_position)$/;"	f	class:nav
 resize	main/lib/queuearray/QueueArray.h	/^void QueueArray<T>::resize (const int s) {$/;"	f	class:QueueArray
 response	main/lib/pid/pid.h	/^		bool response;$/;"	m	class:PID
+reverseDirection	main/lib/motor/motor.cpp	/^void motor::reverseDirection()$/;"	f	class:motor
+reverseDirection	motor_test/motor.cpp	/^void motor::reverseDirection()$/;"	f	class:motor
+reverseDirection	motor_test/src/motor.cpp	/^void motor::reverseDirection()$/;"	f	class:motor
 rgb_lcd	main/lib/grove/rgb_lcd.cpp	/^rgb_lcd::rgb_lcd()$/;"	f	class:rgb_lcd
 rgb_lcd	main/lib/grove/rgb_lcd.h	/^class rgb_lcd : public Print $/;"	c
 right	main/lib/motor/motor.cpp	/^void motor::right(int speed)$/;"	f	class:motor
-right	motor_test/src/motor.cpp	/^void Motor::right(int speed)$/;"	f	class:Motor
+right	motor_test/motor.cpp	/^void motor::right(int speed)$/;"	f	class:motor
+right	motor_test/src/motor.cpp	/^void motor::right(int speed)$/;"	f	class:motor
 rightToLeft	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::rightToLeft(void)$/;"	f	class:rgb_lcd
 rowPins	main/lib/keypad/Keypad.h	/^    byte *rowPins;$/;"	m	class:Keypad
 rows	main/lib/keypad/Keypad.h	/^    byte rows;$/;"	m	struct:__anon2
@@ -418,25 +432,26 @@ scaling	main/src/drivemotor.h	/^		int scaling, initial;$/;"	m	class:DriveMotor
 scanKeys	main/lib/keypad/Keypad.cpp	/^void Keypad::scanKeys() {$/;"	f	class:Keypad
 scrollDisplayLeft	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::scrollDisplayLeft(void)$/;"	f	class:rgb_lcd
 scrollDisplayRight	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::scrollDisplayRight(void)$/;"	f	class:rgb_lcd
-searchEventCode	main/lib/eventmanager/EventManager.cpp	/^int EventManager::ListenerList::searchEventCode( int eventCode ) $/;"	f	class:EventManager::ListenerList
-searchListeners	main/lib/eventmanager/EventManager.cpp	/^int EventManager::ListenerList::searchListeners( EventListener* listener ) $/;"	f	class:EventManager::ListenerList
-searchListeners	main/lib/eventmanager/EventManager.cpp	/^int EventManager::ListenerList::searchListeners( int eventCode, EventListener* listener ) $/;"	f	class:EventManager::ListenerList
-senPins	main/.build/uno/src/main.cpp	/^const int senPins[NUMPINS] = {A0,A1,A2,A3}; $/;"	v
-sendEvent	main/lib/eventmanager/EventManager.cpp	/^int EventManager::ListenerList::sendEvent( int eventCode, int param ) $/;"	f	class:EventManager::ListenerList
+searchEventCode	main/lib/EventManager/EventManager.cpp	/^int EventManager::ListenerList::searchEventCode( int eventCode ) $/;"	f	class:EventManager::ListenerList
+searchListeners	main/lib/EventManager/EventManager.cpp	/^int EventManager::ListenerList::searchListeners( EventListener* listener ) $/;"	f	class:EventManager::ListenerList
+searchListeners	main/lib/EventManager/EventManager.cpp	/^int EventManager::ListenerList::searchListeners( int eventCode, EventListener* listener ) $/;"	f	class:EventManager::ListenerList
+sendEvent	main/lib/EventManager/EventManager.cpp	/^int EventManager::ListenerList::sendEvent( int eventCode, int param ) $/;"	f	class:EventManager::ListenerList
 sensorPin	main/lib/legacy/photoLineDetection.h	/^		int sensorPin;$/;"	m	class:PhotoLineDetection
 sensorPin	main/lib/sensing/sensor.h	/^		int sensorPin;$/;"	m	class:Sensor
-sensorPollingFunction	main/.build/uno/src/main.cpp	/^void sensorPollingFunction()$/;"	f
 sensorVal	main/lib/sensing/sensor.h	/^		int sensorVal;$/;"	m	class:Sensor
 sensor_h	main/lib/sensing/sensor.h	7;"	d
 sensor_thresh	main/lib/legacy/photoLineDetection.h	/^		int sensor_thresh;$/;"	m	class:PhotoLineDetection
 sensor_value	main/lib/legacy/photoLineDetection.h	/^		int sensor_value;$/;"	m	class:PhotoLineDetection
+sensors	main/src/nav.h	/^enum sensors$/;"	g
+set	main/lib/FlexiTimer2/FlexiTimer2.cpp	/^void FlexiTimer2::set(unsigned long ms, void (*f)()) {$/;"	f	class:FlexiTimer2
+set	main/lib/FlexiTimer2/FlexiTimer2.cpp	/^void FlexiTimer2::set(unsigned long units, double resolution, void (*f)()) {$/;"	f	class:FlexiTimer2
 setColor	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::setColor(unsigned char color)$/;"	f	class:rgb_lcd
 setColorAll	main/lib/grove/rgb_lcd.h	/^  void setColorAll(){setRGB(0, 0, 0);}$/;"	f	class:rgb_lcd
 setColorWhite	main/lib/grove/rgb_lcd.h	/^  void setColorWhite(){setRGB(255, 255, 255);}$/;"	f	class:rgb_lcd
 setCursor	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::setCursor(uint8_t col, uint8_t row)$/;"	f	class:rgb_lcd
 setDebounceTime	main/lib/keypad/Keypad.cpp	/^void Keypad::setDebounceTime(uint debounce) {$/;"	f	class:Keypad
-setDefaultListener	main/lib/eventmanager/EventManager.cpp	/^boolean EventManager::ListenerList::setDefaultListener( EventListener* listener ) $/;"	f	class:EventManager::ListenerList
-setDefaultListener	main/lib/eventmanager/EventManager.h	/^inline boolean EventManager::setDefaultListener( EventListener* listener )$/;"	f	class:EventManager
+setDefaultListener	main/lib/EventManager/EventManager.cpp	/^boolean EventManager::ListenerList::setDefaultListener( EventListener* listener ) $/;"	f	class:EventManager::ListenerList
+setDefaultListener	main/lib/EventManager/EventManager.h	/^inline boolean EventManager::setDefaultListener( EventListener* listener )$/;"	f	class:EventManager
 setHoldTime	main/lib/keypad/Keypad.cpp	/^void Keypad::setHoldTime(uint hold) {$/;"	f	class:Keypad
 setPWM	main/lib/grove/rgb_lcd.h	/^  void setPWM(unsigned char color, unsigned char pwm){setReg(color, pwm);}      \/\/ set pwm$/;"	f	class:rgb_lcd
 setPrinter	main/lib/queuearray/QueueArray.h	/^void QueueArray<T>::setPrinter (Print & p) {$/;"	f	class:QueueArray
@@ -448,30 +463,35 @@ set_destination	main/src/nav.cpp	/^int nav::set_destination(grid new_destination
 set_limits	main/lib/pid/pid.cpp	/^void PID::set_limits(int l, int h) {$/;"	f	class:PID
 set_response	main/lib/pid/pid.cpp	/^void PID::set_response(bool r) {$/;"	f	class:PID
 setpoint	main/lib/pid/pid.h	/^		const int* setpoint;$/;"	m	class:PID
-setup	main/.build/uno/src/main.cpp	/^void setup()$/;"	f
+setup	motor_test/.build/uno/src/test.cpp	/^void setup()$/;"	f
 single_key	main/lib/keypad/Keypad.h	/^	bool single_key;$/;"	m	class:Keypad
 size	main/lib/queuearray/QueueArray.h	/^    int size;        \/\/ the size of the queue.$/;"	m	class:QueueArray
 sizeKpd	main/lib/keypad/Keypad.h	/^	KeypadSize sizeKpd;$/;"	m	class:Keypad
-starboard	main/src/drivemotor.h	/^		motor port, starboard;$/;"	m	class:DriveMotor
+starboard	main/src/drivemotor.h	/^		motor port, starboard, clarm;$/;"	m	class:DriveMotor
+start	main/lib/FlexiTimer2/FlexiTimer2.cpp	/^void FlexiTimer2::start() {$/;"	f	class:FlexiTimer2
 start	main/lib/pid/pid.cpp	/^void PID::start() {$/;"	f	class:PID
-startTask	main/src/nav.cpp	/^void nav::startTask()$/;"	f	class:nav
+startTask	main/src/nav.cpp	/^void nav::startTask(int& timer)$/;"	f	class:nav
 startTime	main/lib/keypad/Keypad.h	/^	unsigned long startTime;$/;"	m	class:Keypad
 stateChanged	main/lib/keypad/utility/Key.h	/^	boolean stateChanged;$/;"	m	class:Key
 status	main/lib/motor/motor.h	/^		motor_states status;$/;"	m	class:motor
-status	motor_test/src/motor.h	/^		motor_states status;$/;"	m	class:Motor
+status	motor_test/motor.h	/^		motor_states status;$/;"	m	class:motor
+status	motor_test/src/motor.h	/^		motor_states status;$/;"	m	class:motor
+stop	main/lib/FlexiTimer2/FlexiTimer2.cpp	/^void FlexiTimer2::stop() {$/;"	f	class:FlexiTimer2
 stop	main/lib/motor/motor.cpp	/^void motor::stop()$/;"	f	class:motor
 stop	main/lib/pid/pid.cpp	/^void PID::stop() {on = 0;}$/;"	f	class:PID
 stop	main/src/drivemotor.cpp	/^void DriveMotor::stop()$/;"	f	class:DriveMotor
-stop	motor_test/src/motor.cpp	/^void Motor::stop()$/;"	f	class:Motor
+stop	motor_test/motor.cpp	/^void motor::stop()$/;"	f	class:motor
+stop	motor_test/src/motor.cpp	/^void motor::stop()$/;"	f	class:motor
 tail	main/lib/queuearray/QueueArray.h	/^    int tail;        \/\/ the tail of the queue.$/;"	m	class:QueueArray
 task	main/src/nav.h	/^	task(motions a, int v) : do_now(a), value(v) {}$/;"	f	struct:task
 task	main/src/nav.h	/^struct task$/;"	s
 taskdestination	main/src/nav.h	/^		grid taskdestination;$/;"	m	class:nav
 tasklist	main/src/nav.h	/^		QueueArray <task> tasklist;$/;"	m	class:nav
+tcnt2	main/lib/FlexiTimer2/FlexiTimer2.cpp	/^volatile unsigned int FlexiTimer2::tcnt2;$/;"	m	class:FlexiTimer2	file:
 thresh	main/lib/legacy/photoLineDetection.h	/^		PhotoThresholdValues thresh;$/;"	m	class:PhotoLineDetection
 thresh	main/lib/sensing/sensor.h	/^		int thresh[3];$/;"	m	class:Sensor
-threshold_values	main/.build/uno/src/main.cpp	/^int threshold_values[3] = {0, 800, 0};$/;"	v
 time_prev	main/lib/pid/pid.h	/^		unsigned long time_prev;$/;"	m	class:PID
+time_units	main/lib/FlexiTimer2/FlexiTimer2.cpp	/^unsigned long FlexiTimer2::time_units;$/;"	m	class:FlexiTimer2	file:
 transitionTo	main/lib/keypad/Keypad.cpp	/^void Keypad::transitionTo(byte idx, KeyState nextState) {$/;"	f	class:Keypad
 tune	main/lib/pid/pid.cpp	/^void PID::tune(double p, double i, double d) {$/;"	f	class:PID
 uint	main/lib/keypad/Keypad.h	/^typedef unsigned int uint;$/;"	t

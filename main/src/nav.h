@@ -66,7 +66,6 @@ class nav
 	// DEBUG make stuff to private after
 	public:
 		QueueArray <task> tasklist;
-		int cycle_count;
 		bool on_grid;
 		motions currentMotion;
 		grid currentGrid;

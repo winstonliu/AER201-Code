@@ -2,7 +2,6 @@
 
 nav::nav(grid sp, DriveMotor& d, motor& c) : Driver(d), clarm(c)
 {
-	cycle_count = 0;
 	currentGrid = sp;	
 	destination = sp;
 	currentMotion = IDLE;
@@ -122,6 +121,7 @@ int nav::hopperBerthing()
 void nav::startTask(int& timer)
 {
 	// Initialize tasks
+	timer = 3600000; // default is 1 hour
 	currentMotion = tasklist.peek().do_now;
 	switch (currentMotion)
 	{

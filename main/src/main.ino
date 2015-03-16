@@ -1,8 +1,9 @@
 #include <Wire.h>
 #include <rgb_lcd.h>
-
 #include <irsensor.h>
 #include <motor.h>
+//#include <EventManager.h>
+#include <Metro.h>
 
 #include "nav.h"
 #include "drivemotor.h"
@@ -15,6 +16,8 @@
 #else
 #define DEBUG( x )
 #endif
+
+//EventManager myEvents();
 
 // ================================================================ //
 // ADJUSTABLE PARAMETERS
@@ -63,66 +66,13 @@ IRSensor irsen[NUMPINS];
 // ================================================================ //
 // Timers
 
-int nav_timer = -42;
+Metro displayTimer = Metro(200);
+Metro sensorPollTimer = Metro(20);
+Metro navProcessTimer = Metro(50);
+Metro navDelayTimer = Metro(3600000); // Set to 1 hour when unused
+
 // ================================================================ //
 
-// Listener functions (folded)
-void displayFunction()
-{
-	grid temp_grid = Navigator.currentGrid;
-/*
-	DEBUG(irsen[1].getValue());
-	DEBUG(" ");
-	DEBUG(irsen[1].detect());
-	DEBUG(" | ");
-	DEBUG(irsen[2].getValue());
-	DEBUG(" ");
-	DEBUG(irsen[2].detect());
-	DEBUG(" | ");
-	DEBUG(irsen[3].getValue());
-	DEBUG(" ");
-	DEBUG(irsen[3].detect());
-	DEBUG("\r\n");
-	DEBUG("Current heading: ");
-	DEBUG(current_heading);
-	DEBUG("\r\n");
-	DEBUG(" x: ");
-	DEBUG(temp_grid.x);
-	DEBUG(" y: ");
-	DEBUG(temp_grid.y);
-	DEBUG(" d: ");
-	DEBUG(temp_grid.d);
-	DEBUG("\r\n");
-	DEBUG("# Tasks: ");
-	DEBUG(Navigator.countRemaining());
-*/
-	/*
-	}
-	else if (event == EventManager::kEventDisplayLCD)
-	{
-		lcd.clear();
-		lcd.print("|");	
-		lcd.print(irsen[1].getValue());	
-		lcd.setCursor(0,5);
-		lcd.print("|");	
-		lcd.print(irsen[2].getValue());	
-		lcd.setCursor(0,9);
-		lcd.print("|");	
-		lcd.print(irsen[3].getValue());	
-		lcd.print("|");	
-		lcd.setCursor(1,0);
-		lcd.print("|");	
-		lcd.print(irsen[1].detect());	
-		lcd.print("|");	
-		lcd.print(irsen[2].detect());	
-		lcd.print("|");	
-		lcd.print(irsen[3].detect());	
-		lcd.print("||");	
-		lcd.print(current_heading);	
-		lcd.print("|");	
-	}
-	*/
-}
 void sensorPollingFunction()
 {
 	int sum_lines = 0;
@@ -176,6 +126,7 @@ void setup()
 	pinMode(btnCalibrate, INPUT);
 	pinMode(intpin_claw, INPUT);
 
+
 	// Set threshold values for irsensor
 	for (int i = 0; i < NUMPINS; ++i)
 	{
@@ -185,7 +136,7 @@ void setup()
 	}
 
 	// DEBUG
-	Navigator.tasklist.push(task(PAUSE, 2000));
+	Navigator.tasklist.push(task(PAUSE, 5000));
 	Navigator.tasklist.push(task(ROTATETO, 270));
 
 /* // Check for navigation error
@@ -229,28 +180,46 @@ void loop()
 		Navigator.interrupt(CLAW_TOUCH);	
 	intpin_last = intpin_now;
 
-	// Check for nav_timer expiration
-	if (nav_timer > 0) 
-	{
-		--nav_timer;
-		DEBUG("Nav Timer: ");
-		DEBUG(nav_timer);
-		DEBUG("\r\n");
-	}
-	else if (nav_timer <= 0 && nav_timer != -42)
-	{
-		Navigator.interrupt(TIMER);
-		nav_timer = -42;
-	}	
-
 	// Check if there are any tasks left to do
-	if ((millis() - main_lap) > 20)
-	{
-		// DEBUG
-		grid temp_grid = Navigator.currentGrid;
+	// DEBUG
+	grid temp_grid = Navigator.currentGrid;
 
+	/*
+	DEBUG("Current location: ");
+	DEBUG(" x: ");
+	DEBUG(temp_grid.x);
+	DEBUG(" y: ");
+	DEBUG(temp_grid.y);
+	DEBUG(" d: ");
+	DEBUG(temp_grid.d);
+	DEBUG("\r\n");
+	*/
+
+	bool temp_ret = Navigator.doneTasks();
+	/*
+	DEBUG("Is done: ");
+	DEBUG(temp_ret);
+	DEBUG("\r\n");
+	*/
+	if (temp_ret == true)
+	{
+		doneFunction();
+	}
+	else if (Navigator.getMotion() == IDLE)
+	{
+		int nav_timer;
+		DEBUG("Is idle.");
+		DEBUG("\r\n");
+		Navigator.startTask(nav_timer);
+		navDelayTimer.interval(nav_timer);
+		navDelayTimer.reset();
+	}
+	else if (Navigator.checkTaskComplete() == true)
+	{
+		Driver.stop();
 		/*
-		DEBUG("Current location: ");
+		grid temp_grid = Navigator.taskdestination;
+		DEBUG("Task destination: ");
 		DEBUG(" x: ");
 		DEBUG(temp_grid.x);
 		DEBUG(" y: ");
@@ -258,41 +227,10 @@ void loop()
 		DEBUG(" d: ");
 		DEBUG(temp_grid.d);
 		DEBUG("\r\n");
-		*/
-
-		bool temp_ret = Navigator.doneTasks();
-		/*
-		DEBUG("Is done: ");
-		DEBUG(temp_ret);
+		DEBUG("Task Complete");
 		DEBUG("\r\n");
 		*/
-		if (temp_ret == true)
-		{
-			doneFunction();
-		}
-		else if (Navigator.getMotion() == IDLE)
-		{
-			Navigator.startTask(nav_timer);
-		}
-		else if (Navigator.checkTaskComplete() == true)
-		{
-			Driver.stop();
-			/*
-			grid temp_grid = Navigator.taskdestination;
-			DEBUG("Task destination: ");
-			DEBUG(" x: ");
-			DEBUG(temp_grid.x);
-			DEBUG(" y: ");
-			DEBUG(temp_grid.y);
-			DEBUG(" d: ");
-			DEBUG(temp_grid.d);
-			DEBUG("\r\n");
-			DEBUG("Task Complete");
-			DEBUG("\r\n");
-			*/
-		}	
-	}
-
+	}	
 	// Event manager processing
 	addEvents();
 
@@ -301,46 +239,42 @@ void loop()
 
 // ================================================================ //
 
+void display()
+{
+	DEBUG(">> Current action: ");
+	DEBUG(Navigator.getMotion());
+	DEBUG("\r\n");
+
+	// DEBUG
+	lcd.clear();
+	lcd.print(irsen[1].readSensor());
+	lcd.print(" ");
+	lcd.print(irsen[2].readSensor());
+	lcd.print(" ");
+	lcd.print(irsen[3].readSensor());
+	lcd.setCursor(0,1);
+	lcd.print(irsen[1].detect());
+	lcd.print(" ");
+	lcd.print(irsen[2].detect());
+	lcd.print(" ");
+	lcd.print(irsen[3].detect());
+	lcd.print(" ");
+	lcd.print(current_heading);
+}
+
 void addEvents()
 {
 	// Button state declarations
 	static int btnCal_state = digitalRead(btnCalibrate);
-	// Timing loops 
-	static unsigned int display_lap = 0;
-	static unsigned int poll_lap = 0;
-	static unsigned int nav_lap = 0;
 
 	// Display event
-	if ((millis() - display_lap) > 200)
-	{
-		DEBUG(">> Current action: ");
-		DEBUG(Navigator.getMotion());
-		DEBUG("\r\n");
-
-		// DEBUG
-		lcd.clear();
-		lcd.print(irsen[1].readSensor());
-		lcd.print(" ");
-		lcd.print(irsen[2].readSensor());
-		lcd.print(" ");
-		lcd.print(irsen[3].readSensor());
-		lcd.setCursor(0,1);
-		lcd.print(irsen[1].detect());
-		lcd.print(" ");
-		lcd.print(irsen[2].detect());
-		lcd.print(" ");
-		lcd.print(irsen[3].detect());
-		lcd.print(" ");
-		lcd.print(current_heading);
-		display_lap = millis();
-	}
+	if (displayTimer.check() == 1) display();
 
 	// Poll sensors
-	if ((millis() - poll_lap) > 20) // 20
+	if (sensorPollTimer.check() == 1) // 20
 	{
 		// DEBUG
 		sensorPollingFunction();	
-		poll_lap = millis();
 		/*
 		DEBUG("White ");
 		DEBUG(threshold_values[WHITE]);
@@ -349,12 +283,14 @@ void addEvents()
 		*/
 	}
 
-	if (millis() - nav_lap > 50)
+	if (navProcessTimer.check() == 1) Navigator.processTask();
+	if (navDelayTimer.check() == 1) 
 	{
-		++Navigator.cycle_count;
-		Navigator.processTask();
-		nav_lap = millis();
+		Navigator.interrupt(TIMER);
+		DEBUG("Nav Timer tripped.");
+		DEBUG("\r\n");
 	}
+
 
 	// Check for button press
 	int calRead = digitalRead(btnCalibrate);
