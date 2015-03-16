@@ -1,5 +1,5 @@
 #pragma once
-#include "motor.h"
+#include <motor.h>
 
 const int ON_WHITE = false;
 

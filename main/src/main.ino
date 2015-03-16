@@ -24,7 +24,8 @@
 
 const int btnCalibrate = 10;
 const int NUMPINS = 4; // Initialize irsensors
-const int senPins[NUMPINS] = {A0,A1,A2,A3}; 
+const int senPins[NUMPINS] = {A13,A14,A15,A12}; 
+const int numCyclesTrack = 1;
 // Left: A0, middle: A1, right A2
 const int intpin_claw = 0;
 
@@ -45,10 +46,10 @@ const int wheel_pwm = 125;
 const int claw_pwm = 100;
 
 // Initialize motors (en, dir)
-motor port(3,4);
-motor starboard(5,6);
-motor wheel(9,8, wheel_pwm);
-motor clarm(11, 12, claw_pwm); // Claw arm
+motor starboard(5,4);
+motor port(7,6);
+motor wheel(12,13, wheel_pwm);
+motor clarm(14, 15, claw_pwm); // Claw arm
 
 int current_heading;
 
@@ -67,7 +68,7 @@ IRSensor irsen[NUMPINS];
 // Timers
 
 Metro displayTimer = Metro(200);
-Metro sensorPollTimer = Metro(20);
+Metro sensorPollTimer = Metro(30);
 Metro navProcessTimer = Metro(50);
 Metro navDelayTimer = Metro(3600000); // Set to 1 hour when unused
 
@@ -131,7 +132,7 @@ void setup()
 	for (int i = 0; i < NUMPINS; ++i)
 	{
 		// Make new IRSensor
-		irsen[i] = IRSensor(senPins[i], 4);
+		irsen[i] = IRSensor(senPins[i], numCyclesTrack);
 		irsen[i].setThresh(threshold_values);
 	}
 

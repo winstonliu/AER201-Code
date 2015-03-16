@@ -1,7 +1,7 @@
 #include "motor.h"
 
-motor port(8,9);
-motor starboard(10,11);
+motor port(4,5);
+motor starboard(7,6);
 
 void setup()
 {
@@ -10,5 +10,5 @@ void setup()
 }
 
 void loop()
-{
+{	
 }

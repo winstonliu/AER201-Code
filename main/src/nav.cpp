@@ -43,7 +43,7 @@ int nav::set_destination(grid new_destination)
 	return -1;
 }
 
-grid nav::directionalLineIncrement(int i)
+grid nav::dirLineInc(int i)
 {
 	grid temp_grid = currentGrid;
 	switch(currentGrid.d)
@@ -132,7 +132,7 @@ void nav::startTask(int& timer)
 			break;
 		case MOVEONGRID:
 			Driver.driveStraight();
-			taskdestination = directionalLineIncrement(tasklist.peek().value);
+			taskdestination = dirLineInc(tasklist.peek().value);
 			break;
 		case ROTATETO:
 			taskdestination = currentGrid;
@@ -171,7 +171,7 @@ int nav::interrupt(sensors senInt)
 		case LINE_ISR:
 			if (currentMotion == MOVEONGRID)
 			{
-				grid new_grid = directionalLineIncrement(1);
+				grid new_grid = dirLineInc(1);
 				if (check_validity(new_grid) == true) currentGrid = new_grid;
 			}
 			else if (currentMotion == ROTATETO)

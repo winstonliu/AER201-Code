@@ -74,7 +74,7 @@ class nav
 		grid hopperWest;
 
 		bool check_validity(grid new_position);
-		grid directionalLineIncrement(int i);
+		grid dirLineInc(int i);
 
 		grid taskdestination;
 

@@ -75,7 +75,7 @@ void DriveMotor::driveInCircles()
 		&& port.get_status() != MOTOR_RIGHT)
 	{
 		starboard.right(255);
-		port.left(255);
+		port.right(255);
 		currentStatus = TURNINGLEFT;
 	}
 }
