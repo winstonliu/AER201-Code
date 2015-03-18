@@ -5,7 +5,11 @@ nav::nav(grid sp, DriveMotor& d, motor& c) : Driver(d), clarm(c)
 	currentGrid = sp;	
 	destination = sp;
 	currentMotion = IDLE;
+
 	FLAG_clawextended = true;
+	FLAG_pause = false;
+	FLAG_hopperleft = false;
+	FLAG_hopperright = false;
 }
 
 bool nav::check_validity(grid coordinates)
@@ -134,10 +138,13 @@ void nav::startTask(int& timer)
 			Driver.driveStraight();
 			taskdestination = dirLineInc(tasklist.peek().value);
 			break;
+		case MOVEOFFGRID:
+			Driver.driveStraight();
+			break;
 		case ROTATETO:
 			taskdestination = currentGrid;
 			taskdestination.d = tasklist.peek().value;
-			Driver.driveInCircles();
+			Driver.turnLeft();
 			break;
 		case CLAWRETRACT:
 			clarm.right();
@@ -156,9 +163,6 @@ void nav::processTask()
 	{
 		case MOVEONGRID:
 			Driver.lineMotorScaling();	
-			break;
-		case ROTATETO:
-			Driver.driveInCircles();
 			break;
 	}
 }
@@ -188,8 +192,25 @@ int nav::interrupt(sensors senInt)
 				FLAG_clawextended = false;
 			}
 			break;
+		case HOPPER_TOUCH_LEFT:
+			if (FLAG_hopperright == true)
+				Driver.stop();
+			else
+				Driver.pivotLeft();
+			FLAG_hopperleft = true;
+			break;
+		case HOPPER_TOUCH_RIGHT:
+			if (FLAG_hopperleft == true)
+				Driver.stop();
+			else
+				Driver.pivotRight();
+			FLAG_hopperright = true;
+			break;
 		case TIMER:
-			if (currentMotion == PAUSE) FLAG_pause = false;
+			if (currentMotion == PAUSE) 
+			{
+				FLAG_pause = false;
+			}
 			else if (currentMotion == CLAWEXTEND)
 			{
 				clarm.stop();
@@ -209,6 +230,10 @@ bool nav::checkTaskComplete()
 			if (FLAG_pause == false) advance = true;	
 			break;
 		case MOVEONGRID:
+			if (currentGrid.x == taskdestination.x &&
+					currentGrid.y == taskdestination.y)
+				advance = true;
+			break;
 		case ROTATETO:
 			if (currentGrid == taskdestination) advance = true;
 			break;
@@ -217,6 +242,13 @@ bool nav::checkTaskComplete()
 			break;
 		case CLAWRETRACT:
 			if (FLAG_clawextended == false) { advance = true; }
+			break;
+		case HOPPERALIGN:
+			if ((FLAG_hopperleft && FLAG_hopperright) == true) 
+				advance = true;
+			break;
+		case MOVEOFFGRID:
+			advance = true;
 			break;
 	}
 
@@ -228,7 +260,7 @@ bool nav::checkTaskComplete()
 	return advance;
 }
 
-bool nav::doneTasks() { return tasklist.isEmpty(); }
+bool nav::doneTasks() { return tasklist.count() == 0; }
 int nav::countRemaining() { return tasklist.count(); }
 motions nav::getMotion() { return currentMotion; }
 grid nav::getGrid() { return currentGrid; }

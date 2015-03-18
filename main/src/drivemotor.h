@@ -8,6 +8,8 @@ enum drive_status
 	DRIVINGFORWARD,
 	TURNINGLEFT,
 	TURNINGRIGHT,
+	PIVOTLEFT,
+	PIVOTRIGHT,
 	STOPPED
 };
 
@@ -24,7 +26,10 @@ class DriveMotor
 		int mapLine(bool left, bool middle, bool right);
 		int lineMotorScaling();
 		void driveStraight();
-		void driveInCircles();
+		void turnLeft();
+		void turnRight();
+		void pivotLeft();
+		void pivotRight();
 		drive_status get_status();
 		void stop();
 };

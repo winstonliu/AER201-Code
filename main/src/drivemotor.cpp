@@ -68,7 +68,7 @@ void DriveMotor::driveStraight()
 	currentStatus = DRIVINGFORWARD;
 }
 
-void DriveMotor::driveInCircles()
+void DriveMotor::turnLeft()
 {
 	// Turn left
 	if (starboard.get_status() != MOTOR_RIGHT 
@@ -77,6 +77,40 @@ void DriveMotor::driveInCircles()
 		starboard.right(255);
 		port.right(255);
 		currentStatus = TURNINGLEFT;
+	}
+}
+
+void DriveMotor::turnRight()
+{
+	// Turn right
+	if (starboard.get_status() != MOTOR_LEFT 
+		&& port.get_status() != MOTOR_LEFT)
+	{
+		starboard.left(255);
+		port.left(255);
+		currentStatus = TURNINGRIGHT;
+	}
+}
+
+void DriveMotor::pivotLeft()
+{
+	if (starboard.get_status() != MOTOR_LEFT 
+		&& port.get_status() != MOTOR_OFF)
+	{
+		starboard.right(125);
+		port.stop();
+		currentStatus = PIVOTLEFT;
+	}
+}
+
+void DriveMotor::pivotRight()
+{
+	if (starboard.get_status() != MOTOR_OFF 
+		&& port.get_status() != MOTOR_LEFT)
+	{
+		starboard.stop();
+		port.left(125);
+		currentStatus = PIVOTRIGHT;
 	}
 }
 

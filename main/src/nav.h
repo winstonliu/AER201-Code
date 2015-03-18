@@ -6,7 +6,9 @@ enum sensors
 {
 	LINE_ISR,
 	CLAW_TOUCH,
-	TIMER	
+	HOPPER_TOUCH_LEFT,
+	HOPPER_TOUCH_RIGHT,
+	TIMER
 };
 
 enum motions
@@ -63,7 +65,9 @@ class nav
 		// Flags
 		bool FLAG_clawextended;
 		bool FLAG_pause;
-	// DEBUG make stuff to private after
+		bool FLAG_hopperleft;
+		bool FLAG_hopperright;
+		// TODO move stuff to private after
 	public:
 		QueueArray <task> tasklist;
 		bool on_grid;

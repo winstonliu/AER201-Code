@@ -24,10 +24,11 @@
 
 const int btnCalibrate = 10;
 const int NUMPINS = 4; // Initialize irsensors
-const int senPins[NUMPINS] = {A13,A14,A15,A12}; 
-const int numCyclesTrack = 1;
+const int senPins[NUMPINS] = {A13,A14,A15,A10}; // l,m,r,offset
+const int numCyclesTrack = 4;
 // Left: A0, middle: A1, right A2
 const int intpin_claw = 0;
+const int blackthresh = 600; // Threshold for black line
 
 // Initialize nav x,y,d
 grid start_pos(4, 1, 0);
@@ -74,16 +75,19 @@ Metro navDelayTimer = Metro(3600000); // Set to 1 hour when unused
 
 // ================================================================ //
 
+
+// XXX CODE
+long main_lap = 0;
+// XXX
+
 void sensorPollingFunction()
 {
-	int sum_lines = 0;
 	// Read sensors
 	for (int i = 0; i < NUMPINS; ++i) 
 	{
 		irsen[i].readSensor(); 
-		// Perpendicular line detection for past cycles
-		sum_lines += irsen[i].pastEncounters();	
 	}
+
 
 	// If all sensors have been triggered in the past n cycles,
 	// then trigger line detected
@@ -93,25 +97,25 @@ void sensorPollingFunction()
 	DEBUG("\r\n");
 	*/
 
-	if (sum_lines == NUMPINS && Driver.get_status() != STOPPED)
+	// Check the offset sensor for line pass detection
+	if (irsen[3].detect() == BLACK && Driver.get_status() != STOPPED)
 	{
 		Navigator.interrupt(LINE_ISR);			
+
+		DEBUG("#");
+		DEBUG(main_lap);
+		DEBUG("# ");
+		DEBUG("Line interrupt tripped.");
+		DEBUG("\r\n");
 	}
 
 	// Update heading
 	// DEBUG current_heading variable
 	current_heading = Driver.mapLine(
+		irsen[0].detect(),
 		irsen[1].detect(),
-		irsen[2].detect(),
-		irsen[3].detect()
+		irsen[2].detect()
 	);
-}
-void doneFunction()
-{
-	//DEBUG("DONE");
-	lcd.clear();
-	lcd.print("DONE");
-	FLAG_DONE = true;
 }
 
 // ================================================================ //
@@ -170,7 +174,6 @@ void setup()
 
 void loop()
 {
-	static int main_lap = 0;
 	if (FLAG_NAVERR == true || FLAG_DONE == true)
 		return;
 
@@ -182,45 +185,54 @@ void loop()
 	intpin_last = intpin_now;
 
 	// Check if there are any tasks left to do
-	// DEBUG
-	grid temp_grid = Navigator.currentGrid;
-
-	/*
-	DEBUG("Current location: ");
-	DEBUG(" x: ");
-	DEBUG(temp_grid.x);
-	DEBUG(" y: ");
-	DEBUG(temp_grid.y);
-	DEBUG(" d: ");
-	DEBUG(temp_grid.d);
-	DEBUG("\r\n");
-	*/
-
-	bool temp_ret = Navigator.doneTasks();
-	/*
-	DEBUG("Is done: ");
-	DEBUG(temp_ret);
-	DEBUG("\r\n");
-	*/
-	if (temp_ret == true)
+	if (Navigator.doneTasks() == true)
 	{
-		doneFunction();
+		DEBUG("Tasks left: ");
+		DEBUG(Navigator.countRemaining());
+		DEBUG("\r\n");
+		DEBUG("Is done");
+		DEBUG("\r\n");
+		lcd.clear();
+		lcd.print("DONE");
+		FLAG_DONE = true;
 	}
 	else if (Navigator.getMotion() == IDLE)
 	{
 		int nav_timer;
+		DEBUG("#");
+		DEBUG(main_lap);
+		DEBUG("# ");
 		DEBUG("Is idle.");
-		DEBUG("\r\n");
+		DEBUG(" Tasks left: ");
+		DEBUG(Navigator.countRemaining());
+
 		Navigator.startTask(nav_timer);
+
+		DEBUG(" Next task: ");	
+		DEBUG(Navigator.getMotion());
+		DEBUG("\r\n");
+
 		navDelayTimer.interval(nav_timer);
 		navDelayTimer.reset();
 	}
 	else if (Navigator.checkTaskComplete() == true)
 	{
 		Driver.stop();
-		/*
+
+		DEBUG("#");
+		DEBUG(main_lap);
+		DEBUG("# ");
+		DEBUG("Task completed. ");
+		grid home_grid = Navigator.currentGrid;
+		DEBUG("CURR ");
+		DEBUG(" x: ");
+		DEBUG(home_grid.x);
+		DEBUG(" y: ");
+		DEBUG(home_grid.y);
+		DEBUG(" d: ");
+		DEBUG(home_grid.d);
 		grid temp_grid = Navigator.taskdestination;
-		DEBUG("Task destination: ");
+		DEBUG(" DEST ");
 		DEBUG(" x: ");
 		DEBUG(temp_grid.x);
 		DEBUG(" y: ");
@@ -228,12 +240,10 @@ void loop()
 		DEBUG(" d: ");
 		DEBUG(temp_grid.d);
 		DEBUG("\r\n");
-		DEBUG("Task Complete");
-		DEBUG("\r\n");
-		*/
 	}	
 	// Event manager processing
 	addEvents();
+	++main_lap;
 
 }
 
@@ -242,7 +252,10 @@ void loop()
 
 void display()
 {
-	DEBUG(">> Current action: ");
+	DEBUG("#");
+	DEBUG(main_lap);
+	DEBUG("# ");
+	DEBUG("Current action: ");
 	DEBUG(Navigator.getMotion());
 	DEBUG("\r\n");
 
@@ -288,6 +301,9 @@ void addEvents()
 	if (navDelayTimer.check() == 1) 
 	{
 		Navigator.interrupt(TIMER);
+		DEBUG("#");
+		DEBUG(main_lap);
+		DEBUG("# ");
 		DEBUG("Nav Timer tripped.");
 		DEBUG("\r\n");
 	}
