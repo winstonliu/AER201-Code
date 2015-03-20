@@ -1,18 +1,8 @@
 #include "nav.h"
 
-nav::nav(grid sp, DriveMotor& d, motor& c) : Driver(d), clarm(c)
-{
-	currentGrid = sp;	
-	destination = sp;
-	currentMotion = IDLE;
+Nav::Nav(grid sp) : currentGrid(sp), destination(sp) {}
 
-	FLAG_clawextended = true;
-	FLAG_pause = false;
-	FLAG_hopperleft = false;
-	FLAG_hopperright = false;
-}
-
-bool nav::check_validity(grid coordinates)
+bool Nav::check_validity(grid coordinates)
 {
 	// Check the validity of grid coordinates
 	if (coordinates.x < 1 || coordinates.x > 7)
@@ -25,10 +15,10 @@ bool nav::check_validity(grid coordinates)
 		return true;
 }
 
-int nav::reset(grid new_position)
+int Nav::reset(grid new_position)
 {
 	// FOR EMERGENCIES ONLY, reset grid coordinates
-	if (nav::check_validity(new_position) == true)
+	if (Nav::check_validity(new_position) == true)
 	{
 		currentGrid = new_position;
 		return 0;
@@ -36,10 +26,10 @@ int nav::reset(grid new_position)
 	return -1;
 }
 
-int nav::set_destination(grid new_destination)
+int Nav::set_destination(grid new_destination)
 {
 	// Set next destination coordinates of the robot
-	if (nav::check_validity(new_destination) == true)
+	if (Nav::check_validity(new_destination) == true)
 	{
 		destination = new_destination;
 		return 0;
@@ -47,28 +37,7 @@ int nav::set_destination(grid new_destination)
 	return -1;
 }
 
-grid nav::dirLineInc(int i)
-{
-	grid temp_grid = currentGrid;
-	switch(currentGrid.d)
-	{
-		case 0:
-			temp_grid.y + i;
-			break;
-		case 90:
-			temp_grid.x + i;
-			break;
-		case 180:
-			temp_grid.y - i;
-			break;
-		case 270:
-			temp_grid.x - i;
-			break;
-	}
-	return temp_grid;
-}
-
-int nav::computeRectilinearPath(grid new_destination)
+int Nav::computeRectilinearPath(grid new_destination)
 {
 	// Check validity and set destination
 	if (set_destination(new_destination) == -1)
@@ -113,7 +82,7 @@ int nav::computeRectilinearPath(grid new_destination)
 	return 0;
 }
 
-int nav::hopperBerthing()
+int Nav::hopperBerthing()
 {
 	tasklist.push(task(MOVEOFFGRID, 0)); // Keep moving until interrupt
 	tasklist.push(task(HOPPERALIGN, 0)); // Align with hopper
@@ -122,146 +91,29 @@ int nav::hopperBerthing()
 	tasklist.push(task(CLAWEXTEND, 0)); // Extend claw
 }
 
-void nav::startTask(int& timer)
+int Nav::setGrid(grid new_grid)
 {
-	// Initialize tasks
-	timer = 3600000; // default is 1 hour
-	currentMotion = tasklist.peek().do_now;
-	switch (currentMotion)
+	if (check_validity(new_grid) == true)
 	{
-		case PAUSE:
-			timer = tasklist.peek().value;
-			FLAG_pause = true;
-			Driver.stop();
-			break;
-		case MOVEONGRID:
-			Driver.driveStraight();
-			taskdestination = dirLineInc(tasklist.peek().value);
-			break;
-		case MOVEOFFGRID:
-			Driver.driveStraight();
-			break;
-		case ROTATETO:
-			taskdestination = currentGrid;
-			taskdestination.d = tasklist.peek().value;
-			Driver.turnLeft();
-			break;
-		case CLAWRETRACT:
-			clarm.right();
-			break;
-		case CLAWEXTEND:
-			clarm.left();
-			timer = 1000;
-			break;
+		currentGrid = new_grid;
+		return 0;
+	}
+	else
+	{
+		return -1;
 	}
 }
 
-void nav::processTask()
-{
-	// Non-time critical things that need to be done in the loop
-	switch (currentMotion)
-	{
-		case MOVEONGRID:
-			Driver.lineMotorScaling();	
-			break;
-	}
-}
-
-int nav::interrupt(sensors senInt)
-{
-	// Forward drive intersects line
-	switch(senInt)
-	{
-		case LINE_ISR:
-			if (currentMotion == MOVEONGRID)
-			{
-				grid new_grid = dirLineInc(1);
-				if (check_validity(new_grid) == true) currentGrid = new_grid;
-			}
-			else if (currentMotion == ROTATETO)
-			{
-				// XXX Assuming that the robot only turns to the left
-				currentGrid.d = (360 + currentGrid.d - 90) % 360;
-			}
-			break;
-		case CLAW_TOUCH:
-			if (currentMotion == CLAWRETRACT)
-			{
-				// kill claw motor		
-				clarm.stop();
-				FLAG_clawextended = false;
-			}
-			break;
-		case HOPPER_TOUCH_LEFT:
-			if (FLAG_hopperright == true)
-				Driver.stop();
-			else
-				Driver.pivotLeft();
-			FLAG_hopperleft = true;
-			break;
-		case HOPPER_TOUCH_RIGHT:
-			if (FLAG_hopperleft == true)
-				Driver.stop();
-			else
-				Driver.pivotRight();
-			FLAG_hopperright = true;
-			break;
-		case TIMER:
-			if (currentMotion == PAUSE) 
-			{
-				FLAG_pause = false;
-			}
-			else if (currentMotion == CLAWEXTEND)
-			{
-				clarm.stop();
-				FLAG_clawextended = true;
-			}
-			break;
-	}
-}
-
-bool nav::checkTaskComplete() 
+void Nav::advance() { tasklist.pop(); }
+motions Nav::getMotion() 
 { 
-	bool advance = false;
-	// Checks for task completion
-	switch (currentMotion)
-	{
-		case PAUSE:
-			if (FLAG_pause == false) advance = true;	
-			break;
-		case MOVEONGRID:
-			if (currentGrid.x == taskdestination.x &&
-					currentGrid.y == taskdestination.y)
-				advance = true;
-			break;
-		case ROTATETO:
-			if (currentGrid == taskdestination) advance = true;
-			break;
-		case CLAWEXTEND: 
-			if (FLAG_clawextended == true) { advance = true; }
-			break;
-		case CLAWRETRACT:
-			if (FLAG_clawextended == false) { advance = true; }
-			break;
-		case HOPPERALIGN:
-			if ((FLAG_hopperleft && FLAG_hopperright) == true) 
-				advance = true;
-			break;
-		case MOVEOFFGRID:
-			advance = true;
-			break;
-	}
-
-	if (advance == true)
-	{
-		tasklist.pop(); 
-		currentMotion = IDLE;
-	}
-	return advance;
+	return tasklist.isEmpty() ? IDLE : tasklist.peek().do_now; 
 }
-
-bool nav::doneTasks() { return tasklist.count() == 0; }
-int nav::countRemaining() { return tasklist.count(); }
-motions nav::getMotion() { return currentMotion; }
-grid nav::getGrid() { return currentGrid; }
-grid nav::getDestination() { return destination; }
+int Nav::getValue()
+{
+	return tasklist.isEmpty() ? 0 : tasklist.peek().value; 
+}
+grid Nav::getGrid() { return currentGrid; }
+grid Nav::getDestination() { return destination; }
+bool Nav::doneTasks() { return tasklist.count() == 0; }
+int Nav::countRemaining() { return tasklist.count(); }

@@ -6,6 +6,7 @@
 #include <Metro.h>
 
 #include "nav.h"
+#include "taskmanager.h"
 #include "drivemotor.h"
 
 // Enable debug messages through serial
@@ -63,8 +64,13 @@ bool FLAG_NAVERR = false;
 bool FLAG_DONE = false;
 
 rgb_lcd lcd;
-nav Navigator(start_pos, Driver, clarm);
+Nav Navigator(start_pos);
 IRSensor irsen[NUMPINS];
+
+DriveMotor* TaskManager::taskDriver = &Driver;
+motor* TaskManager::taskClarm = &clarm;
+Nav* TaskManager::taskNav = &Navigator;
+
 // ================================================================ //
 // Timers
 
@@ -100,7 +106,7 @@ void sensorPollingFunction()
 	// Check the offset sensor for line pass detection
 	if (irsen[3].detect() == BLACK && Driver.get_status() != STOPPED)
 	{
-		Navigator.interrupt(LINE_ISR);			
+		TaskManager::interrupt(LINE_ISR);			
 
 		DEBUG("#");
 		DEBUG(main_lap);
@@ -126,6 +132,7 @@ void setup()
 	lcd.begin(16,2);
 
 	//wheel.left();	
+
 
 	// Pins
 	pinMode(btnCalibrate, INPUT);
@@ -181,7 +188,7 @@ void loop()
 	static int intpin_last = LOW;
 	int intpin_now = digitalRead(intpin_claw);
 	if (intpin_now == HIGH && intpin_last == LOW)
-		Navigator.interrupt(CLAW_TOUCH);	
+		TaskManager::interrupt(CLAW_TOUCH);	
 	intpin_last = intpin_now;
 
 	// Check if there are any tasks left to do
@@ -206,7 +213,7 @@ void loop()
 		DEBUG(" Tasks left: ");
 		DEBUG(Navigator.countRemaining());
 
-		Navigator.startTask(nav_timer);
+		TaskManager::startTask(nav_timer);
 
 		DEBUG(" Next task: ");	
 		DEBUG(Navigator.getMotion());
@@ -215,15 +222,16 @@ void loop()
 		navDelayTimer.interval(nav_timer);
 		navDelayTimer.reset();
 	}
-	else if (Navigator.checkTaskComplete() == true)
+	else if (TaskManager::checkTaskComplete() == true)
 	{
 		Driver.stop();
+		Navigator.advance();
 
 		DEBUG("#");
 		DEBUG(main_lap);
 		DEBUG("# ");
 		DEBUG("Task completed. ");
-		grid home_grid = Navigator.currentGrid;
+		grid home_grid = Navigator.getGrid();
 		DEBUG("CURR ");
 		DEBUG(" x: ");
 		DEBUG(home_grid.x);
@@ -231,7 +239,7 @@ void loop()
 		DEBUG(home_grid.y);
 		DEBUG(" d: ");
 		DEBUG(home_grid.d);
-		grid temp_grid = Navigator.taskdestination;
+		grid temp_grid = TaskManager::taskdestination;
 		DEBUG(" DEST ");
 		DEBUG(" x: ");
 		DEBUG(temp_grid.x);
@@ -297,10 +305,10 @@ void addEvents()
 		*/
 	}
 
-	if (navProcessTimer.check() == 1) Navigator.processTask();
+	if (navProcessTimer.check() == 1) TaskManager::processTask();
 	if (navDelayTimer.check() == 1) 
 	{
-		Navigator.interrupt(TIMER);
+		TaskManager::interrupt(TIMER);
 		DEBUG("#");
 		DEBUG(main_lap);
 		DEBUG("# ");

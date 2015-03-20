@@ -55,47 +55,37 @@ struct grid
 	}
 };
 
-class nav
+class Nav
 {
 	// Navigation class with event-driven interrupts
 	private:
-		DriveMotor Driver;
-		motor clarm;
-		
+		grid currentGrid;
+		grid destination;
 		// Flags
-		bool FLAG_clawextended;
-		bool FLAG_pause;
-		bool FLAG_hopperleft;
-		bool FLAG_hopperright;
 		// TODO move stuff to private after
 	public:
 		QueueArray <task> tasklist;
 		bool on_grid;
-		motions currentMotion;
-		grid currentGrid;
-		grid destination;
 		grid hopperEast;
 		grid hopperWest;
 
 		bool check_validity(grid new_position);
-		grid dirLineInc(int i);
 
-		grid taskdestination;
-
-		nav(grid start_position, DriveMotor& Driver, motor& clarm);
+		Nav(grid start_position);
 		int computeRectilinearPath(grid new_destination);
 		int hopperBerthing();
-
-		void startTask(int& timer);
-		void processTask();
-		int interrupt(sensors sensor_interrupt);	
-		bool checkTaskComplete();
+		void advance();
 
 		int reset(grid);
 		int set_destination(grid new_destination);
-		bool doneTasks();
-		int countRemaining();
+
+		int setGrid(grid new_grid);
+
 		motions getMotion();
+		int getValue();
 		grid getGrid();
 		grid getDestination();
+
+		bool doneTasks();
+		int countRemaining();
 };
