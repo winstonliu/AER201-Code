@@ -27,9 +27,10 @@ const int btnCalibrate = 10;
 const int NUMPINS = 4; // Initialize irsensors
 const int senPins[NUMPINS] = {A13,A14,A15,A10}; // l,m,r,offset
 const int numCyclesTrack = 4;
-// Left: A0, middle: A1, right A2
-const int intpin_claw = 0;
+const int clarmPin = 13;
 const int blackthresh = 600; // Threshold for black line
+const int INTencLeftPin= 0;
+const int INTencRightPin = 1;
 
 // Initialize nav x,y,d
 grid start_pos(4, 1, 0);
@@ -70,6 +71,7 @@ IRSensor irsen[NUMPINS];
 DriveMotor* TaskManager::taskDriver = &Driver;
 motor* TaskManager::taskClarm = &clarm;
 Nav* TaskManager::taskNav = &Navigator;
+int nav_timer;
 
 // ================================================================ //
 // Timers
@@ -82,7 +84,7 @@ Metro navDelayTimer = Metro(3600000); // Set to 1 hour when unused
 // ================================================================ //
 
 
-// XXX CODE
+// XXX DEBUG CODE
 long main_lap = 0;
 // XXX
 
@@ -123,6 +125,16 @@ void sensorPollingFunction()
 		irsen[2].detect()
 	);
 }
+void encLeftPin()
+{
+	if (Navigator.on_grid == false)
+		Driver.incEncPortCNT();
+}
+void encRightPin()
+{
+	if (Navigator.on_grid == false)
+		Driver.incEncStarboardCNT();
+}
 
 // ================================================================ //
 
@@ -133,11 +145,9 @@ void setup()
 
 	//wheel.left();	
 
-
 	// Pins
 	pinMode(btnCalibrate, INPUT);
-	pinMode(intpin_claw, INPUT);
-
+	pinMode(clarmPin, INPUT);
 
 	// Set threshold values for irsensor
 	for (int i = 0; i < NUMPINS; ++i)
@@ -147,9 +157,18 @@ void setup()
 		irsen[i].setThresh(threshold_values);
 	}
 
+	// Interrupts
+	attachInterrupt(INTencLeftPin, encLeftPin, RISING);
+	attachInterrupt(INTencRightPin, encRightPin, RISING);
+
 	// DEBUG
 	Navigator.tasklist.push(task(PAUSE, 5000));
 	Navigator.tasklist.push(task(ROTATETO, 270));
+
+	// Start first task
+	TaskManager::startTask(nav_timer);
+	navDelayTimer.interval(nav_timer);
+	navDelayTimer.reset();
 
 /* // Check for navigation error
 	int ret_err = Navigator.computeRectilinearPath(end_pos);
@@ -186,53 +205,31 @@ void loop()
 
 	// Check for rising claw interrupt
 	static int intpin_last = LOW;
-	int intpin_now = digitalRead(intpin_claw);
+	int intpin_now = digitalRead(clarmPin);
 	if (intpin_now == HIGH && intpin_last == LOW)
 		TaskManager::interrupt(CLAW_TOUCH);	
 	intpin_last = intpin_now;
 
 	// Check if there are any tasks left to do
-	if (Navigator.doneTasks() == true)
-	{
-		DEBUG("Tasks left: ");
-		DEBUG(Navigator.countRemaining());
-		DEBUG("\r\n");
-		DEBUG("Is done");
-		DEBUG("\r\n");
-		lcd.clear();
-		lcd.print("DONE");
-		FLAG_DONE = true;
-	}
-	else if (Navigator.getMotion() == IDLE)
-	{
-		int nav_timer;
-		DEBUG("#");
-		DEBUG(main_lap);
-		DEBUG("# ");
-		DEBUG("Is idle.");
-		DEBUG(" Tasks left: ");
-		DEBUG(Navigator.countRemaining());
-
-		TaskManager::startTask(nav_timer);
-
-		DEBUG(" Next task: ");	
-		DEBUG(Navigator.getMotion());
-		DEBUG("\r\n");
-
-		navDelayTimer.interval(nav_timer);
-		navDelayTimer.reset();
-	}
-	else if (TaskManager::checkTaskComplete() == true)
+	if (TaskManager::checkTaskComplete() == true)
 	{
 		Driver.stop();
 		Navigator.advance();
+		if (Navigator.doneTasks() == false)
+			TaskManager::startTask(nav_timer);
+		else
+			FLAG_DONE = true;	
+
+		navDelayTimer.interval(nav_timer);
+		navDelayTimer.reset();
 
 		DEBUG("#");
 		DEBUG(main_lap);
 		DEBUG("# ");
 		DEBUG("Task completed. ");
+		DEBUG(TaskManager::taskNav->getMotion());
 		grid home_grid = Navigator.getGrid();
-		DEBUG("CURR ");
+		DEBUG(" CURR ");
 		DEBUG(" x: ");
 		DEBUG(home_grid.x);
 		DEBUG(" y: ");

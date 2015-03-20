@@ -1,7 +1,11 @@
 #include "drivemotor.h"
 
 DriveMotor::DriveMotor(motor& p, motor& s, int ds, int di) : 
-	port(p), starboard(s), scaling(ds), initial(di) {}
+	port(p), starboard(s), scaling(ds), initial(di) 
+{
+	encPortCNT = 0;
+	encStarboardCNT = 0;
+}
 
 int DriveMotor::mapLine(bool l, bool m, bool r) 
 {
@@ -60,6 +64,13 @@ int DriveMotor::lineMotorScaling()
 	}
 	return adjustedSpeed;
 }
+
+void DriveMotor::incEncPortCNT() { ++encPortCNT; }
+void DriveMotor::incEncStarboardCNT() { ++encStarboardCNT; }
+void DriveMotor::resetEncPortCNT() { encPortCNT = 0; }
+void DriveMotor::resetEncStarboardCNT() { encStarboardCNT = 0; }
+unsigned int DriveMotor::getEncPortCNT() { return encPortCNT; }
+unsigned int DriveMotor::getEncStarboardCNT() { return encStarboardCNT; }
 
 void DriveMotor::driveStraight()
 {

@@ -18,6 +18,7 @@ class DriveMotor
 	private:
 		int current_heading;
 		int scaling, initial;
+		unsigned int encPortCNT, encStarboardCNT;
 		motor port, starboard, clarm;
 		drive_status currentStatus;
 	public:
@@ -25,6 +26,14 @@ class DriveMotor
 				int scaling = 4, int initial = 10);
 		int mapLine(bool left, bool middle, bool right);
 		int lineMotorScaling();
+
+		void incEncPortCNT();
+		void incEncStarboardCNT();
+		void resetEncPortCNT();
+		void resetEncStarboardCNT();
+		unsigned int getEncPortCNT();
+		unsigned int getEncStarboardCNT();
+		
 		void driveStraight();
 		void turnLeft();
 		void turnRight();
@@ -33,4 +42,3 @@ class DriveMotor
 		drive_status get_status();
 		void stop();
 };
-

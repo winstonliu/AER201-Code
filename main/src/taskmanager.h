@@ -3,6 +3,7 @@
 
 namespace TaskManager
 {
+	// Flags
 	extern bool FLAG_clawextended;
 	extern bool FLAG_pause;
 	extern bool FLAG_hopperleft;

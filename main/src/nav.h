@@ -55,21 +55,23 @@ struct grid
 	}
 };
 
+// dead-reckoning coordinates, name change to avoid confusion
+struct drcoord : grid {};
+
 class Nav
 {
 	// Navigation class with event-driven interrupts
 	private:
 		grid currentGrid;
 		grid destination;
-		// Flags
+		grid hopperEast;
+		grid hopperWest;
+		drcoord offgridpos;
 		// TODO move stuff to private after
 	public:
 		QueueArray <task> tasklist;
-		bool on_grid;
-		grid hopperEast;
-		grid hopperWest;
-
 		bool check_validity(grid new_position);
+		bool on_grid;
 
 		Nav(grid start_position);
 		int computeRectilinearPath(grid new_destination);

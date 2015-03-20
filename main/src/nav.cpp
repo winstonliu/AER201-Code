@@ -104,6 +104,7 @@ int Nav::setGrid(grid new_grid)
 	}
 }
 
+
 void Nav::advance() { tasklist.pop(); }
 motions Nav::getMotion() 
 { 
