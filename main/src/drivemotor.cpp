@@ -67,8 +67,11 @@ int DriveMotor::lineMotorScaling()
 
 void DriveMotor::incEncPortCNT() { ++encPortCNT; }
 void DriveMotor::incEncStarboardCNT() { ++encStarboardCNT; }
-void DriveMotor::resetEncPortCNT() { encPortCNT = 0; }
-void DriveMotor::resetEncStarboardCNT() { encStarboardCNT = 0; }
+void DriveMotor::resetEncCNT() 
+{ 
+	encPortCNT = 0; 
+	encStarboardCNT = 0;
+}
 unsigned int DriveMotor::getEncPortCNT() { return encPortCNT; }
 unsigned int DriveMotor::getEncStarboardCNT() { return encStarboardCNT; }
 

@@ -13,10 +13,13 @@ enum sensors
 
 enum motions
 {
+	GOONGRID,
 	MOVEONGRID,
-	MOVEOFFGRID,
-	MOVEOFFGRIDREV,
-	ROTATETO,
+	GOOFFGRID,
+	OFFGRIDOUTBOUND,
+	OFFGRIDRETURN,
+	ROTATEONGRID,
+	ROTATEOFFGRID,
 	HOPPERALIGN,
 	CLAWEXTEND,
 	CLAWRETRACT,
@@ -56,7 +59,16 @@ struct grid
 };
 
 // dead-reckoning coordinates, name change to avoid confusion
-struct drcoord : grid {};
+struct drcoord : grid 
+{
+	double x;
+	double y;
+	double z;
+	double d;
+
+	drcoord() {}
+	drcoord(double a, double b, double c): x(a), y(b), d(c) {}
+};
 
 class Nav
 {
@@ -66,11 +78,11 @@ class Nav
 		grid destination;
 		grid hopperEast;
 		grid hopperWest;
-		drcoord offgridpos;
 		// TODO move stuff to private after
 	public:
 		QueueArray <task> tasklist;
 		bool check_validity(grid new_position);
+		drcoord offgridpos;
 		bool on_grid;
 
 		Nav(grid start_position);
@@ -80,7 +92,6 @@ class Nav
 
 		int reset(grid);
 		int set_destination(grid new_destination);
-
 		int setGrid(grid new_grid);
 
 		motions getMotion();

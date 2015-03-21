@@ -73,21 +73,21 @@ int Nav::computeRectilinearPath(grid new_destination)
 	}
 
 	tasklist.push(task(PAUSE, 2000));
-	tasklist.push(task(ROTATETO, next_xd)); // Rotate to face x
+	tasklist.push(task(ROTATEONGRID, next_xd)); // Rotate to face x
 	tasklist.push(task(MOVEONGRID, difference.x)); // Move x
-	tasklist.push(task(ROTATETO, next_yd)); // Rotate to face y
+	tasklist.push(task(ROTATEONGRID, next_yd)); // Rotate to face y
 	tasklist.push(task(MOVEONGRID, difference.y)); // Move y
-	tasklist.push(task(ROTATETO, destination.d)); // Rotate to face final
+	tasklist.push(task(ROTATEONGRID, destination.d)); // Rotate to face final
 
 	return 0;
 }
 
 int Nav::hopperBerthing()
 {
-	tasklist.push(task(MOVEOFFGRID, 0)); // Keep moving until interrupt
+	tasklist.push(task(OFFGRIDOUTBOUND, 0)); // Move until interrupt
 	tasklist.push(task(HOPPERALIGN, 0)); // Align with hopper
 	tasklist.push(task(CLAWRETRACT, 0)); // Retract claw
-	tasklist.push(task(MOVEOFFGRID, 0)); // Reverse
+	tasklist.push(task(OFFGRIDRETURN, 0)); // Reverse
 	tasklist.push(task(CLAWEXTEND, 0)); // Extend claw
 }
 

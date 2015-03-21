@@ -25,12 +25,17 @@
 
 const int btnCalibrate = 10;
 const int NUMPINS = 4; // Initialize irsensors
-const int senPins[NUMPINS] = {A13,A14,A15,A10}; // l,m,r,offset
+const int senPins[NUMPINS] = {A13,A14,A15,A12}; // l,m,r,offset
 const int numCyclesTrack = 4;
 const int clarmPin = 13;
 const int blackthresh = 600; // Threshold for black line
 const int INTencLeftPin= 0;
 const int INTencRightPin = 1;
+
+// Task Manager (cm)
+int TaskManager::Rw = 1.905; // Wheel radii
+int TaskManager::D = 24.5; //
+int TaskManager::Tr = 8;
 
 // Initialize nav x,y,d
 grid start_pos(4, 1, 0);
@@ -49,8 +54,8 @@ const int wheel_pwm = 125;
 const int claw_pwm = 100;
 
 // Initialize motors (en, dir)
-motor starboard(5,4);
-motor port(7,6);
+motor starboard(9,8);
+motor port(11,10);
 motor wheel(12,13, wheel_pwm);
 motor clarm(14, 15, claw_pwm); // Claw arm
 
@@ -94,7 +99,12 @@ void sensorPollingFunction()
 	for (int i = 0; i < NUMPINS; ++i) 
 	{
 		irsen[i].readSensor(); 
+		DEBUG("#");
+		DEBUG(main_lap);
+		DEBUG("# ");
+		DEBUG(irsen[i].getValue());
 	}
+	DEBUG("\r\n");
 
 
 	// If all sensors have been triggered in the past n cycles,
@@ -113,7 +123,14 @@ void sensorPollingFunction()
 		DEBUG("#");
 		DEBUG(main_lap);
 		DEBUG("# ");
-		DEBUG("Line interrupt tripped.");
+		DEBUG("Line interrupt tripped. ");
+		DEBUG(irsen[0].getValue());
+		DEBUG(" ");
+		DEBUG(irsen[1].getValue());
+		DEBUG(" ");
+		DEBUG(irsen[2].getValue());
+		DEBUG(" ");
+		DEBUG(irsen[3].getValue());
 		DEBUG("\r\n");
 	}
 
@@ -163,14 +180,15 @@ void setup()
 
 	// DEBUG
 	Navigator.tasklist.push(task(PAUSE, 5000));
-	Navigator.tasklist.push(task(ROTATETO, 270));
+	Navigator.tasklist.push(task(ROTATEONGRID, 270));
 
 	// Start first task
 	TaskManager::startTask(nav_timer);
 	navDelayTimer.interval(nav_timer);
 	navDelayTimer.reset();
 
-/* // Check for navigation error
+/* 
+	// Check for navigation error
 	int ret_err = Navigator.computeRectilinearPath(end_pos);
 	DEBUG("Computation result: ");
 	DEBUG(ret_err);
@@ -204,11 +222,11 @@ void loop()
 		return;
 
 	// Check for rising claw interrupt
-	static int intpin_last = LOW;
-	int intpin_now = digitalRead(clarmPin);
-	if (intpin_now == HIGH && intpin_last == LOW)
+	static int clarm_last = LOW;
+	int clarm_now = digitalRead(clarmPin);
+	if (clarm_now == HIGH && clarm_last == LOW)
 		TaskManager::interrupt(CLAW_TOUCH);	
-	intpin_last = intpin_now;
+	clarm_last = clarm_now;
 
 	// Check if there are any tasks left to do
 	if (TaskManager::checkTaskComplete() == true)
@@ -223,6 +241,7 @@ void loop()
 		navDelayTimer.interval(nav_timer);
 		navDelayTimer.reset();
 
+		// Debug block
 		DEBUG("#");
 		DEBUG(main_lap);
 		DEBUG("# ");

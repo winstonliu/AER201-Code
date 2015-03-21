@@ -29,8 +29,7 @@ class DriveMotor
 
 		void incEncPortCNT();
 		void incEncStarboardCNT();
-		void resetEncPortCNT();
-		void resetEncStarboardCNT();
+		void resetEncCNT();
 		unsigned int getEncPortCNT();
 		unsigned int getEncStarboardCNT();
 		

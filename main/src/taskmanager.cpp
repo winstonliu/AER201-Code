@@ -27,29 +27,61 @@ grid TaskManager::dirLineInc(int i)
 	return temp_grid;
 }
 
+drcoord TaskManager::calcOffGrid(drcoord lastPos)
+{
+	drcoord newPos = lastPos;
+	unsigned int encPort = taskDriver->getEncPortCNT();
+	unsigned int encStarboard = taskDriver->getEncStarboardCNT();
+	// Turning to starboard is positive
+	newPos.d = 2 * M_PI * (Rw/D) * (encPort - encStarboard) / Tr;
+	newPos.x = Rw * cos(lastPos.d) * (encPort + encStarboard) * M_PI / Tr;
+	newPos.y = Rw * sin(lastPos.d) * (encPort + encStarboard) * M_PI / Tr;
+	// Reset count
+	taskDriver->resetEncCNT();
+	return newPos;
+}
+
 void TaskManager::startTask(int& timer)
 {
 	// Initialize tasks
 	timer = 3600000; // default is 1 hour
+	int navVal = taskNav->getValue();
+	grid navGrid = taskNav->getGrid();
 	switch (taskNav->getMotion())
 	{
 		case PAUSE:
-			timer = taskNav->getValue();
+			timer = navVal;
 			FLAG_pause = true;
 			taskDriver->stop();
 			break;
 		case MOVEONGRID:
 			taskDriver->driveStraight();
-			taskdestination = dirLineInc(taskNav->getValue());
+			taskdestination = dirLineInc(navVal);
 			break;
-		case MOVEOFFGRID:
+		case GOONGRID:
+			taskNav->on_grid = true;
+			break;
+		case GOOFFGRID:
+			taskDriver->resetEncCNT();
+			taskNav->on_grid = false;
+			break;
+		case OFFGRIDOUTBOUND:
 			taskDriver->driveStraight();
 			break;
-		case ROTATETO:
-			taskdestination = taskNav->getGrid();
-			taskdestination.d = taskNav->getValue();
+		case ROTATEONGRID:
+			taskdestination = navGrid;
+			taskdestination.d = navVal;
 			// TODO only turns left for now
 			taskDriver->turnLeft();
+			break;
+		case ROTATEOFFGRID:
+			// Determine direction of rotation
+			// Normalize current heading	
+			navVal = (navVal - navGrid.d) % 360;
+			if (navVal > 180) 
+				taskDriver->turnLeft();
+			else
+				taskDriver->turnRight();
 			break;
 		case CLAWRETRACT:
 			taskClarm->right();
@@ -69,6 +101,11 @@ void TaskManager::processTask()
 		case MOVEONGRID:
 			taskDriver->lineMotorScaling();	
 			break;
+		case ROTATEOFFGRID:
+		case OFFGRIDOUTBOUND:
+			// Update off grid position
+			taskNav->offgridpos = calcOffGrid(taskNav->offgridpos);					
+			break;
 	}
 }
 
@@ -83,7 +120,7 @@ int TaskManager::interrupt(sensors senInt)
 				grid new_grid = dirLineInc(1);
 				taskNav->setGrid(new_grid);
 			}
-			else if (taskNav->getMotion() == ROTATETO)
+			else if (taskNav->getMotion() == ROTATEONGRID)
 			{
 				// TODO Assuming that the robot only turns to the left
 				grid new_grid = taskNav->getGrid();
@@ -130,7 +167,9 @@ int TaskManager::interrupt(sensors senInt)
 bool TaskManager::checkTaskComplete() 
 { 
 	bool advance = false;
+	int navVal = taskNav->getValue();
 	grid gridNow = taskNav->getGrid();
+	
 	// Checks for task completion
 	switch (taskNav->getMotion())
 	{
@@ -142,8 +181,17 @@ bool TaskManager::checkTaskComplete()
 					gridNow.y == taskdestination.y)
 				advance = true;
 			break;
-		case ROTATETO:
+		case ROTATEONGRID:
 			if (gridNow == taskdestination) advance = true;
+			break;
+		case ROTATEOFFGRID:
+			if ((taskDriver->get_status() == TURNINGRIGHT 
+					&& taskNav->offgridpos.d > navVal)
+				|| (taskDriver->get_status() == TURNINGLEFT 
+					&& taskNav->offgridpos.d < navVal))
+			{
+				advance = true;
+			}
 			break;
 		case CLAWEXTEND: 
 			if (FLAG_clawextended == true) { advance = true; }
@@ -155,7 +203,12 @@ bool TaskManager::checkTaskComplete()
 			if ((FLAG_hopperleft && FLAG_hopperright) == true) 
 				advance = true;
 			break;
-		case MOVEOFFGRID:
+		case OFFGRIDOUTBOUND:
+			if ((FLAG_hopperleft || FLAG_hopperright) == true) 
+				advance = true;
+			break;
+		case GOOFFGRID:
+		case GOONGRID:
 			advance = true;
 			break;
 	}
