@@ -12,16 +12,16 @@ grid TaskManager::dirLineInc(int i)
 	switch(temp_grid.d)
 	{
 		case 0:
-			temp_grid.y + i;
+			temp_grid.y += i;
 			break;
 		case 90:
-			temp_grid.x + i;
+			temp_grid.x += i;
 			break;
 		case 180:
-			temp_grid.y - i;
+			temp_grid.y -= i;
 			break;
 		case 270:
-			temp_grid.x - i;
+			temp_grid.x -= i;
 			break;
 	}
 	return temp_grid;
@@ -41,10 +41,9 @@ drcoord TaskManager::calcOffGrid(drcoord lastPos)
 	return newPos;
 }
 
-void TaskManager::startTask(int& timer)
+void TaskManager::startTask(int& timer, grid& alfd, int& gg)
 {
 	// Initialize tasks
-	timer = 3600000; // default is 1 hour
 	int navVal = taskNav->getValue();
 	grid navGrid = taskNav->getGrid();
 	switch (taskNav->getMotion())
@@ -91,6 +90,8 @@ void TaskManager::startTask(int& timer)
 			timer = 1000;
 			break;
 	}
+	alfd = taskdestination;
+	gg = navVal;
 }
 
 void TaskManager::processTask()
@@ -104,7 +105,7 @@ void TaskManager::processTask()
 		case ROTATEOFFGRID:
 		case OFFGRIDOUTBOUND:
 			// Update off grid position
-			taskNav->offgridpos = calcOffGrid(taskNav->offgridpos);					
+			taskNav->offgridpos = calcOffGrid(taskNav->offgridpos);
 			break;
 	}
 }

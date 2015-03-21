@@ -28,7 +28,7 @@ const int NUMPINS = 4; // Initialize irsensors
 const int senPins[NUMPINS] = {A13,A14,A15,A12}; // l,m,r,offset
 const int numCyclesTrack = 4;
 const int clarmPin = 13;
-const int blackthresh = 600; // Threshold for black line
+const int blackthresh = 700; // Threshold for black line
 const int INTencLeftPin= 0;
 const int INTencRightPin = 1;
 
@@ -54,8 +54,8 @@ const int wheel_pwm = 125;
 const int claw_pwm = 100;
 
 // Initialize motors (en, dir)
-motor starboard(9,8);
-motor port(11,10);
+motor starboard(8,9);
+motor port(10,11);
 motor wheel(12,13, wheel_pwm);
 motor clarm(14, 15, claw_pwm); // Claw arm
 
@@ -99,12 +99,15 @@ void sensorPollingFunction()
 	for (int i = 0; i < NUMPINS; ++i) 
 	{
 		irsen[i].readSensor(); 
+
+		/*
 		DEBUG("#");
 		DEBUG(main_lap);
 		DEBUG("# ");
 		DEBUG(irsen[i].getValue());
+		*/
 	}
-	DEBUG("\r\n");
+	//DEBUG("\r\n");
 
 
 	// If all sensors have been triggered in the past n cycles,
@@ -120,6 +123,7 @@ void sensorPollingFunction()
 	{
 		TaskManager::interrupt(LINE_ISR);			
 
+		/*
 		DEBUG("#");
 		DEBUG(main_lap);
 		DEBUG("# ");
@@ -132,6 +136,7 @@ void sensorPollingFunction()
 		DEBUG(" ");
 		DEBUG(irsen[3].getValue());
 		DEBUG("\r\n");
+		*/
 	}
 
 	// Update heading
@@ -170,7 +175,7 @@ void setup()
 	for (int i = 0; i < NUMPINS; ++i)
 	{
 		// Make new IRSensor
-		irsen[i] = IRSensor(senPins[i], numCyclesTrack);
+		irsen[i] = IRSensor(senPins[i], numCyclesTrack, blackthresh);
 		irsen[i].setThresh(threshold_values);
 	}
 
@@ -180,12 +185,18 @@ void setup()
 
 	// DEBUG
 	Navigator.tasklist.push(task(PAUSE, 5000));
-	Navigator.tasklist.push(task(ROTATEONGRID, 270));
+	Navigator.tasklist.push(task(MOVEONGRID, 2));
 
 	// Start first task
-	TaskManager::startTask(nav_timer);
+	grid blah;
+	int dope;
+	TaskManager::startTask(nav_timer, blah, dope);
 	navDelayTimer.interval(nav_timer);
 	navDelayTimer.reset();
+	DEBUG("DOPE: ");
+	DEBUG(dope);
+	DEBUG("\r\n");
+
 
 /* 
 	// Check for navigation error
@@ -231,17 +242,36 @@ void loop()
 	// Check if there are any tasks left to do
 	if (TaskManager::checkTaskComplete() == true)
 	{
+		nav_timer = 3600000; // default is 1 hour
 		Driver.stop();
 		Navigator.advance();
 		if (Navigator.doneTasks() == false)
-			TaskManager::startTask(nav_timer);
+		{
+			grid alfd;
+			int gg;
+			TaskManager::startTask(nav_timer, alfd, gg);
+			DEBUG("Starting new task. ");
+			DEBUG(" ALFD ");
+			DEBUG(" x: ");
+			DEBUG(alfd.x);
+			DEBUG(" y: ");
+			DEBUG(alfd.y);
+			DEBUG(" d: ");
+			DEBUG(alfd.d);
+			DEBUG(" NAVVAL: ");
+			DEBUG(gg);
+			DEBUG(" ");
+			DEBUG(TaskManager::taskNav->getMotion());
+			DEBUG("\r\n");
+		}
 		else
+		{
 			FLAG_DONE = true;	
+		}
 
 		navDelayTimer.interval(nav_timer);
 		navDelayTimer.reset();
 
-		// Debug block
 		DEBUG("#");
 		DEBUG(main_lap);
 		DEBUG("# ");

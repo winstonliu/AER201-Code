@@ -23,7 +23,7 @@ namespace TaskManager
 	grid dirLineInc(int i);
 	drcoord calcOffGrid(drcoord lastPos);
 
-	void startTask(int& timer);
+	void startTask(int& timer, grid& alfd, int& gg);
 	void processTask();
 	int interrupt(sensors sensor_interrupt);	
 	bool checkTaskComplete();

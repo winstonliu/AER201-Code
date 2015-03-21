@@ -8,8 +8,8 @@ motor starboard(10,11);
 
 void setup()
 {
-	port.left();
-	starboard.right();
+	port.right();
+	starboard.left();
 	Serial.begin(9600);
 }
 
