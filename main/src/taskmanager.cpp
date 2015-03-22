@@ -54,8 +54,11 @@ void TaskManager::startTask(int& timer, grid& alfd, int& gg)
 			taskDriver->stop();
 			break;
 		case MOVEONGRID:
-			taskDriver->driveStraight();
+			taskDriver->driveStraight(125);
 			taskdestination = dirLineInc(navVal);
+			break;
+		case MOVEINREVERSE:
+			taskDriver->driveReverse(125);
 			break;
 		case GOONGRID:
 			taskNav->on_grid = true;
@@ -70,9 +73,6 @@ void TaskManager::startTask(int& timer, grid& alfd, int& gg)
 		case ROTATEONGRID:
 			taskdestination = navGrid;
 			taskdestination.d = navVal;
-			// TODO only turns left for now
-			taskDriver->turnLeft();
-			break;
 		case ROTATEOFFGRID:
 			// Determine direction of rotation
 			// Normalize current heading	
@@ -94,43 +94,51 @@ void TaskManager::startTask(int& timer, grid& alfd, int& gg)
 	gg = navVal;
 }
 
-void TaskManager::processTask()
+void TaskManager::processTask(int& debug_speed, int& mestatus)
 {
 	// Non-time critical things that need to be done in the loop
 	switch (taskNav->getMotion())
 	{
 		case MOVEONGRID:
-			taskDriver->lineMotorScaling();	
+			debug_speed = taskDriver->lineMotorScaling(mestatus);
 			break;
 		case ROTATEOFFGRID:
 		case OFFGRIDOUTBOUND:
 			// Update off grid position
 			taskNav->offgridpos = calcOffGrid(taskNav->offgridpos);
 			break;
+		case MOVEINREVERSE:
+			taskDriver->lineMotorScaling(mestatus);
+			break;
 	}
 }
 
 int TaskManager::interrupt(sensors senInt)
 {
+	motions currentTask = taskNav->getMotion();
 	// Forward drive intersects line
 	switch(senInt)
 	{
 		case LINE_ISR:
-			if (taskNav->getMotion() == MOVEONGRID)
+			if (currentTask == MOVEONGRID)
 			{
 				grid new_grid = dirLineInc(1);
 				taskNav->setGrid(new_grid);
 			}
-			else if (taskNav->getMotion() == ROTATEONGRID)
+			else if (currentTask == ROTATEONGRID)
 			{
 				// TODO Assuming that the robot only turns to the left
 				grid new_grid = taskNav->getGrid();
 				new_grid.d = (360 + new_grid.d - 90) % 360;
 				taskNav->setGrid(new_grid);
 			}
+			else if (currentTask == MOVEINREVERSE)
+			{
+				taskDriver->stop();
+			}
 			break;
 		case CLAW_TOUCH:
-			if (taskNav->getMotion() == CLAWRETRACT)
+			if (currentTask == CLAWRETRACT)
 			{
 				// kill claw motor		
 				taskClarm->stop();
@@ -152,11 +160,11 @@ int TaskManager::interrupt(sensors senInt)
 			FLAG_hopperright = true;
 			break;
 		case TIMER:
-			if (taskNav->getMotion() == PAUSE) 
+			if (currentTask == PAUSE) 
 			{
 				FLAG_pause = false;
 			}
-			else if (taskNav->getMotion() == CLAWEXTEND)
+			else if (currentTask == CLAWEXTEND)
 			{
 				taskClarm->stop();
 				FLAG_clawextended = true;
@@ -180,6 +188,10 @@ bool TaskManager::checkTaskComplete()
 		case MOVEONGRID:
 			if (gridNow.x == taskdestination.x &&
 					gridNow.y == taskdestination.y)
+				advance = true;
+			break;
+		case MOVEINREVERSE:
+			if (taskDriver->get_status() == STOPPED)
 				advance = true;
 			break;
 		case ROTATEONGRID:

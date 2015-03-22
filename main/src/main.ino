@@ -26,7 +26,7 @@
 const int btnCalibrate = 10;
 const int NUMPINS = 4; // Initialize irsensors
 const int senPins[NUMPINS] = {A13,A14,A15,A12}; // l,m,r,offset
-const int numCyclesTrack = 4;
+const int numCyclesTrack = 2;
 const int clarmPin = 13;
 const int blackthresh = 700; // Threshold for black line
 const int INTencLeftPin= 0;
@@ -81,7 +81,7 @@ int nav_timer;
 // ================================================================ //
 // Timers
 
-Metro displayTimer = Metro(200);
+Metro displayTimer = Metro(500);
 Metro sensorPollTimer = Metro(30);
 Metro navProcessTimer = Metro(50);
 Metro navDelayTimer = Metro(3600000); // Set to 1 hour when unused
@@ -90,25 +90,20 @@ Metro navDelayTimer = Metro(3600000); // Set to 1 hour when unused
 
 
 // XXX DEBUG CODE
+int debug_speed;
+int mestatus = -1;
 long main_lap = 0;
 // XXX
 
 void sensorPollingFunction()
 {
+	int sum_lines = 0;
 	// Read sensors
 	for (int i = 0; i < NUMPINS; ++i) 
 	{
 		irsen[i].readSensor(); 
-
-		/*
-		DEBUG("#");
-		DEBUG(main_lap);
-		DEBUG("# ");
-		DEBUG(irsen[i].getValue());
-		*/
+		sum_lines += irsen[i].pastEncounters();
 	}
-	//DEBUG("\r\n");
-
 
 	// If all sensors have been triggered in the past n cycles,
 	// then trigger line detected
@@ -118,10 +113,13 @@ void sensorPollingFunction()
 	DEBUG("\r\n");
 	*/
 
-	// Check the offset sensor for line pass detection
-	if (irsen[3].detect() == BLACK && Driver.get_status() != STOPPED)
+	// Check the offset sensor for line pass detection, look for rising edge
+	static int pastPin = WHITE;
+	int currentPin = irsen[3].detect();
+	if (currentPin == BLACK && pastPin == WHITE 
+		&& Driver.get_status() != STOPPED && sum_lines == NUMPINS)
 	{
-		TaskManager::interrupt(LINE_ISR);			
+		TaskManager::interrupt(LINE_ISR);
 
 		/*
 		DEBUG("#");
@@ -138,9 +136,9 @@ void sensorPollingFunction()
 		DEBUG("\r\n");
 		*/
 	}
+	pastPin = currentPin;
 
 	// Update heading
-	// DEBUG current_heading variable
 	current_heading = Driver.mapLine(
 		irsen[0].detect(),
 		irsen[1].detect(),
@@ -183,9 +181,12 @@ void setup()
 	attachInterrupt(INTencLeftPin, encLeftPin, RISING);
 	attachInterrupt(INTencRightPin, encRightPin, RISING);
 
-	// DEBUG
+	// DEBUG COMMANDS
 	Navigator.tasklist.push(task(PAUSE, 5000));
-	Navigator.tasklist.push(task(MOVEONGRID, 2));
+	Navigator.tasklist.push(task(MOVEONGRID, 1));
+	Navigator.tasklist.push(task(PAUSE, 2000));
+	Navigator.tasklist.push(task(MOVEINREVERSE, 0));
+	//Navigator.tasklist.push(task(ROTATEONGRID, 90));
 
 	// Start first task
 	grid blah;
@@ -243,24 +244,28 @@ void loop()
 	if (TaskManager::checkTaskComplete() == true)
 	{
 		nav_timer = 3600000; // default is 1 hour
+		DEBUG("FULL STOP");
+		DEBUG("\r\n");
 		Driver.stop();
 		Navigator.advance();
 		if (Navigator.doneTasks() == false)
 		{
-			grid alfd;
+			grid dest;
 			int gg;
-			TaskManager::startTask(nav_timer, alfd, gg);
+
+			TaskManager::startTask(nav_timer, dest, gg);
+
 			DEBUG("Starting new task. ");
-			DEBUG(" ALFD ");
+			DEBUG(" DEST ");
 			DEBUG(" x: ");
-			DEBUG(alfd.x);
+			DEBUG(dest.x);
 			DEBUG(" y: ");
-			DEBUG(alfd.y);
+			DEBUG(dest.y);
 			DEBUG(" d: ");
-			DEBUG(alfd.d);
+			DEBUG(dest.d);
 			DEBUG(" NAVVAL: ");
 			DEBUG(gg);
-			DEBUG(" ");
+			DEBUG(" MOTION: ");
 			DEBUG(TaskManager::taskNav->getMotion());
 			DEBUG("\r\n");
 		}
@@ -309,8 +314,31 @@ void display()
 	DEBUG("#");
 	DEBUG(main_lap);
 	DEBUG("# ");
-	DEBUG("Current action: ");
+	DEBUG("Current motion: ");
 	DEBUG(Navigator.getMotion());
+	DEBUG(" Driver: ");
+	DEBUG(Driver.get_status());
+	DEBUG("\r\n");
+	DEBUG("Heading: ");
+	DEBUG(Driver.current_heading);
+	DEBUG(" Adjust speed: ");
+	DEBUG(debug_speed);
+	DEBUG(" RAW ");
+	DEBUG(irsen[0].readSensor());
+	DEBUG(" ");
+	DEBUG(irsen[1].readSensor());
+	DEBUG(" ");
+	DEBUG(irsen[2].readSensor());
+	DEBUG(" ");
+	DEBUG(irsen[3].readSensor());
+	DEBUG(" DET ");
+	DEBUG(irsen[0].detect());
+	DEBUG(" ");
+	DEBUG(irsen[1].detect());
+	DEBUG(" ");
+	DEBUG(irsen[2].detect());
+	DEBUG(" ");
+	DEBUG(irsen[3].detect());
 	DEBUG("\r\n");
 
 	// DEBUG
@@ -351,7 +379,10 @@ void addEvents()
 		*/
 	}
 
-	if (navProcessTimer.check() == 1) TaskManager::processTask();
+	if (navProcessTimer.check() == 1) 
+	{
+		TaskManager::processTask(debug_speed, mestatus);
+	}
 	if (navDelayTimer.check() == 1) 
 	{
 		TaskManager::interrupt(TIMER);

@@ -24,7 +24,7 @@ namespace TaskManager
 	drcoord calcOffGrid(drcoord lastPos);
 
 	void startTask(int& timer, grid& alfd, int& gg);
-	void processTask();
+	void processTask(int& debug_speed, int& mestatus);
 	int interrupt(sensors sensor_interrupt);	
 	bool checkTaskComplete();
 }

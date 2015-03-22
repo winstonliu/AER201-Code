@@ -6,6 +6,7 @@ motor::motor(int pin_enable, int pin_direction, int speed)
 	enable = pin_enable;
 	direction = pin_direction;
 	motorspeed = speed;
+	status = MOTOR_OFF;
 
 	// Enable motor pins
 	pinMode(enable, OUTPUT);

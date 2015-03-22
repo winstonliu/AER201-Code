@@ -6,6 +6,7 @@ const int ON_WHITE = false;
 enum drive_status
 {
 	DRIVINGFORWARD,
+	DRIVINGREVERSE,
 	TURNINGLEFT,
 	TURNINGRIGHT,
 	PIVOTLEFT,
@@ -16,16 +17,16 @@ enum drive_status
 class DriveMotor
 {
 	private:
-		int current_heading;
 		int scaling, initial;
 		unsigned int encPortCNT, encStarboardCNT;
 		motor port, starboard, clarm;
 		drive_status currentStatus;
 	public:
+		int current_heading;
 		DriveMotor(motor& port, motor& starboard, 
 				int scaling = 4, int initial = 10);
 		int mapLine(bool left, bool middle, bool right);
-		int lineMotorScaling();
+		int lineMotorScaling(int& mestatus);
 
 		void incEncPortCNT();
 		void incEncStarboardCNT();
@@ -33,9 +34,10 @@ class DriveMotor
 		unsigned int getEncPortCNT();
 		unsigned int getEncStarboardCNT();
 		
-		void driveStraight();
-		void turnLeft();
-		void turnRight();
+		void driveStraight(int speed = 255);
+		void driveReverse(int speed = 255);
+		void turnLeft(int speed = 255);
+		void turnRight(int speed = 255);
 		void pivotLeft();
 		void pivotRight();
 		drive_status get_status();
