@@ -14,8 +14,6 @@ int DriveMotor::mapLine(bool l, bool m, bool r)
 	// positive is right
 	// false is 0, true is 1
 	
-	current_heading = 0;	
-	/*
 	// 000
 	if ((l|m|r) == ON_WHITE)
 		current_heading = ((current_heading > 0) ? 3 : -3);
@@ -36,7 +34,6 @@ int DriveMotor::mapLine(bool l, bool m, bool r)
 	// 110
 	else if ((!l|!m|r) == ON_WHITE)
 		current_heading = -2;
-	*/
 
 	return current_heading;
 }
