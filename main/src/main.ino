@@ -25,7 +25,7 @@
 
 const int btnCalibrate = 10;
 const int NUMPINS = 4; // Initialize irsensors
-const int senPins[NUMPINS] = {A13,A14,A15,A12}; // l,m,r,offset
+const int senPins[NUMPINS] = {A15,A14,A13,A12}; // l,m,r,offset
 const int numCyclesTrack = 2;
 const int clarmPin = 13;
 const int blackthresh = 700; // Threshold for black line
@@ -339,6 +339,10 @@ void display()
 	DEBUG(irsen[2].detect());
 	DEBUG(" ");
 	DEBUG(irsen[3].detect());
+	DEBUG(" P ");
+	DEBUG(port.get_status());
+	DEBUG(" S ");
+	DEBUG(starboard.get_status());
 	DEBUG("\r\n");
 
 	// DEBUG
