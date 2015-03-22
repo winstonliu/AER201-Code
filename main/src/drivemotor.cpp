@@ -1,8 +1,10 @@
 #include "drivemotor.h"
 
 DriveMotor::DriveMotor(motor& p, motor& s, int ds, int di) : 
-	port(p), starboard(s), scaling(ds), initial(di) 
+	scaling(ds), initial(di) 
 {
+	ptr_port = &p;
+	ptr_starboard = &s;
 	encPortCNT = 0;
 	encStarboardCNT = 0;
 	currentStatus = STOPPED;
@@ -14,6 +16,9 @@ int DriveMotor::mapLine(bool l, bool m, bool r)
 	// positive is right
 	// false is 0, true is 1
 	
+	current_heading = -3;
+	
+	/*
 	// 000
 	if ((l|m|r) == ON_WHITE)
 		current_heading = ((current_heading > 0) ? 3 : -3);
@@ -34,38 +39,40 @@ int DriveMotor::mapLine(bool l, bool m, bool r)
 	// 110
 	else if ((!l|!m|r) == ON_WHITE)
 		current_heading = -2;
+	*/
 
 	return current_heading;
 }
 
-int DriveMotor::lineMotorScaling(int& mestatus)
+int DriveMotor::lineMotorScaling()
 {
 	// If the heading is less than zero, then PWM the port (left) wheel and
 	// v.v. If the heading is zero, then full steam ahead.
 	// DEBUG
-	int adjustedSpeed;
+	int newSpeed;
 	if (current_heading < 0)
 	{
-		adjustedSpeed = 255 - initial - (-1)*current_heading*scaling;
-		port.adjustSpeed(adjustedSpeed); 
-		//port.left(adjustedSpeed);
-		mestatus = 0;
+		newSpeed = 255 + current_heading*scaling*initial;
+		//ptr_port->adjustSpeed(newSpeed); 
+		if (newSpeed < 0) newSpeed = 0;
+		ptr_port->adjustSpeed(newSpeed);
+		ptr_starboard->adjustSpeed(255);
 	}
 	else if (current_heading > 0)
 	{
-		adjustedSpeed = 255 - initial - current_heading*scaling;
-		starboard.adjustSpeed(adjustedSpeed); 
-		//starboard.right(adjustedSpeed);
-		mestatus = 1;
+		newSpeed = 255 - current_heading*scaling*initial;
+		//ptr_starboard->adjustSpeed(newSpeed); 
+		if (newSpeed < 0) newSpeed = 0;
+		ptr_port->adjustSpeed(255);
+		ptr_starboard->adjustSpeed(newSpeed);
 	}
 	else
 	{
-		adjustedSpeed = 255;
-		port.adjustSpeed(adjustedSpeed);
-		starboard.adjustSpeed(adjustedSpeed);
-		mestatus = 2;
+		newSpeed = 255;
+		ptr_port->adjustSpeed(newSpeed);
+		ptr_starboard->adjustSpeed(newSpeed);
 	}
-	return adjustedSpeed;
+	return newSpeed;
 }
 
 void DriveMotor::incEncPortCNT() { ++encPortCNT; }
@@ -80,53 +87,53 @@ unsigned int DriveMotor::getEncStarboardCNT() { return encStarboardCNT; }
 
 void DriveMotor::driveStraight(int speed)
 {
-	port.left(speed);
-	starboard.right(speed);
+	ptr_port->left(speed);
+	ptr_starboard->right(speed);
 	currentStatus = DRIVINGFORWARD;
 }
 
 void DriveMotor::driveReverse(int speed)
 {
-	starboard.left(speed);
-	port.right(speed);
+	ptr_starboard->left(speed);
+	ptr_port->right(speed);
 	currentStatus = DRIVINGREVERSE;
 }
 
 void DriveMotor::turnLeft(int speed)
 {
 	// Turn left
-	starboard.right(speed);
-	port.right(speed);
+	ptr_starboard->right(speed);
+	ptr_port->right(speed);
 	currentStatus = TURNINGLEFT;
 }
 
 void DriveMotor::turnRight(int speed)
 {
 	// Turn right
-	starboard.left(speed);
-	port.left(speed);
+	ptr_starboard->left(speed);
+	ptr_port->left(speed);
 	currentStatus = TURNINGRIGHT;
 }
 
 void DriveMotor::pivotLeft()
 {
-	starboard.right(125);
-	port.stop();
+	ptr_starboard->right(125);
+	ptr_port->stop();
 	currentStatus = PIVOTLEFT;
 }
 
 void DriveMotor::pivotRight()
 {
-	starboard.stop();
-	port.left(125);
+	ptr_starboard->stop();
+	ptr_port->left(125);
 	currentStatus = PIVOTRIGHT;
 }
 
 void DriveMotor::stop()
 {
 	currentStatus = STOPPED;	
-	starboard.stop();
-	port.stop();
+	ptr_starboard->stop();
+	ptr_port->stop();
 }
 
 drive_status DriveMotor::get_status() { return currentStatus; } 

@@ -54,7 +54,7 @@ void TaskManager::startTask(int& timer, grid& alfd, int& gg)
 			taskDriver->stop();
 			break;
 		case MOVEONGRID:
-			taskDriver->driveStraight(125);
+			taskDriver->driveStraight();
 			taskdestination = dirLineInc(navVal);
 			break;
 		case MOVEINREVERSE:
@@ -94,13 +94,13 @@ void TaskManager::startTask(int& timer, grid& alfd, int& gg)
 	gg = navVal;
 }
 
-void TaskManager::processTask(int& debug_speed, int& mestatus)
+void TaskManager::processTask(int& debug_speed)
 {
 	// Non-time critical things that need to be done in the loop
 	switch (taskNav->getMotion())
 	{
 		case MOVEONGRID:
-			debug_speed = taskDriver->lineMotorScaling(mestatus);
+			debug_speed = taskDriver->lineMotorScaling();
 			break;
 		case ROTATEOFFGRID:
 		case OFFGRIDOUTBOUND:
@@ -108,7 +108,7 @@ void TaskManager::processTask(int& debug_speed, int& mestatus)
 			taskNav->offgridpos = calcOffGrid(taskNav->offgridpos);
 			break;
 		case MOVEINREVERSE:
-			taskDriver->lineMotorScaling(mestatus);
+			taskDriver->lineMotorScaling();
 			break;
 	}
 }

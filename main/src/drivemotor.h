@@ -1,5 +1,5 @@
 #pragma once
-#include <motor.h>
+#include "motor.h"
 
 const int ON_WHITE = false;
 
@@ -19,14 +19,15 @@ class DriveMotor
 	private:
 		int scaling, initial;
 		unsigned int encPortCNT, encStarboardCNT;
-		motor port, starboard, clarm;
+		motor *ptr_port;
+		motor *ptr_starboard;
 		drive_status currentStatus;
 	public:
 		int current_heading;
 		DriveMotor(motor& port, motor& starboard, 
 				int scaling = 4, int initial = 10);
 		int mapLine(bool left, bool middle, bool right);
-		int lineMotorScaling(int& mestatus);
+		int lineMotorScaling();
 
 		void incEncPortCNT();
 		void incEncStarboardCNT();

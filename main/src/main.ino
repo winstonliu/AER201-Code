@@ -91,7 +91,6 @@ Metro navDelayTimer = Metro(3600000); // Set to 1 hour when unused
 
 // XXX DEBUG CODE
 int debug_speed;
-int mestatus = -1;
 long main_lap = 0;
 // XXX
 
@@ -228,6 +227,12 @@ void setup()
 */
 }
 
+void poop()
+{
+	port.left(50);
+	starboard.right();
+}
+
 void loop()
 {
 	if (FLAG_NAVERR == true || FLAG_DONE == true)
@@ -340,9 +345,9 @@ void display()
 	DEBUG(" ");
 	DEBUG(irsen[3].detect());
 	DEBUG(" P ");
-	DEBUG(port.get_status());
+	DEBUG(port.motorspeed);
 	DEBUG(" S ");
-	DEBUG(starboard.get_status());
+	DEBUG(starboard.motorspeed);
 	DEBUG("\r\n");
 
 	// DEBUG
@@ -385,7 +390,7 @@ void addEvents()
 
 	if (navProcessTimer.check() == 1) 
 	{
-		TaskManager::processTask(debug_speed, mestatus);
+		TaskManager::processTask(debug_speed);
 	}
 	if (navDelayTimer.check() == 1) 
 	{

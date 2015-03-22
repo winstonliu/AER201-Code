@@ -15,7 +15,6 @@ DriveMotor Driver(port, starboard, dmotor_scaling, dmotor_initial);
 void setup()
 {
 	Serial.begin(9600);
-	Driver.turnRight();
 }
 
 void loop()
