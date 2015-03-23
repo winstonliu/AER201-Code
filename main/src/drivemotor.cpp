@@ -5,8 +5,6 @@ DriveMotor::DriveMotor(motor& p, motor& s, int ds, int di) :
 {
 	ptr_port = &p;
 	ptr_starboard = &s;
-	encPortCNT = 0;
-	encStarboardCNT = 0;
 	currentStatus = STOPPED;
 }
 
@@ -16,9 +14,6 @@ int DriveMotor::mapLine(bool l, bool m, bool r)
 	// positive is right
 	// false is 0, true is 1
 	
-	current_heading = -3;
-	
-	/*
 	// 000
 	if ((l|m|r) == ON_WHITE)
 		current_heading = ((current_heading > 0) ? 3 : -3);
@@ -39,12 +34,11 @@ int DriveMotor::mapLine(bool l, bool m, bool r)
 	// 110
 	else if ((!l|!m|r) == ON_WHITE)
 		current_heading = -2;
-	*/
 
 	return current_heading;
 }
 
-int DriveMotor::lineMotorScaling()
+int DriveMotor::lineMotorScaling(int baseSpeed)
 {
 	// If the heading is less than zero, then PWM the port (left) wheel and
 	// v.v. If the heading is zero, then full steam ahead.
@@ -52,38 +46,28 @@ int DriveMotor::lineMotorScaling()
 	int newSpeed;
 	if (current_heading < 0)
 	{
-		newSpeed = 255 + current_heading*scaling*initial;
+		newSpeed = baseSpeed + current_heading*scaling*initial;
 		//ptr_port->adjustSpeed(newSpeed); 
 		if (newSpeed < 0) newSpeed = 0;
 		ptr_port->adjustSpeed(newSpeed);
-		ptr_starboard->adjustSpeed(255);
+		ptr_starboard->adjustSpeed(baseSpeed);
 	}
 	else if (current_heading > 0)
 	{
-		newSpeed = 255 - current_heading*scaling*initial;
+		newSpeed = baseSpeed - current_heading*scaling*initial;
 		//ptr_starboard->adjustSpeed(newSpeed); 
 		if (newSpeed < 0) newSpeed = 0;
-		ptr_port->adjustSpeed(255);
+		ptr_port->adjustSpeed(baseSpeed);
 		ptr_starboard->adjustSpeed(newSpeed);
 	}
 	else
 	{
-		newSpeed = 255;
+		newSpeed = baseSpeed;
 		ptr_port->adjustSpeed(newSpeed);
 		ptr_starboard->adjustSpeed(newSpeed);
 	}
 	return newSpeed;
 }
-
-void DriveMotor::incEncPortCNT() { ++encPortCNT; }
-void DriveMotor::incEncStarboardCNT() { ++encStarboardCNT; }
-void DriveMotor::resetEncCNT() 
-{ 
-	encPortCNT = 0; 
-	encStarboardCNT = 0;
-}
-unsigned int DriveMotor::getEncPortCNT() { return encPortCNT; }
-unsigned int DriveMotor::getEncStarboardCNT() { return encStarboardCNT; }
 
 void DriveMotor::driveStraight(int speed)
 {

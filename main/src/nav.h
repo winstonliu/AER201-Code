@@ -79,6 +79,7 @@ class Nav
 		grid destination;
 		grid hopperEast;
 		grid hopperWest;
+		unsigned int encPortCNT, encStarboardCNT;
 		// TODO move stuff to private after
 	public:
 		QueueArray <task> tasklist;
@@ -95,10 +96,20 @@ class Nav
 		int set_destination(grid new_destination);
 		int setGrid(grid new_grid);
 
-		motions getMotion();
-		int getValue();
+		void incEncPortCNT();
+		void incEncStarboardCNT();
+		void resetEncCNT();
+		unsigned int getEncPortCNT();
+		unsigned int getEncStarboardCNT();
+
+		unsigned int absEncDistance();
+
+		void resetOffGridToZero();
+		
+		int getTaskValue();
 		grid getGrid();
 		grid getDestination();
+		motions getMotion();
 
 		bool doneTasks();
 		int countRemaining();

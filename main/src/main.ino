@@ -32,10 +32,15 @@ const int blackthresh = 700; // Threshold for black line
 const int INTencLeftPin= 0;
 const int INTencRightPin = 1;
 
+// Playing field constants (cm)
+
+double TaskManager::lineSep = 20;
+unsigned int TaskManager::lineSepTicks = floor(lineSep / (2*M_PI*Rw));
+
 // Task Manager (cm)
-int TaskManager::Rw = 1.905; // Wheel radii
-int TaskManager::D = 24.5; //
-int TaskManager::Tr = 8;
+double TaskManager::Rw = 1.905; // Wheel radii
+double TaskManager::D = 24.5; // Wheel separation
+double TaskManager::Tr = 8; // Ticks per rotation
 
 // Initialize nav x,y,d
 grid start_pos(4, 1, 0);
@@ -120,8 +125,7 @@ void sensorPollingFunction()
 	{
 		TaskManager::interrupt(LINE_ISR);
 
-		/*
-		DEBUG("#");
+		/* DEBUG("#");
 		DEBUG(main_lap);
 		DEBUG("# ");
 		DEBUG("Line interrupt tripped. ");
@@ -132,8 +136,7 @@ void sensorPollingFunction()
 		DEBUG(irsen[2].getValue());
 		DEBUG(" ");
 		DEBUG(irsen[3].getValue());
-		DEBUG("\r\n");
-		*/
+		DEBUG("\r\n"); */
 	}
 	pastPin = currentPin;
 
@@ -144,16 +147,8 @@ void sensorPollingFunction()
 		irsen[2].detect()
 	);
 }
-void encLeftPin()
-{
-	if (Navigator.on_grid == false)
-		Driver.incEncPortCNT();
-}
-void encRightPin()
-{
-	if (Navigator.on_grid == false)
-		Driver.incEncStarboardCNT();
-}
+void encLeftPin() { Navigator.incEncPortCNT(); }
+void encRightPin() { Navigator.incEncStarboardCNT(); }
 
 // ================================================================ //
 
@@ -258,6 +253,7 @@ void loop()
 			grid dest;
 			int gg;
 
+			Navigator.resetEncCNT();
 			TaskManager::startTask(nav_timer, dest, gg);
 
 			DEBUG("Starting new task. ");
@@ -378,14 +374,7 @@ void addEvents()
 	// Poll sensors
 	if (sensorPollTimer.check() == 1) // 20
 	{
-		// DEBUG
 		sensorPollingFunction();	
-		/*
-		DEBUG("White ");
-		DEBUG(threshold_values[WHITE]);
-		DEBUG("Black ");
-		DEBUG(threshold_values[BLACK]);
-		*/
 	}
 
 	if (navProcessTimer.check() == 1) 

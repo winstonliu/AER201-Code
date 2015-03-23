@@ -5,6 +5,7 @@ bool TaskManager::FLAG_pause = false;
 bool TaskManager::FLAG_hopperleft = false;
 bool TaskManager::FLAG_hopperright = false;
 grid TaskManager::taskdestination = taskNav->getDestination();
+drcoord TaskManager::almosthere = taskNav->offgridpos;
 
 grid TaskManager::dirLineInc(int i)
 {
@@ -30,21 +31,21 @@ grid TaskManager::dirLineInc(int i)
 drcoord TaskManager::calcOffGrid(drcoord lastPos)
 {
 	drcoord newPos = lastPos;
-	unsigned int encPort = taskDriver->getEncPortCNT();
-	unsigned int encStarboard = taskDriver->getEncStarboardCNT();
+	unsigned int encPort = taskNav->getEncPortCNT();
+	unsigned int encStarboard = taskNav->getEncStarboardCNT();
 	// Turning to starboard is positive
 	newPos.d = 2 * M_PI * (Rw/D) * (encPort - encStarboard) / Tr;
 	newPos.x = Rw * cos(lastPos.d) * (encPort + encStarboard) * M_PI / Tr;
 	newPos.y = Rw * sin(lastPos.d) * (encPort + encStarboard) * M_PI / Tr;
 	// Reset count
-	taskDriver->resetEncCNT();
+	taskNav->resetEncCNT();
 	return newPos;
 }
 
 void TaskManager::startTask(int& timer, grid& alfd, int& gg)
 {
 	// Initialize tasks
-	int navVal = taskNav->getValue();
+	int navVal = taskNav->getTaskValue();
 	grid navGrid = taskNav->getGrid();
 	switch (taskNav->getMotion())
 	{
@@ -59,13 +60,6 @@ void TaskManager::startTask(int& timer, grid& alfd, int& gg)
 			break;
 		case MOVEINREVERSE:
 			taskDriver->driveReverse(125);
-			break;
-		case GOONGRID:
-			taskNav->on_grid = true;
-			break;
-		case GOOFFGRID:
-			taskDriver->resetEncCNT();
-			taskNav->on_grid = false;
 			break;
 		case OFFGRIDOUTBOUND:
 			taskDriver->driveStraight();
@@ -89,6 +83,13 @@ void TaskManager::startTask(int& timer, grid& alfd, int& gg)
 			taskClarm->left();
 			timer = 1000;
 			break;
+		// Grid ON, OFF	
+		case GOONGRID:
+			taskNav->on_grid = true;
+			break;
+		case GOOFFGRID:
+			taskNav->on_grid = false;
+			break;
 	}
 	alfd = taskdestination;
 	gg = navVal;
@@ -96,11 +97,14 @@ void TaskManager::startTask(int& timer, grid& alfd, int& gg)
 
 void TaskManager::processTask(int& debug_speed)
 {
+	int baseSpeed = 255;
 	// Non-time critical things that need to be done in the loop
 	switch (taskNav->getMotion())
 	{
 		case MOVEONGRID:
-			debug_speed = taskDriver->lineMotorScaling();
+			if (taskNav->absEncDistance() >= floor(lineSepTicks * 0.75))
+				baseSpeed = 125;
+			debug_speed = taskDriver->lineMotorScaling(baseSpeed);
 			break;
 		case ROTATEOFFGRID:
 		case OFFGRIDOUTBOUND:
@@ -108,7 +112,6 @@ void TaskManager::processTask(int& debug_speed)
 			taskNav->offgridpos = calcOffGrid(taskNav->offgridpos);
 			break;
 		case MOVEINREVERSE:
-			taskDriver->lineMotorScaling();
 			break;
 	}
 }
@@ -122,14 +125,17 @@ int TaskManager::interrupt(sensors senInt)
 		case LINE_ISR:
 			if (currentTask == MOVEONGRID)
 			{
-				grid new_grid = dirLineInc(1);
-				taskNav->setGrid(new_grid);
+				taskNav->resetOffGridToZero();
+				taskNav->setGrid(dirLineInc(1));
 			}
 			else if (currentTask == ROTATEONGRID)
 			{
-				// TODO Assuming that the robot only turns to the left
+				// Calculating 
 				grid new_grid = taskNav->getGrid();
-				new_grid.d = (360 + new_grid.d - 90) % 360;
+				if (taskDriver->get_status() == TURNINGLEFT)
+					new_grid.d = (360 + new_grid.d - 90) % 360;
+				else if (taskDriver->get_status() == TURNINGRIGHT)
+					new_grid.d = (360 + new_grid.d + 90) % 360;
 				taskNav->setGrid(new_grid);
 			}
 			else if (currentTask == MOVEINREVERSE)
@@ -176,7 +182,7 @@ int TaskManager::interrupt(sensors senInt)
 bool TaskManager::checkTaskComplete() 
 { 
 	bool advance = false;
-	int navVal = taskNav->getValue();
+	int navVal = taskNav->getTaskValue();
 	grid gridNow = taskNav->getGrid();
 	
 	// Checks for task completion

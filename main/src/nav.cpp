@@ -1,6 +1,11 @@
 #include "nav.h"
 
-Nav::Nav(grid sp) : currentGrid(sp), destination(sp) {}
+Nav::Nav(grid sp) : currentGrid(sp), destination(sp) 
+{
+	encPortCNT = 0;
+	encStarboardCNT = 0;
+	offgridpos = drcoord(0,0,0);
+}
 
 bool Nav::check_validity(grid coordinates)
 {
@@ -91,6 +96,29 @@ int Nav::hopperBerthing()
 	tasklist.push(task(CLAWEXTEND, 0)); // Extend claw
 }
 
+void Nav::incEncPortCNT() { ++encPortCNT; }
+void Nav::incEncStarboardCNT() { ++encStarboardCNT; }
+void Nav::resetEncCNT() 
+{ 
+	encPortCNT = 0; 
+	encStarboardCNT = 0;
+}
+unsigned int Nav::getEncPortCNT() { return encPortCNT; }
+unsigned int Nav::getEncStarboardCNT() { return encStarboardCNT; }
+unsigned int Nav::absEncDistance()
+{
+	// Return the absolute distance
+	return abs((int)sqrt(offgridpos.x*offgridpos.x 
+				+ offgridpos.y*offgridpos.y)); 
+}
+
+void Nav::resetOffGridToZero() 
+{ 
+	offgridpos.x = 0; 
+	offgridpos.y = 0; 
+	offgridpos.d = 0; 
+}
+
 int Nav::setGrid(grid new_grid)
 {
 	if (check_validity(new_grid) == true)
@@ -104,13 +132,12 @@ int Nav::setGrid(grid new_grid)
 	}
 }
 
-
 void Nav::advance() { tasklist.pop(); }
 motions Nav::getMotion() 
 { 
 	return tasklist.isEmpty() ? IDLE : tasklist.peek().do_now; 
 }
-int Nav::getValue()
+int Nav::getTaskValue()
 {
 	return tasklist.isEmpty() ? 0 : tasklist.peek().value; 
 }

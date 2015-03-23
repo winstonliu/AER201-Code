@@ -10,15 +10,19 @@ namespace TaskManager
 	extern bool FLAG_hopperleft;
 	extern bool FLAG_hopperright;
 
-	extern int Rw; // Wheel radii
-	extern int D; // Wheel separation
-	extern int Tr; // ticks per rotation
+	extern double lineSep;
+	extern unsigned int lineSepTicks;
+
+	extern double Rw; // Wheel radii
+	extern double D; // Wheel separation
+	extern double Tr; // ticks per rotation
 
 	// Stuff from nav class
 	extern DriveMotor* taskDriver;
 	extern motor* taskClarm;
 	extern Nav* taskNav;	
 	extern grid taskdestination;
+	extern drcoord almosthere;
 
 	grid dirLineInc(int i);
 	drcoord calcOffGrid(drcoord lastPos);

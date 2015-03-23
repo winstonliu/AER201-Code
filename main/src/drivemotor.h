@@ -18,7 +18,6 @@ class DriveMotor
 {
 	private:
 		int scaling, initial;
-		unsigned int encPortCNT, encStarboardCNT;
 		motor *ptr_port;
 		motor *ptr_starboard;
 		drive_status currentStatus;
@@ -27,14 +26,8 @@ class DriveMotor
 		DriveMotor(motor& port, motor& starboard, 
 				int scaling = 4, int initial = 10);
 		int mapLine(bool left, bool middle, bool right);
-		int lineMotorScaling();
+		int lineMotorScaling(int baseSpeed = 255);
 
-		void incEncPortCNT();
-		void incEncStarboardCNT();
-		void resetEncCNT();
-		unsigned int getEncPortCNT();
-		unsigned int getEncStarboardCNT();
-		
 		void driveStraight(int speed = 255);
 		void driveReverse(int speed = 255);
 		void turnLeft(int speed = 255);
