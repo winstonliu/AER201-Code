@@ -10,7 +10,9 @@ enum drive_status
 	TURNINGLEFT,
 	TURNINGRIGHT,
 	PIVOTLEFT,
+	PIVOTLEFTBACK,
 	PIVOTRIGHT,
+	PIVOTRIGHTBACK,
 	STOPPED
 };
 
@@ -33,7 +35,9 @@ class DriveMotor
 		void turnLeft(int speed = 255);
 		void turnRight(int speed = 255);
 		void pivotLeft();
+		void pivotLeftReverse();
 		void pivotRight();
+		void pivotRightReverse();
 		drive_status get_status();
 		void stop();
 };

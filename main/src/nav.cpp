@@ -89,8 +89,9 @@ int Nav::computeRectilinearPath(grid new_destination)
 	return 0;
 }
 
-int Nav::hopperBerthing()
+int Nav::hopperDocking()
 {
+	tasklist.push(task(ROTATEOFFGRID, 315)); // Move until interrupt
 	tasklist.push(task(OFFGRIDOUTBOUND, 0)); // Move until interrupt
 	tasklist.push(task(HOPPERALIGN, 0)); // Align with hopper
 	tasklist.push(task(CLAWRETRACT, 0)); // Retract claw
@@ -98,6 +99,26 @@ int Nav::hopperBerthing()
 	tasklist.push(task(CLAWEXTEND, 0)); // Extend claw
 }
 
+int Nav::hopperUndocking()
+{
+	// Using cosine law to calculate degrees of rotation
+	// It's a triangle
+	/*
+	int len_b = 10;
+	double len_c = sqrt(len_a*len_a + len_b*len_b 
+			- 2*len_a*len_b*cos(angleC));
+	int angleA = floor(acos((len_b*len_b + len_c*len_c - len_a*len_a)
+		/ (2*len_b*len_c)));
+	*/
+
+	// negative implies use counted lines
+	tasklist.push(task(OFFGRIDRETURN, -1));
+	tasklist.push(task(ROTATEOFFGRID, currentGrid.d)); // Move until interrupt
+}
+
+int Nav::gameBoardDocking()
+{
+}
 void Nav::incEncPortCNT() { ++encPortCNT; }
 void Nav::incEncStarboardCNT() { ++encStarboardCNT; }
 void Nav::resetEncCNT() 

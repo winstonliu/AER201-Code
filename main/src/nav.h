@@ -74,12 +74,12 @@ struct drcoord : grid
 class Nav
 {
 	// Navigation class with event-driven interrupts
-	private:
+	//private:
+		// TODO move stuff to private after
+	public:
 		grid currentGrid;
 		grid destination;
 		unsigned int encPortCNT, encStarboardCNT;
-		// TODO move stuff to private after
-	public:
 		grid hopperEast;
 		grid hopperWest;
 		QueueArray <task> tasklist;
@@ -89,7 +89,8 @@ class Nav
 
 		Nav(grid start_position);
 		int computeRectilinearPath(grid new_destination);
-		int hopperBerthing();
+		int hopperDocking();
+		int hopperUndocking();
 		void advance();
 
 		int reset(grid);

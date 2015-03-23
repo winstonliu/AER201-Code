@@ -5,7 +5,12 @@ bool TaskManager::FLAG_pause = false;
 bool TaskManager::FLAG_hopperleft = false;
 bool TaskManager::FLAG_hopperright = false;
 grid TaskManager::taskdestination = taskNav->getDestination();
-drcoord TaskManager::almosthere = taskNav->offgridpos;
+drcoord TaskManager::departingpoint = taskNav->offgridpos;
+
+int TaskManager::predockingheading = 0;
+int TaskManager::internalcount = 0;
+
+double TaskManager::euclideanDist(int x, int y) { return sqrt(x*x + y*y); }
 
 grid TaskManager::dirLineInc(int i)
 {
@@ -58,10 +63,14 @@ void TaskManager::startTask(int& timer, grid& alfd, int& gg)
 			taskDriver->driveStraight();
 			taskdestination = dirLineInc(navVal);
 			break;
+		case OFFGRIDRETURN:
+			if (navVal > 0)
+				internalcount = navVal;
 		case MOVEINREVERSE:
 			taskDriver->driveReverse(125);
 			break;
 		case OFFGRIDOUTBOUND:
+			predockingheading = taskNav->offgridpos.d;
 			taskDriver->driveStraight();
 			break;
 		case ROTATEONGRID:
@@ -97,13 +106,15 @@ void TaskManager::startTask(int& timer, grid& alfd, int& gg)
 
 void TaskManager::processTask(int& debug_speed)
 {
-	int baseSpeed = 255;
+	int baseSpeed;
 	// Non-time critical things that need to be done in the loop
 	switch (taskNav->getMotion())
 	{
 		case MOVEONGRID:
 			if (taskNav->absEncDistance() >= floor(lineSepTicks * 0.75))
 				baseSpeed = 125;
+			else
+				baseSpeed = 255;
 			debug_speed = taskDriver->lineMotorScaling(baseSpeed);
 			break;
 		case ROTATEOFFGRID:
@@ -119,9 +130,9 @@ void TaskManager::processTask(int& debug_speed)
 int TaskManager::interrupt(sensors senInt)
 {
 	motions currentTask = taskNav->getMotion();
-	// Forward drive intersects line
 	switch(senInt)
 	{
+		// Forward drive intersects line
 		case LINE_ISR:
 			if (currentTask == MOVEONGRID)
 			{
@@ -152,6 +163,7 @@ int TaskManager::interrupt(sensors senInt)
 			}
 			break;
 		case HOPPER_TOUCH_LEFT:
+			// Stop if both have touched, else pivot
 			if (FLAG_hopperright == true)
 				taskDriver->stop();
 			else
@@ -159,6 +171,7 @@ int TaskManager::interrupt(sensors senInt)
 			FLAG_hopperleft = true;
 			break;
 		case HOPPER_TOUCH_RIGHT:
+			// Stop if both have touched, else pivot
 			if (FLAG_hopperleft == true)
 				taskDriver->stop();
 			else
@@ -220,11 +233,22 @@ bool TaskManager::checkTaskComplete()
 			break;
 		case HOPPERALIGN:
 			if ((FLAG_hopperleft && FLAG_hopperright) == true) 
+			{
+				internalcount = floor(euclideanDist(taskNav->encStarboardCNT, 
+						taskNav->encPortCNT));
 				advance = true;
+			}
 			break;
 		case OFFGRIDOUTBOUND:
 			if ((FLAG_hopperleft || FLAG_hopperright) == true) 
 				advance = true;
+			break;
+		case OFFGRIDRETURN:
+			if (internalcount <= floor(euclideanDist(taskNav->encStarboardCNT, 
+					taskNav->encPortCNT)))
+			{
+				advance = true;
+			}
 			break;
 		case GOOFFGRID:
 		case GOONGRID:

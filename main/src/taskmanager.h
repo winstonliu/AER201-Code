@@ -17,12 +17,18 @@ namespace TaskManager
 	extern double D; // Wheel separation
 	extern double Tr; // ticks per rotation
 
+	extern int offGridTicks;
+	extern int predockingheading;
+	extern int internalcount;
+
 	// Stuff from nav class
 	extern DriveMotor* taskDriver;
 	extern motor* taskClarm;
 	extern Nav* taskNav;	
 	extern grid taskdestination;
-	extern drcoord almosthere;
+	extern drcoord departingpoint;
+
+	double euclideanDist(int x, int y);
 
 	grid dirLineInc(int i);
 	drcoord calcOffGrid(drcoord lastPos);

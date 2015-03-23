@@ -28,13 +28,14 @@ const int senPins[NUMPINS] = {A15,A14,A13,A12}; // l,m,r,offset
 const int numCyclesTrack = 2;
 const int clarmPin = 13;
 const int blackthresh = 700; // Threshold for black line
-const int INTencLeftPin= 0;
-const int INTencRightPin = 1;
+
+const int INTencPortPin= 5;
+const int INTencStarboardPin = 4;
 
 // Playing field constants (cm)
 
 double TaskManager::lineSep = 20;
-unsigned int TaskManager::lineSepTicks = floor(lineSep / (2*M_PI*Rw));
+unsigned int TaskManager::lineSepTicks = floor(lineSep / (2*M_PI*Rw) * Tr);
 
 // Task Manager (cm)
 double TaskManager::Rw = 1.905; // Wheel radii
@@ -70,10 +71,10 @@ char keys[rows][cols] = {
 
 // XXX TODO These pins are wrong XXX
 //connect to the row pinouts of the keypad
-byte rowPins[rows] = {13, 12, 11, 10}; 
+byte rowPins[rows] = {31, 33, 35, 37}; 
 
 //connect to the column pinouts of the keypad
-byte colPins[cols] = {9, 8, 7}; 
+byte colPins[cols] = {39, 41, 43}; 
 
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, rows, cols);
 // ================================================================ //
@@ -84,8 +85,8 @@ const int claw_pwm = 100;
 // Initialize motors (en, dir)
 motor starboard(8,9);
 motor port(10,11);
-motor wheel(12,13, wheel_pwm);
-motor clarm(14, 15, claw_pwm); // Claw arm
+//motor wheel(12,13, wheel_pwm);
+motor clarm(30, 29, claw_pwm); // Claw arm
 
 int current_heading;
 
@@ -170,13 +171,24 @@ void sensorPollingFunction()
 		irsen[2].detect()
 	);
 }
-void encLeftPin() { Navigator.incEncPortCNT(); }
-void encRightPin() { Navigator.incEncStarboardCNT(); }
+void encLeftPin() 
+{ 
+	Serial.println("INTLEFT");
+	Navigator.incEncPortCNT(); 
+}
+void encRightPin() 
+{ 
+	Serial.println("INTRIGHT");
+	Navigator.incEncStarboardCNT(); 
+}
 int getKeyStuff()
 {
+	int counter = 0;
+	for (int i = 0; i < INBUFFERSIZE; ++i)
+		inputbuffer[i] = 0;
 	while (true)
 	{
-		static int counter = 0;
+		Serial.println(" waiting for key: ");
 		char key = keypad.waitForKey();
 
 		if (key != NO_KEY)
@@ -191,7 +203,10 @@ int getKeyStuff()
 			{
 				//lcd.clear();
 				Serial.println(" ");
-				counter = -1;
+				for (int i = 0; i < INBUFFERSIZE; ++i)
+					inputbuffer[i] = 0;
+				counter = 0;
+				continue;
 			}
 			else if (counter < INBUFFERSIZE)
 			{
@@ -202,7 +217,10 @@ int getKeyStuff()
 			{
 				//lcd.clear();
 				Serial.println(" ");
-				counter = -1;
+				for (int i = 0; i < INBUFFERSIZE; ++i)
+					inputbuffer[i] = 0;
+				counter = 0;
+				continue;
 			}
 			++counter;
 		}	
@@ -232,8 +250,8 @@ void setup()
 	}
 
 	// Interrupts
-	attachInterrupt(INTencLeftPin, encLeftPin, RISING);
-	attachInterrupt(INTencRightPin, encRightPin, RISING);
+	attachInterrupt(INTencPortPin, encLeftPin, RISING);
+	attachInterrupt(INTencStarboardPin, encRightPin, RISING);
 
 	// DEBUG COMMANDS
 	Navigator.tasklist.push(task(PAUSE, 5000));
@@ -242,7 +260,6 @@ void setup()
 	Navigator.tasklist.push(task(MOVEINREVERSE, 0));
 	//Navigator.tasklist.push(task(ROTATEONGRID, 90));
 
-	
 /* 
 	// Check for navigation error
 	int ret_err = Navigator.computeRectilinearPath(end_pos);
@@ -270,6 +287,43 @@ void setup()
 		FLAG_NAVERR = true;
 	}
 */
+
+	/*
+	// XXX BLOCKING and SHADY CODE Do keypad inputs first
+	if (FLAG_CANSTART == false)
+	{
+		Serial.println("Hopper East x: ");
+		//lcd.setCursor(0,1);
+		Navigator.hopperEast.x = getKeyStuff();	
+		Serial.println("Hopper East y: ");
+		//lcd.setCursor(0,1);
+		Navigator.hopperEast.y = getKeyStuff();	
+		Serial.println("Hopper East d: ");
+		//lcd.setCursor(0,1);
+		Navigator.hopperEast.d = getKeyStuff();	
+		Serial.print("Hopper East X ");
+		Serial.print(Navigator.hopperEast.x);
+		Serial.print(" Y ");
+		Serial.print(Navigator.hopperEast.y);
+		Serial.print(" D ");
+		Serial.println(Navigator.hopperEast.d);
+		FLAG_CANSTART = true;
+	}
+	else
+	{
+	*/
+		// Start first task
+		grid blah;
+		int dope;
+		TaskManager::startTask(nav_timer, blah, dope);
+		navDelayTimer.interval(nav_timer);
+		navDelayTimer.reset();
+		DEBUG("DOPE: ");
+		DEBUG(dope);
+		DEBUG("\r\n");
+	//}
+
+	
 }
 
 void poop()
@@ -288,34 +342,7 @@ void loop()
 		return;
 	}
 
-	// XXX BLOCKING and SHADY CODE Do keypad inputs first
-	if (FLAG_CANSTART == false)
-	{
-		Serial.println("Hopper East x: ");
-		//lcd.setCursor(0,1);
-		Navigator.hopperEast.x = getKeyStuff();	
-		Serial.println("Hopper East y: ");
-		//lcd.setCursor(0,1);
-		Navigator.hopperEast.y = getKeyStuff();	
-		Serial.println("Hopper East d: ");
-		//lcd.setCursor(0,1);
-		Navigator.hopperEast.d = getKeyStuff();	
-		FLAG_CANSTART = true;
-	}
-	else
-	{
-		// Start first task
-		grid blah;
-		int dope;
-		TaskManager::startTask(nav_timer, blah, dope);
-		navDelayTimer.interval(nav_timer);
-		navDelayTimer.reset();
-		DEBUG("DOPE: ");
-		DEBUG(dope);
-		DEBUG("\r\n");
-	}
-
-	// Check for rising claw interrupt
+		// Check for rising claw interrupt
 	static int clarm_last = LOW;
 	int clarm_now = digitalRead(clarmPin);
 	if (clarm_now == HIGH && clarm_last == LOW)
@@ -397,14 +424,13 @@ void display()
 	DEBUG("#");
 	DEBUG(main_lap);
 	DEBUG("# ");
-	DEBUG("Current motion: ");
+	DEBUG("MOT: ");
 	DEBUG(Navigator.getMotion());
-	DEBUG(" Driver: ");
+	DEBUG(" DRV: ");
 	DEBUG(Driver.get_status());
-	DEBUG("\r\n");
-	DEBUG("Heading: ");
+	DEBUG(" HED: ");
 	DEBUG(Driver.current_heading);
-	DEBUG(" Adjust speed: ");
+	DEBUG(" ADJSPD: ");
 	DEBUG(debug_speed);
 	DEBUG(" RAW ");
 	DEBUG(irsen[0].readSensor());
@@ -422,11 +448,32 @@ void display()
 	DEBUG(irsen[2].detect());
 	DEBUG(" ");
 	DEBUG(irsen[3].detect());
-	DEBUG(" P ");
+	DEBUG(" PMS ");
 	DEBUG(port.motorspeed);
-	DEBUG(" S ");
+	DEBUG(" SMS ");
 	DEBUG(starboard.motorspeed);
+	DEBUG(" PENC ");
+	DEBUG(Navigator.encPortCNT);
+	DEBUG(" SENC ");
+	DEBUG(Navigator.encStarboardCNT);
+	DEBUG(" AED ");
+	DEBUG(Navigator.absEncDistance());
 	DEBUG("\r\n");
+	/*
+	DEBUG("GPOS X ");
+	DEBUG(Navigator.currentGrid.x);
+	DEBUG(" Y ");
+	DEBUG(Navigator.currentGrid.y);
+	DEBUG(" D ");
+	DEBUG(Navigator.currentGrid.d);
+	DEBUG("OPOS X ");
+	DEBUG(Navigator.offgridpos.x);
+	DEBUG(" Y ");
+	DEBUG(Navigator.offgridpos.y);
+	DEBUG(" D ");
+	DEBUG(Navigator.offgridpos.d)
+	DEBUG("\r\n");
+	*/
 
 	// DEBUG
 	lcd.clear();
