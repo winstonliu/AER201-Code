@@ -6,6 +6,7 @@ enum sensors
 {
 	LINE_ISR,
 	CLAW_TOUCH,
+	BOARD_TOUCH,
 	HOPPER_TOUCH_LEFT,
 	HOPPER_TOUCH_RIGHT,
 	TIMER
@@ -13,19 +14,20 @@ enum sensors
 
 enum motions
 {
-	GOONGRID,
-	MOVEONGRID,
-	MOVEINREVERSE,
-	GOOFFGRID,
-	OFFGRIDOUTBOUND,
-	OFFGRIDRETURN,
-	ROTATEONGRID,
-	ROTATEOFFGRID,
-	HOPPERALIGN,
-	CLAWEXTEND,
-	CLAWRETRACT,
-	PAUSE,
-	MOTIONIDLE
+	GOG, // 0  - Go on grid
+	MOG, // 1  - Move on grid
+	MIR, // 2  - Move in reverse
+	GFG, // 3  - Go off grid
+	OOB, // 4  - Off grid outbound
+	OGR, // 5  - Off grid return
+	ROG, // 6  - Rotate on grid
+	RFG, // 7  - Rotate off grid
+	HAL, // 8  - Hopper alignment
+	GAL, // 9  - Gameboard alignment
+	CEX, // 10 - Claw extend
+	CRT, // 11 - Claw retract
+	PPP, // 12 - Pause
+	MOI, // 13 - Motion idle
 };
 
 struct task
@@ -77,6 +79,10 @@ class Nav
 	//private:
 		// TODO move stuff to private after
 	public:
+		// DEBUG
+		long sketchyTimer;
+		long currentTime;
+		// DEBUG
 		grid currentGrid;
 		grid destination;
 		unsigned int encPortCNT, encStarboardCNT;
@@ -114,4 +120,6 @@ class Nav
 
 		bool doneTasks();
 		int countRemaining();
+
+		long timeElapsed();
 };

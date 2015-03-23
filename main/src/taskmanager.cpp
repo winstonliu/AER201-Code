@@ -1,18 +1,19 @@
 #include "taskmanager.h"
 
-bool TaskManager::FLAG_clawextended = true;
-bool TaskManager::FLAG_pause = false;
-bool TaskManager::FLAG_hopperleft = false;
-bool TaskManager::FLAG_hopperright = false;
-grid TaskManager::taskdestination = taskNav->getDestination();
-drcoord TaskManager::departingpoint = taskNav->offgridpos;
+bool TM::FLAG_clawextended = true;
+bool TM::FLAG_dockedboard = false;
+bool TM::FLAG_pause = false;
+bool TM::FLAG_hopperleft = false;
+bool TM::FLAG_hopperright = false;
+grid TM::taskdestination = taskNav->getDestination();
+drcoord TM::departingpoint = taskNav->offgridpos;
 
-int TaskManager::predockingheading = 0;
-int TaskManager::internalcount = 0;
+int TM::predockingheading = 0;
+int TM::internalcount = 0;
 
-double TaskManager::euclideanDist(int x, int y) { return sqrt(x*x + y*y); }
+double TM::euclideanDist(int x, int y) { return sqrt(x*x + y*y); }
 
-grid TaskManager::dirLineInc(int i)
+grid TM::dirLineInc(int i)
 {
 	grid temp_grid = taskNav->getGrid();
 	switch(temp_grid.d)
@@ -33,7 +34,7 @@ grid TaskManager::dirLineInc(int i)
 	return temp_grid;
 }
 
-drcoord TaskManager::calcOffGrid(drcoord lastPos)
+drcoord TM::calcOffGrid(drcoord lastPos)
 {
 	drcoord newPos = lastPos;
 	unsigned int encPort = taskNav->getEncPortCNT();
@@ -47,7 +48,7 @@ drcoord TaskManager::calcOffGrid(drcoord lastPos)
 	return newPos;
 }
 
-void TaskManager::startTask(int& timer, grid& alfd, int& gg)
+void TM::startTask(int& timer, grid& alfd, int& gg)
 {
 	// Initialize tasks
 	int navVal = taskNav->getTaskValue();
@@ -67,10 +68,14 @@ void TaskManager::startTask(int& timer, grid& alfd, int& gg)
 			if (navVal > 0)
 				internalcount = navVal;
 		case MOVEINREVERSE:
-			taskDriver->driveReverse(125);
+			//timer = navVal;
+			taskDriver->driveReverse();
 			break;
 		case OFFGRIDOUTBOUND:
-			predockingheading = taskNav->offgridpos.d;
+			//predockingheading = taskNav->offgridpos.d;
+			taskDriver->driveStraight();
+			break;
+		case HOPPERALIGN:
 			taskDriver->driveStraight();
 			break;
 		case ROTATEONGRID:
@@ -86,11 +91,16 @@ void TaskManager::startTask(int& timer, grid& alfd, int& gg)
 				taskDriver->turnRight();
 			break;
 		case CLAWRETRACT:
-			taskClarm->right();
+			taskClarm->left(clarm_pwm);
+			wheel_pwm = 0;
 			break;
 		case CLAWEXTEND:
-			taskClarm->left();
-			timer = 1000;
+			taskClarm->right(clarm_pwm);
+			wheel_pwm = 0;
+			timer = navVal;
+			break;
+		case GAMEBOARDALIGN:
+			taskDriver->pivotLeftReverse();
 			break;
 		// Grid ON, OFF	
 		case GOONGRID:
@@ -104,30 +114,40 @@ void TaskManager::startTask(int& timer, grid& alfd, int& gg)
 	gg = navVal;
 }
 
-void TaskManager::processTask(int& debug_speed)
+void TM::processTask(int& debug_speed)
 {
-	int baseSpeed;
+	int baseSpeed = 255;
 	// Non-time critical things that need to be done in the loop
 	switch (taskNav->getMotion())
 	{
 		case MOVEONGRID:
+			/*
 			if (taskNav->absEncDistance() >= floor(lineSepTicks * 0.75))
 				baseSpeed = 125;
 			else
 				baseSpeed = 255;
 			debug_speed = taskDriver->lineMotorScaling(baseSpeed);
+			*/
+			/*
+			if (taskNav->timeElapsed() >= timeforaline) 
+				baseSpeed = 125;
+			else
+				baseSpeed = 255;
+			*/
+			debug_speed = taskDriver->lineMotorScaling(baseSpeed);
 			break;
 		case ROTATEOFFGRID:
 		case OFFGRIDOUTBOUND:
 			// Update off grid position
-			taskNav->offgridpos = calcOffGrid(taskNav->offgridpos);
+			//taskNav->offgridpos = calcOffGrid(taskNav->offgridpos);
 			break;
 		case MOVEINREVERSE:
+			taskDriver->driveReverse();
 			break;
 	}
 }
 
-int TaskManager::interrupt(sensors senInt)
+int TM::interrupt(sensors senInt)
 {
 	motions currentTask = taskNav->getMotion();
 	switch(senInt)
@@ -149,11 +169,6 @@ int TaskManager::interrupt(sensors senInt)
 					new_grid.d = (360 + new_grid.d + 90) % 360;
 				taskNav->setGrid(new_grid);
 			}
-			else if (currentTask == MOVEINREVERSE)
-			{
-				taskDriver->stop();
-			}
-			break;
 		case CLAW_TOUCH:
 			if (currentTask == CLAWRETRACT)
 			{
@@ -162,21 +177,29 @@ int TaskManager::interrupt(sensors senInt)
 				FLAG_clawextended = false;
 			}
 			break;
+		case BOARD_TOUCH:
+			taskDriver->stop();
+			FLAG_dockedboard = true;
+			break;
 		case HOPPER_TOUCH_LEFT:
 			// Stop if both have touched, else pivot
-			if (FLAG_hopperright == true)
-				taskDriver->stop();
-			else
-				taskDriver->pivotLeft();
-			FLAG_hopperleft = true;
+			if (currentTask == HOPPERALIGN)
+			{
+				if (FLAG_hopperright == true)
+					taskDriver->stop();
+				else
+					taskDriver->pivotLeft();
+			}
 			break;
 		case HOPPER_TOUCH_RIGHT:
 			// Stop if both have touched, else pivot
-			if (FLAG_hopperleft == true)
-				taskDriver->stop();
-			else
-				taskDriver->pivotRight();
-			FLAG_hopperright = true;
+			if (currentTask == HOPPERALIGN)
+			{
+				if (FLAG_hopperleft == true)
+					taskDriver->stop();
+				else
+					taskDriver->pivotRight();
+			}
 			break;
 		case TIMER:
 			if (currentTask == PAUSE) 
@@ -188,11 +211,17 @@ int TaskManager::interrupt(sensors senInt)
 				taskClarm->stop();
 				FLAG_clawextended = true;
 			}
+			/*
+			else if (currentTask == MOVEINREVERSE)
+			{
+				taskDriver->stop();
+			}
+			*/
 			break;
 	}
 }
 
-bool TaskManager::checkTaskComplete() 
+bool TM::checkTaskComplete() 
 { 
 	bool advance = false;
 	int navVal = taskNav->getTaskValue();
@@ -205,18 +234,22 @@ bool TaskManager::checkTaskComplete()
 			if (FLAG_pause == false) advance = true;	
 			break;
 		case MOVEONGRID:
-			if (gridNow.x == taskdestination.x &&
-					gridNow.y == taskdestination.y)
+			if (taskNav->currentGrid.x == taskdestination.x &&
+					taskNav->currentGrid.y == taskdestination.y)
 				advance = true;
 			break;
+		/*
 		case MOVEINREVERSE:
-			if (taskDriver->get_status() == STOPPED)
+			if (taskDriver->get_status() == STOPPED && taskNav->timeElapsed() > 1000)
 				advance = true;
 			break;
+		*/
 		case ROTATEONGRID:
-			if (gridNow == taskdestination) advance = true;
+			if (gridNow == taskdestination && taskNav->timeElapsed() > 2000) 
+				advance = true;
 			break;
 		case ROTATEOFFGRID:
+			/*
 			if ((taskDriver->get_status() == TURNINGRIGHT 
 					&& taskNav->offgridpos.d > navVal)
 				|| (taskDriver->get_status() == TURNINGLEFT 
@@ -224,23 +257,42 @@ bool TaskManager::checkTaskComplete()
 			{
 				advance = true;
 			}
+			*/
+			if (taskNav->timeElapsed() > 1350)
+				advance = true;
 			break;
 		case CLAWEXTEND: 
-			if (FLAG_clawextended == true) { advance = true; }
+			if (FLAG_clawextended == true) 
+			{ 
+				taskWheel->left();
+				wheel_pwm = 255;
+				advance = true; 
+			}
 			break;
 		case CLAWRETRACT:
-			if (FLAG_clawextended == false) { advance = true; }
+			if (FLAG_clawextended == false) 
+			{ 
+				advance = true; 
+			}
 			break;
 		case HOPPERALIGN:
 			if ((FLAG_hopperleft && FLAG_hopperright) == true) 
 			{
+				taskDriver->stop();
 				internalcount = floor(euclideanDist(taskNav->encStarboardCNT, 
 						taskNav->encPortCNT));
 				advance = true;
 			}
 			break;
+		case GAMEBOARDALIGN:
+			if (FLAG_dockedboard == true)
+			{
+				FLAG_dockedboard = false;
+				advance = true;
+			}
+			break;
 		case OFFGRIDOUTBOUND:
-			if ((FLAG_hopperleft || FLAG_hopperright) == true) 
+			if ((FLAG_hopperleft || FLAG_hopperright) == true && taskNav->timeElapsed() > 500) 
 				advance = true;
 			break;
 		case OFFGRIDRETURN:
@@ -250,10 +302,281 @@ bool TaskManager::checkTaskComplete()
 				advance = true;
 			}
 			break;
+		case MOVEINREVERSE:
+			if (board_now == true && taskNav->timeElapsed() > 1500);
+				advance = true;
+			break;
 		case GOOFFGRID:
 		case GOONGRID:
 			advance = true;
 			break;
 	}
 	return advance;
+}
+
+namespace TM::GOG // 0  - Go on grid
+{
+	void start()
+	{
+
+	}
+	void process()
+	{
+
+	}
+	void interrupt()
+	{
+
+	}
+	void check()
+	{
+
+	}
+}
+namespace TM::MOG // 1  - Move on grid
+{
+	void start()
+	{
+
+	}
+	void process()
+	{
+
+	}
+	void interrupt()
+	{
+
+	}
+	void check()
+	{
+
+	}
+}
+namespace TM::MIR // 2  - Move in reverse
+{
+	void start();
+	{
+
+	}
+	void process()
+	{
+
+	}
+	void interrupt()
+	{
+
+	}
+	void check()
+	{
+
+	}
+}
+namespace TM::GFG // 3  - Go off grid
+{
+	void start()
+	{
+
+	}
+	void process()
+	{
+
+	}
+	void interrupt()
+	{
+
+	}
+	void check()
+	{
+
+	}
+}
+namespace TM::OOB // 4  - Off grid outbound
+{
+	void start()
+	{
+
+	}
+	void process()
+	{
+
+	}
+	void interrupt()
+	{
+
+	}
+	void check()
+	{
+
+	}
+}
+namespace TM::OGR // 5  - Off grid return
+{
+	void start()
+	{
+
+	}
+	void process()
+	{
+
+	}
+	void interrupt()
+	{
+
+	}
+	void check()
+	{
+
+	}
+}
+namespace TM::ROG // 6  - Rotate on grid
+{
+	void start()
+	{
+
+	}
+	void process()
+	{
+
+	}
+	void interrupt()
+	{
+
+	}
+	void check()
+	{
+
+	}
+}
+namespace TM::RFG // 7  - Rotate off grid
+{
+	void start()
+	{
+
+	}
+	void process()
+	{
+
+	}
+	void interrupt()
+	{
+
+	}
+	void check()
+	{
+
+	}
+}
+namespace TM::HAL // 8  - Hopper alignment
+{
+	void start()
+	{
+
+	}
+	void process()
+	{
+
+	}
+	void interrupt()
+	{
+
+	}
+	void check()
+	{
+
+	}
+}
+namespace TM::GAL // 9  - Gameboard alignment
+{
+	void start()
+	{
+
+	}
+	void process()
+	{
+
+	}
+	void interrupt()
+	{
+
+	}
+	void check()
+	{
+
+	}
+}
+namespace TM::CEX // 10 - Claw extend
+{
+	void start()
+	{
+
+	}
+	void process()
+	{
+
+	}
+	void interrupt()
+	{
+
+	}
+	void check()
+	{
+
+	}
+}
+namespace TM::CRT // 11 - Claw retract
+{
+	void start()
+	{
+
+	}
+	void process()
+	{
+
+	}
+	void interrupt()
+	{
+
+	}
+	void check()
+	{
+
+	}
+}
+namespace TM::PPP // 12 - Pause
+{
+	void start()
+	{
+
+	}
+	void process()
+	{
+
+	}
+	void interrupt()
+	{
+
+	}
+	void check()
+	{
+
+	}
+}
+namespace TM::MOI // 13 - Motion idle
+{
+	void start()
+	{
+
+	}
+	void process()
+	{
+
+	}
+	void interrupt()
+	{
+
+	}
+	void check()
+	{
+
+	}
 }

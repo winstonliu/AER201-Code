@@ -26,21 +26,34 @@ const int btnCalibrate = 10;
 const int NUMPINS = 4; // Initialize irsensors
 const int senPins[NUMPINS] = {A15,A14,A13,A12}; // l,m,r,offset
 const int numCyclesTrack = 2;
-const int clarmPin = 13;
-const int blackthresh = 700; // Threshold for black line
+const int blackthresh = 600; // Threshold for black line
+
+int TM::board_now;
+
+// PINS
+
+const int clarmPin = 3;
+const int boardPin = 2;
+const int hopperlPin = 5;
+const int hopperrPin = 4;
+const int solenoidPin = 6;
 
 const int INTencPortPin= 5;
 const int INTencStarboardPin = 4;
 
+
 // Playing field constants (cm)
 
-double TaskManager::lineSep = 20;
-unsigned int TaskManager::lineSepTicks = floor(lineSep / (2*M_PI*Rw) * Tr);
+double TM::lineSep = 20;
+unsigned int TM::lineSepTicks = floor(lineSep / (2*M_PI*Rw) * Tr);
 
 // Task Manager (cm)
-double TaskManager::Rw = 1.905; // Wheel radii
-double TaskManager::D = 24.5; // Wheel separation
-double TaskManager::Tr = 8; // Ticks per rotation
+double TM::Rw = 1.905; // Wheel radii
+double TM::D = 24.5; // Wheel separation
+double TM::Tr = 8; // Ticks per rotation
+
+// XXX SET THIS
+int TM::timeforaline;
 
 // Initialize nav x,y,d
 grid start_pos(4, 1, 0);
@@ -79,14 +92,14 @@ byte colPins[cols] = {39, 41, 43};
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, rows, cols);
 // ================================================================ //
 // MOTOR initialization
-const int wheel_pwm = 125;
-const int claw_pwm = 100;
+int TM::wheel_pwm = 0;
+int TM::clarm_pwm = 200;
 
 // Initialize motors (en, dir)
 motor starboard(8,9);
 motor port(10,11);
-//motor wheel(12,13, wheel_pwm);
-motor clarm(30, 29, claw_pwm); // Claw arm
+motor wheel(7,50,TM::wheel_pwm);
+motor clarm(12,13,TM::clarm_pwm); // Claw arm
 
 int current_heading;
 
@@ -102,10 +115,11 @@ rgb_lcd lcd;
 Nav Navigator(start_pos);
 IRSensor irsen[NUMPINS];
 
-DriveMotor* TaskManager::taskDriver = &Driver;
-motor* TaskManager::taskClarm = &clarm;
-Nav* TaskManager::taskNav = &Navigator;
-int nav_timer;
+DriveMotor* TM::taskDriver = &Driver;
+motor* TM::taskClarm = &clarm;
+motor* TM::taskWheel = &wheel;
+Nav* TM::taskNav = &Navigator;
+int nav_timer = 3600000;
 
 
 // ================================================================ //
@@ -144,10 +158,15 @@ void sensorPollingFunction()
 	// Check the offset sensor for line pass detection, look for rising edge
 	static int pastPin = WHITE;
 	int currentPin = irsen[3].detect();
+	/*
 	if (currentPin == BLACK && pastPin == WHITE 
 		&& Driver.get_status() != STOPPED && sum_lines == NUMPINS)
 	{
-		TaskManager::interrupt(LINE_ISR);
+	*/
+	if (currentPin == BLACK)
+	{
+
+		TM::interrupt(LINE_ISR);
 
 		/* DEBUG("#");
 		DEBUG(main_lap);
@@ -173,12 +192,12 @@ void sensorPollingFunction()
 }
 void encLeftPin() 
 { 
-	Serial.println("INTLEFT");
+	//Serial.println("INTLEFT");
 	Navigator.incEncPortCNT(); 
 }
 void encRightPin() 
 { 
-	Serial.println("INTRIGHT");
+	//Serial.println("INTRIGHT");
 	Navigator.incEncStarboardCNT(); 
 }
 int getKeyStuff()
@@ -255,10 +274,25 @@ void setup()
 
 	// DEBUG COMMANDS
 	Navigator.tasklist.push(task(PAUSE, 5000));
-	Navigator.tasklist.push(task(MOVEONGRID, 1));
+	Navigator.tasklist.push(task(ROTATEOFFGRID, 90));
 	Navigator.tasklist.push(task(PAUSE, 2000));
-	Navigator.tasklist.push(task(MOVEINREVERSE, 0));
-	//Navigator.tasklist.push(task(ROTATEONGRID, 90));
+	Navigator.tasklist.push(task(OFFGRIDOUTBOUND, 0));
+	Navigator.tasklist.push(task(PAUSE, 2000));
+	Navigator.tasklist.push(task(HOPPERALIGN, 0));
+	Navigator.tasklist.push(task(PAUSE, 2000));
+	Navigator.tasklist.push(task(CLAWRETRACT, 0));
+	Navigator.tasklist.push(task(PAUSE, 2000));
+	Navigator.tasklist.push(task(MOVEINREVERSE, 5000));
+	Navigator.tasklist.push(task(CLAWEXTEND, 900));
+	//Navigator.tasklist.push(task(PAUSE, 5000));
+	//Navigator.tasklist.push(task(PAUSE, 2000));
+	//Navigator.tasklist.push(task(ROTATEONGRID, 270));
+	//Navigator.tasklist.push(task(ROTATEOFFGRID, 0));
+	//Navigator.tasklist.push(task(PAUSE, 1000));
+	//Navigator.tasklist.push(task(MOVEONGRID, 4));
+	//Navigator.tasklist.push(task(PAUSE, 1000));
+	//Navigator.tasklist.push(task(MOVEINREVERSE, 1));
+	//Navigator.tasklist.push(task(PAUSE, 1000));
 
 /* 
 	// Check for navigation error
@@ -315,7 +349,8 @@ void setup()
 		// Start first task
 		grid blah;
 		int dope;
-		TaskManager::startTask(nav_timer, blah, dope);
+		TM::startTask(nav_timer, blah, dope);
+		Navigator.sketchyTimer = millis();
 		navDelayTimer.interval(nav_timer);
 		navDelayTimer.reset();
 		DEBUG("DOPE: ");
@@ -328,12 +363,14 @@ void setup()
 
 void poop()
 {
-	port.left(50);
-	starboard.right();
+	Driver.driveReverse(125);
 }
 
 void loop()
 {
+	wheel.left(TM::wheel_pwm);
+	Navigator.currentTime = millis();
+
 	if (FLAG_NAVERR == true)
 		return;
 	else if (Navigator.getMotion() == MOTIONIDLE)
@@ -342,15 +379,59 @@ void loop()
 		return;
 	}
 
-		// Check for rising claw interrupt
+	// Check for rising claw interrupt
 	static int clarm_last = LOW;
 	int clarm_now = digitalRead(clarmPin);
 	if (clarm_now == HIGH && clarm_last == LOW)
-		TaskManager::interrupt(CLAW_TOUCH);	
+	{
+		TM::interrupt(CLAW_TOUCH);	
+		//Serial.println("LINEINT");
+	}
 	clarm_last = clarm_now;
 
+	// Check for rising gameboard interrupt
+	static int board_last = LOW;
+	TM::board_now = digitalRead(boardPin);
+	if (TM::board_now == HIGH && board_last == LOW)
+		TM::interrupt(BOARD_TOUCH);	
+	board_last = TM::board_now;
+
+	// Solenoid pin
+	digitalWrite(solenoidPin, TM::board_now);
+	//Serial.println(TM::board_now);
+
+	// Check for rising hopper left interrupt
+	if(TM::FLAG_hopperleft = digitalRead(hopperlPin) == true)
+		TM::interrupt(HOPPER_TOUCH_LEFT);	
+
+	if(TM::FLAG_hopperright = digitalRead(hopperrPin) == true)
+		TM::interrupt(HOPPER_TOUCH_RIGHT);	
+	// XXX
+	/*
+	static int hopperl_last = LOW;
+	int hopperl_now = digitalRead(hopperlPin);
+	TM::FLAG_hopperleft = hopperl_now;
+	if (hopperl_now == HIGH && hopperl_last == LOW)
+	{
+		TM::interrupt(HOPPER_TOUCH_LEFT);	
+		Serial.print("HL");
+	}
+	hopperl_last = hopperl_now;
+
+	// Check for rising hopper right interrupt
+	static int hopperr_last = LOW;
+	int hopperr_now = digitalRead(hopperrPin);
+	TM::FLAG_hopperright = hopperr_now;
+	if (hopperr_now == HIGH && hopperr_last == LOW)
+	{
+		TM::interrupt(HOPPER_TOUCH_RIGHT);	
+		Serial.print("HR");
+	}
+	hopperr_last = hopperr_now;
+	*/
+
 	// Check if there are any tasks left to do
-	if (TaskManager::checkTaskComplete() == true)
+	if (TM::checkTaskComplete() == true)
 	{
 		nav_timer = 3600000; // default is 1 hour
 		DEBUG("FULL STOP");
@@ -363,9 +444,18 @@ void loop()
 			int gg;
 
 			Navigator.resetEncCNT();
-			TaskManager::startTask(nav_timer, dest, gg);
+			TM::startTask(nav_timer, dest, gg);
+			Navigator.sketchyTimer = millis();
 
 			DEBUG("Starting new task. ");
+			grid home_grid = Navigator.getGrid();
+			DEBUG(" CURR ");
+			DEBUG(" x: ");
+			DEBUG(home_grid.x);
+			DEBUG(" y: ");
+			DEBUG(home_grid.y);
+			DEBUG(" d: ");
+			DEBUG(home_grid.d);
 			DEBUG(" DEST ");
 			DEBUG(" x: ");
 			DEBUG(dest.x);
@@ -376,7 +466,7 @@ void loop()
 			DEBUG(" NAVVAL: ");
 			DEBUG(gg);
 			DEBUG(" MOTION: ");
-			DEBUG(TaskManager::taskNav->getMotion());
+			DEBUG(TM::taskNav->getMotion());
 			DEBUG("\r\n");
 		}
 		else
@@ -391,7 +481,7 @@ void loop()
 		DEBUG(main_lap);
 		DEBUG("# ");
 		DEBUG("Task completed. ");
-		DEBUG(TaskManager::taskNav->getMotion());
+		DEBUG(TM::taskNav->getMotion());
 		grid home_grid = Navigator.getGrid();
 		DEBUG(" CURR ");
 		DEBUG(" x: ");
@@ -400,7 +490,7 @@ void loop()
 		DEBUG(home_grid.y);
 		DEBUG(" d: ");
 		DEBUG(home_grid.d);
-		grid temp_grid = TaskManager::taskdestination;
+		grid temp_grid = TM::taskdestination;
 		DEBUG(" DEST ");
 		DEBUG(" x: ");
 		DEBUG(temp_grid.x);
@@ -452,12 +542,20 @@ void display()
 	DEBUG(port.motorspeed);
 	DEBUG(" SMS ");
 	DEBUG(starboard.motorspeed);
+	DEBUG(" PT ");
+	DEBUG(port.get_status());
+	DEBUG(" ST ");
+	DEBUG(starboard.get_status());
 	DEBUG(" PENC ");
 	DEBUG(Navigator.encPortCNT);
 	DEBUG(" SENC ");
 	DEBUG(Navigator.encStarboardCNT);
-	DEBUG(" AED ");
-	DEBUG(Navigator.absEncDistance());
+	DEBUG(" HR ");
+	DEBUG(TM::FLAG_hopperright);
+	DEBUG(" HL ");
+	DEBUG(TM::FLAG_hopperleft);
+	DEBUG(" WPWM ");
+	DEBUG(TM::wheel_pwm);
 	DEBUG("\r\n");
 	/*
 	DEBUG("GPOS X ");
@@ -508,11 +606,11 @@ void addEvents()
 
 	if (navProcessTimer.check() == 1) 
 	{
-		TaskManager::processTask(debug_speed);
+		TM::processTask(debug_speed);
 	}
 	if (navDelayTimer.check() == 1) 
 	{
-		TaskManager::interrupt(TIMER);
+		TM::interrupt(TIMER);
 		DEBUG("#");
 		DEBUG(main_lap);
 		DEBUG("# ");

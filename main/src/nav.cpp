@@ -9,6 +9,8 @@ Nav::Nav(grid sp) : currentGrid(sp), destination(sp)
 	offgridpos = drcoord(0,0,0);
 }
 
+long Nav::timeElapsed() { return currentTime - sketchyTimer; }
+
 bool Nav::check_validity(grid coordinates)
 {
 	// Check the validity of grid coordinates
@@ -114,10 +116,6 @@ int Nav::hopperUndocking()
 	// negative implies use counted lines
 	tasklist.push(task(OFFGRIDRETURN, -1));
 	tasklist.push(task(ROTATEOFFGRID, currentGrid.d)); // Move until interrupt
-}
-
-int Nav::gameBoardDocking()
-{
 }
 void Nav::incEncPortCNT() { ++encPortCNT; }
 void Nav::incEncStarboardCNT() { ++encStarboardCNT; }
