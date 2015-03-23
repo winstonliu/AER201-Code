@@ -25,7 +25,7 @@ enum motions
 	CLAWEXTEND,
 	CLAWRETRACT,
 	PAUSE,
-	IDLE
+	MOTIONIDLE
 };
 
 struct task
@@ -77,11 +77,11 @@ class Nav
 	private:
 		grid currentGrid;
 		grid destination;
-		grid hopperEast;
-		grid hopperWest;
 		unsigned int encPortCNT, encStarboardCNT;
 		// TODO move stuff to private after
 	public:
+		grid hopperEast;
+		grid hopperWest;
 		QueueArray <task> tasklist;
 		bool check_validity(grid new_position);
 		drcoord offgridpos;

@@ -4,6 +4,8 @@ Nav::Nav(grid sp) : currentGrid(sp), destination(sp)
 {
 	encPortCNT = 0;
 	encStarboardCNT = 0;
+	hopperEast = grid(0,0,0);
+	hopperWest = grid(0,0,0);
 	offgridpos = drcoord(0,0,0);
 }
 
@@ -111,14 +113,12 @@ unsigned int Nav::absEncDistance()
 	return abs((int)sqrt(offgridpos.x*offgridpos.x 
 				+ offgridpos.y*offgridpos.y)); 
 }
-
 void Nav::resetOffGridToZero() 
 { 
 	offgridpos.x = 0; 
 	offgridpos.y = 0; 
 	offgridpos.d = 0; 
 }
-
 int Nav::setGrid(grid new_grid)
 {
 	if (check_validity(new_grid) == true)
@@ -131,11 +131,10 @@ int Nav::setGrid(grid new_grid)
 		return -1;
 	}
 }
-
 void Nav::advance() { tasklist.pop(); }
 motions Nav::getMotion() 
 { 
-	return tasklist.isEmpty() ? IDLE : tasklist.peek().do_now; 
+	return tasklist.isEmpty() ? MOTIONIDLE : tasklist.peek().do_now; 
 }
 int Nav::getTaskValue()
 {

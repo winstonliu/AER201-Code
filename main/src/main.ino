@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include <rgb_lcd.h>
 #include <irsensor.h>
+#include <Keypad.h>
 #include <motor.h>
 //#include <EventManager.h>
 #include <Metro.h>
@@ -17,8 +18,6 @@
 #else
 #define DEBUG( x )
 #endif
-
-//EventManager myEvents();
 
 // ================================================================ //
 // ADJUSTABLE PARAMETERS
@@ -54,6 +53,30 @@ const int dmotor_scaling = 50;
 const int dmotor_initial = 2;
 
 // ================================================================ //
+
+// Keypad
+
+const byte rows = 4;
+const byte cols = 3;
+
+const int INBUFFERSIZE = 4;
+char inputbuffer[INBUFFERSIZE];
+char keys[rows][cols] = {
+ 	{'1','2','3'},
+	{'4','5','6'},
+	{'7','8','9'},
+	{'*','0','#'}
+};
+
+// XXX TODO These pins are wrong XXX
+//connect to the row pinouts of the keypad
+byte rowPins[rows] = {13, 12, 11, 10}; 
+
+//connect to the column pinouts of the keypad
+byte colPins[cols] = {9, 8, 7}; 
+
+Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, rows, cols);
+// ================================================================ //
 // MOTOR initialization
 const int wheel_pwm = 125;
 const int claw_pwm = 100;
@@ -67,12 +90,12 @@ motor clarm(14, 15, claw_pwm); // Claw arm
 int current_heading;
 
 DriveMotor Driver(port, starboard, dmotor_scaling, dmotor_initial);
-
 // ================================================================ //
+// Important stuff
 
-// Flags
 bool FLAG_NAVERR = false;
 bool FLAG_DONE = false;
+bool FLAG_CANSTART = false;
 
 rgb_lcd lcd;
 Nav Navigator(start_pos);
@@ -83,6 +106,7 @@ motor* TaskManager::taskClarm = &clarm;
 Nav* TaskManager::taskNav = &Navigator;
 int nav_timer;
 
+
 // ================================================================ //
 // Timers
 
@@ -92,7 +116,6 @@ Metro navProcessTimer = Metro(50);
 Metro navDelayTimer = Metro(3600000); // Set to 1 hour when unused
 
 // ================================================================ //
-
 
 // XXX DEBUG CODE
 int debug_speed;
@@ -149,6 +172,43 @@ void sensorPollingFunction()
 }
 void encLeftPin() { Navigator.incEncPortCNT(); }
 void encRightPin() { Navigator.incEncStarboardCNT(); }
+int getKeyStuff()
+{
+	while (true)
+	{
+		static int counter = 0;
+		char key = keypad.waitForKey();
+
+		if (key != NO_KEY)
+		{
+			if (key == '*')
+			{
+				//lcd.clear();
+				Serial.println(" ");
+				return atoi(inputbuffer);
+			}
+			else if (key == '#')
+			{
+				//lcd.clear();
+				Serial.println(" ");
+				counter = -1;
+			}
+			else if (counter < INBUFFERSIZE)
+			{
+				Serial.print(key);
+				inputbuffer[counter] = key;
+			}
+			else
+			{
+				//lcd.clear();
+				Serial.println(" ");
+				counter = -1;
+			}
+			++counter;
+		}	
+	}
+}
+
 
 // ================================================================ //
 
@@ -182,17 +242,7 @@ void setup()
 	Navigator.tasklist.push(task(MOVEINREVERSE, 0));
 	//Navigator.tasklist.push(task(ROTATEONGRID, 90));
 
-	// Start first task
-	grid blah;
-	int dope;
-	TaskManager::startTask(nav_timer, blah, dope);
-	navDelayTimer.interval(nav_timer);
-	navDelayTimer.reset();
-	DEBUG("DOPE: ");
-	DEBUG(dope);
-	DEBUG("\r\n");
-
-
+	
 /* 
 	// Check for navigation error
 	int ret_err = Navigator.computeRectilinearPath(end_pos);
@@ -230,8 +280,40 @@ void poop()
 
 void loop()
 {
-	if (FLAG_NAVERR == true || FLAG_DONE == true)
+	if (FLAG_NAVERR == true)
 		return;
+	else if (Navigator.getMotion() == MOTIONIDLE)
+	{
+		// TODO, put in code to wait for further instructions
+		return;
+	}
+
+	// XXX BLOCKING and SHADY CODE Do keypad inputs first
+	if (FLAG_CANSTART == false)
+	{
+		Serial.println("Hopper East x: ");
+		//lcd.setCursor(0,1);
+		Navigator.hopperEast.x = getKeyStuff();	
+		Serial.println("Hopper East y: ");
+		//lcd.setCursor(0,1);
+		Navigator.hopperEast.y = getKeyStuff();	
+		Serial.println("Hopper East d: ");
+		//lcd.setCursor(0,1);
+		Navigator.hopperEast.d = getKeyStuff();	
+		FLAG_CANSTART = true;
+	}
+	else
+	{
+		// Start first task
+		grid blah;
+		int dope;
+		TaskManager::startTask(nav_timer, blah, dope);
+		navDelayTimer.interval(nav_timer);
+		navDelayTimer.reset();
+		DEBUG("DOPE: ");
+		DEBUG(dope);
+		DEBUG("\r\n");
+	}
 
 	// Check for rising claw interrupt
 	static int clarm_last = LOW;
