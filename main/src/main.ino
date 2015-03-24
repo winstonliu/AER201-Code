@@ -167,6 +167,8 @@ void sensorPollingFunction()
 	{
 
 		TM::interrupt(LINE_ISR);
+		Navigator.setGrid(TM::dirLineInc(1));	// Update locationheading
+		Navigator.resetOffGridToZero();
 
 		/* DEBUG("#");
 		DEBUG(main_lap);

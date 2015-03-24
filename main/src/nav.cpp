@@ -81,24 +81,24 @@ int Nav::computeRectilinearPath(grid new_destination)
 		next_yd = 0;
 	}
 
-	tasklist.push(task(PAUSE, 2000));
-	tasklist.push(task(ROTATEONGRID, next_xd)); // Rotate to face x
-	tasklist.push(task(MOVEONGRID, difference.x)); // Move x
-	tasklist.push(task(ROTATEONGRID, next_yd)); // Rotate to face y
-	tasklist.push(task(MOVEONGRID, difference.y)); // Move y
-	tasklist.push(task(ROTATEONGRID, destination.d)); // Rotate to face final
+	tasklist.push(task(PPP, 2000));
+	tasklist.push(task(ROG, next_xd)); // Rotate to face x
+	tasklist.push(task(MOG, difference.x)); // Move x
+	tasklist.push(task(ROG, next_yd)); // Rotate to face y
+	tasklist.push(task(MOG, difference.y)); // Move y
+	tasklist.push(task(ROG, destination.d)); // Rotate to face final
 
 	return 0;
 }
 
 int Nav::hopperDocking()
 {
-	tasklist.push(task(ROTATEOFFGRID, 315)); // Move until interrupt
-	tasklist.push(task(OFFGRIDOUTBOUND, 0)); // Move until interrupt
-	tasklist.push(task(HOPPERALIGN, 0)); // Align with hopper
-	tasklist.push(task(CLAWRETRACT, 0)); // Retract claw
-	tasklist.push(task(OFFGRIDRETURN, 0)); // Reverse
-	tasklist.push(task(CLAWEXTEND, 0)); // Extend claw
+	tasklist.push(task(RFG, 315)); // Move until interrupt
+	tasklist.push(task(OGB, 0)); // Move until interrupt
+	tasklist.push(task(HAL, 0)); // Align with hopper
+	tasklist.push(task(CRT, 0)); // Retract claw
+	tasklist.push(task(OGR, 0)); // Reverse
+	tasklist.push(task(CEX, 0)); // Extend claw
 }
 
 int Nav::hopperUndocking()
@@ -114,8 +114,8 @@ int Nav::hopperUndocking()
 	*/
 
 	// negative implies use counted lines
-	tasklist.push(task(OFFGRIDRETURN, -1));
-	tasklist.push(task(ROTATEOFFGRID, currentGrid.d)); // Move until interrupt
+	tasklist.push(task(OGR, -1));
+	tasklist.push(task(RFG, currentGrid.d)); // Move until interrupt
 }
 void Nav::incEncPortCNT() { ++encPortCNT; }
 void Nav::incEncStarboardCNT() { ++encStarboardCNT; }
@@ -153,7 +153,7 @@ int Nav::setGrid(grid new_grid)
 void Nav::advance() { tasklist.pop(); }
 motions Nav::getMotion() 
 { 
-	return tasklist.isEmpty() ? MOTIONIDLE : tasklist.peek().do_now; 
+	return tasklist.isEmpty() ? MOI : tasklist.peek().do_now; 
 }
 int Nav::getTaskValue()
 {

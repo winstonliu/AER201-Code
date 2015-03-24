@@ -8,6 +8,7 @@ namespace TM	// TaskManager
 	{
 		private:
 			motions mymotion;
+			int taskval;
 		public:
 			Motion(motions mymotion);
 			virtual void start();
@@ -59,18 +60,21 @@ namespace TM	// TaskManager
 	// Move on grid
 	class motionMOG : Motion 
 	{
-   		void start();
-   		void process();
-   		void interrupt();
-   		void complete();
+		private: 
+			int linecount;
+		public:
+			void start();
+			void process();
+			void interrupt(sensors intsensor);
+			bool complete();
 	};
 	// Move in reverse
 	class motionMIR : Motion 
 	{
    		void start();
    		void process();
-   		void interrupt();
-   		void complete();
+   		void interrupt(sensors intsensor);
+   		bool complete();
 	};
 	class motionNOE : Motion {};
 }

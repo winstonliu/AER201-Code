@@ -6,16 +6,19 @@
 !_TAG_PROGRAM_VERSION	5.8	//
 BLACK	main/lib/legacy/photoLineDetection.h	13;"	d
 BLACK	main/lib/sensing/sensor.h	13;"	d
+BOARD_TOUCH	main/src/nav.h	/^	BOARD_TOUCH,$/;"	e	enum:sensors
 CALIBRATED	main/lib/legacy/photoLineDetection.h	15;"	d
-CLAWEXTEND	main/src/nav.h	/^	CLAWEXTEND,$/;"	e	enum:motions
-CLAWRETRACT	main/src/nav.h	/^	CLAWRETRACT,$/;"	e	enum:motions
+CEX	main/src/nav.h	/^	CEX, \/\/ Claw extend$/;"	e	enum:motions
 CLAW_TOUCH	main/src/nav.h	/^	CLAW_TOUCH,$/;"	e	enum:sensors
 CLOSED	main/lib/keypad/Keypad.h	63;"	d
 CLOSED	main/lib/keypad/utility/Key.h	43;"	d
-D	main/.build/mega2560/src/main.cpp	/^int TaskManager::D = 24.5; \/\/$/;"	m	class:TaskManager	file:
-DEBUG	main/.build/mega2560/src/main.cpp	34;"	d	file:
-DEBUG	main/.build/mega2560/src/main.cpp	36;"	d	file:
+CRT	main/src/nav.h	/^	CRT, \/\/ Claw retract$/;"	e	enum:motions
+DRIVINGFORWARD	hardware_verification/src/drivemotor.h	/^	DRIVINGFORWARD,$/;"	e	enum:drive_status
 DRIVINGFORWARD	main/src/drivemotor.h	/^	DRIVINGFORWARD,$/;"	e	enum:drive_status
+DRIVINGREVERSE	hardware_verification/src/drivemotor.h	/^	DRIVINGREVERSE,$/;"	e	enum:drive_status
+DRIVINGREVERSE	main/src/drivemotor.h	/^	DRIVINGREVERSE,$/;"	e	enum:drive_status
+DriveMotor	hardware_verification/src/drivemotor.cpp	/^DriveMotor::DriveMotor(motor& p, motor& s, int ds, int di) : $/;"	f	class:DriveMotor
+DriveMotor	hardware_verification/src/drivemotor.h	/^class DriveMotor$/;"	c
 DriveMotor	main/src/drivemotor.cpp	/^DriveMotor::DriveMotor(motor& p, motor& s, int ds, int di) : $/;"	f	class:DriveMotor
 DriveMotor	main/src/drivemotor.h	/^class DriveMotor$/;"	c
 EVENTMANAGER_EVENT_QUEUE_SIZE	main/lib/EventManager/EventManager.h	49;"	d
@@ -37,27 +40,23 @@ EventPriority	main/lib/EventManager/EventManager.h	/^    enum EventPriority { kH
 EventQueue	main/lib/EventManager/EventManager.cpp	/^EventManager::EventQueue::EventQueue( boolean beSafe ) :$/;"	f	class:EventManager::EventQueue
 EventQueue	main/lib/EventManager/EventManager.h	/^    class EventQueue $/;"	c	class:EventManager
 EventType	main/lib/EventManager/EventManager.h	/^    enum EventType $/;"	g	class:EventManager
-FLAG_DONE	main/.build/mega2560/src/main.cpp	/^bool FLAG_DONE = false;$/;"	v
-FLAG_NAVERR	main/.build/mega2560/src/main.cpp	/^bool FLAG_NAVERR = false;$/;"	v
-FLAG_clawextended	main/src/taskmanager.cpp	/^bool TaskManager::FLAG_clawextended = true;$/;"	m	class:TaskManager	file:
-FLAG_hopperleft	main/src/taskmanager.cpp	/^bool TaskManager::FLAG_hopperleft = false;$/;"	m	class:TaskManager	file:
-FLAG_hopperright	main/src/taskmanager.cpp	/^bool TaskManager::FLAG_hopperright = false;$/;"	m	class:TaskManager	file:
-FLAG_pause	main/src/taskmanager.cpp	/^bool TaskManager::FLAG_pause = false;$/;"	m	class:TaskManager	file:
+FLAG_clawextended	main/src/taskmanager.cpp	/^bool FLAG_clawextended = true;$/;"	v
+FLAG_dockedboard	main/src/taskmanager.cpp	/^bool FLAG_dockedboard = false;$/;"	v
+FLAG_hopperleft	main/src/taskmanager.cpp	/^bool FLAG_hopperleft = false;$/;"	v
+FLAG_hopperright	main/src/taskmanager.cpp	/^bool FLAG_hopperright = false;$/;"	v
+FLAG_pause	main/src/taskmanager.cpp	/^bool FLAG_pause = false;$/;"	v
 FlexiTimer2	main/lib/FlexiTimer2/FlexiTimer2.h	/^namespace FlexiTimer2 {$/;"	n
 FlexiTimer2_h	main/lib/FlexiTimer2/FlexiTimer2.h	2;"	d
-GOOFFGRID	main/src/nav.h	/^	GOOFFGRID,$/;"	e	enum:motions
-GOONGRID	main/src/nav.h	/^	GOONGRID,$/;"	e	enum:motions
+GAL	main/src/nav.h	/^	GAL, \/\/ Gameboard alignment$/;"	e	enum:motions
+GFG	main/src/nav.h	/^	GFG, \/\/ Go off grid$/;"	e	enum:motions
 GenericCallable	main/lib/EventManager/EventManager.h	/^    GenericCallable(F _f): f(_f) {};$/;"	f	class:GenericCallable
 GenericCallable	main/lib/EventManager/EventManager.h	/^class GenericCallable : public EventListener$/;"	c
+HAL	main/src/nav.h	/^	HAL, \/\/ Hopper alignment$/;"	e	enum:motions
 HOLD	main/lib/keypad/utility/Key.h	/^typedef enum{ IDLE, PRESSED, HOLD, RELEASED } KeyState;$/;"	e	enum:__anon1
-HOPPERALIGN	main/src/nav.h	/^	HOPPERALIGN,$/;"	e	enum:motions
 HOPPER_TOUCH_LEFT	main/src/nav.h	/^	HOPPER_TOUCH_LEFT,$/;"	e	enum:sensors
 HOPPER_TOUCH_RIGHT	main/src/nav.h	/^	HOPPER_TOUCH_RIGHT,$/;"	e	enum:sensors
 IDLE	main/lib/keypad/utility/Key.h	/^typedef enum{ IDLE, PRESSED, HOLD, RELEASED } KeyState;$/;"	e	enum:__anon1
-IDLE	main/src/nav.h	/^	IDLE$/;"	e	enum:motions
 INPUT_PULLUP	main/lib/keypad/Keypad.h	49;"	d
-INTencLeftPin	main/.build/mega2560/src/main.cpp	/^const int INTencLeftPin= 0;$/;"	v
-INTencRightPin	main/.build/mega2560/src/main.cpp	/^const int INTencRightPin = 1;$/;"	v
 IRSensor	main/lib/sensing/irsensor.cpp	/^IRSensor::IRSensor(int sv, int nct, int bt):Sensor(sv), numCyclesTrack(nct), blackthresh(bt) {};$/;"	f	class:IRSensor
 IRSensor	main/lib/sensing/irsensor.h	/^		IRSensor() {};$/;"	f	class:IRSensor
 IRSensor	main/lib/sensing/irsensor.h	/^class IRSensor: public Sensor$/;"	c
@@ -107,13 +106,16 @@ ListenerItem	main/lib/EventManager/EventManager.h	/^        struct ListenerItem$
 ListenerList	main/lib/EventManager/EventManager.cpp	/^EventManager::ListenerList::ListenerList() : $/;"	f	class:EventManager::ListenerList
 ListenerList	main/lib/EventManager/EventManager.h	/^    class ListenerList $/;"	c	class:EventManager
 MAPSIZE	main/lib/keypad/Keypad.h	77;"	d
+MIR	main/src/nav.h	/^	MIR, \/\/ Move in reverse$/;"	e	enum:motions
+MOG	main/src/nav.h	/^	MOG, \/\/ Move on grid$/;"	e	enum:motions
+MOI	main/src/nav.h	/^	MOI, \/\/ Motion idle$/;"	e	enum:motions
+MOTIONSCOUNT	main/src/nav.h	/^	MOTIONSCOUNT,$/;"	e	enum:motions
 MOTOR_LEFT	hardware_verification/src/motor.h	/^	MOTOR_LEFT,$/;"	e	enum:motor_states
 MOTOR_LEFT	main/lib/motor/motor.h	/^	MOTOR_LEFT,$/;"	e	enum:motor_states
 MOTOR_OFF	hardware_verification/src/motor.h	/^	MOTOR_OFF$/;"	e	enum:motor_states
 MOTOR_OFF	main/lib/motor/motor.h	/^	MOTOR_OFF$/;"	e	enum:motor_states
 MOTOR_RIGHT	hardware_verification/src/motor.h	/^	MOTOR_RIGHT,$/;"	e	enum:motor_states
 MOTOR_RIGHT	main/lib/motor/motor.h	/^	MOTOR_RIGHT,$/;"	e	enum:motor_states
-MOVEONGRID	main/src/nav.h	/^	MOVEONGRID,$/;"	e	enum:motions
 MemberFunctionCallable	main/lib/EventManager/EventManager.h	/^    MemberFunctionCallable() {};$/;"	f	class:MemberFunctionCallable
 MemberFunctionCallable	main/lib/EventManager/EventManager.h	/^    MemberFunctionCallable(C* _obj,memberf_pointer _f):obj(_obj),f(_f) {};$/;"	f	class:MemberFunctionCallable
 MemberFunctionCallable	main/lib/EventManager/EventManager.h	/^class MemberFunctionCallable : public EventListener$/;"	c
@@ -121,26 +123,35 @@ Metro	main/lib/Metro/Metro.cpp	/^Metro::Metro()$/;"	f	class:Metro
 Metro	main/lib/Metro/Metro.cpp	/^Metro::Metro(unsigned long interval_millis)$/;"	f	class:Metro
 Metro	main/lib/Metro/Metro.h	/^class Metro$/;"	c
 Metro_h	main/lib/Metro/Metro.h	27;"	d
+Motion	main/src/taskmanager.cpp	/^class Motion$/;"	c	file:
+Motion	main/src/taskmanager.h	/^	class Motion$/;"	c	namespace:TM
 NEGATIVE	main/lib/pid/pid.h	/^const bool NEGATIVE = 0;$/;"	v
+NOE	main/src/nav.h	/^	NOE$/;"	e	enum:motions
 NO_KEY	main/lib/keypad/utility/Key.h	/^const char NO_KEY = '\\0';$/;"	v
 NUMPINS	hardware_verification/.build/mega2560/src/motor_test.cpp	/^const int NUMPINS = 4;$/;"	v
-NUMPINS	main/.build/mega2560/src/main.cpp	/^const int NUMPINS = 4; \/\/ Initialize irsensors$/;"	v
-Nav	main/src/nav.cpp	/^Nav::Nav(grid sp) : currentGrid(sp), destination(sp) {}$/;"	f	class:Nav
+Nav	main/src/nav.cpp	/^Nav::Nav(grid sp) : currentGrid(sp), destination(sp) $/;"	f	class:Nav
 Nav	main/src/nav.h	/^class Nav$/;"	c
 OFF	main/lib/pid/pid.h	/^const bool OFF = 0;$/;"	v
-OFFGRIDOUTBOUND	main/src/nav.h	/^	OFFGRIDOUTBOUND,$/;"	e	enum:motions
-OFFGRIDRETURN	main/src/nav.h	/^	OFFGRIDRETURN,$/;"	e	enum:motions
+OGB	main/src/nav.h	/^	OGB, \/\/ Off grid outbound$/;"	e	enum:motions
+OGR	main/src/nav.h	/^	OGR, \/\/ Off grid return$/;"	e	enum:motions
 ON	main/lib/pid/pid.h	/^const bool ON = 1;$/;"	v
+ON_WHITE	hardware_verification/src/drivemotor.h	/^const int ON_WHITE = false;$/;"	v
 ON_WHITE	main/src/drivemotor.h	/^const int ON_WHITE = false;$/;"	v
 OPEN	main/lib/keypad/Keypad.h	62;"	d
 OPEN	main/lib/keypad/utility/Key.h	42;"	d
-PAUSE	main/src/nav.h	/^	PAUSE,$/;"	e	enum:motions
 PID	main/lib/pid/pid.cpp	/^PID::PID(int& in, const int& set, int& out, double p, double i, double d, bool res)$/;"	f	class:PID
 PID	main/lib/pid/pid.h	/^		PID() {};$/;"	f	class:PID
 PID	main/lib/pid/pid.h	/^class PID {$/;"	c
+PIVOTLEFT	hardware_verification/src/drivemotor.h	/^	PIVOTLEFT,$/;"	e	enum:drive_status
 PIVOTLEFT	main/src/drivemotor.h	/^	PIVOTLEFT,$/;"	e	enum:drive_status
+PIVOTLEFTBACK	hardware_verification/src/drivemotor.h	/^	PIVOTLEFTBACK,$/;"	e	enum:drive_status
+PIVOTLEFTBACK	main/src/drivemotor.h	/^	PIVOTLEFTBACK,$/;"	e	enum:drive_status
+PIVOTRIGHT	hardware_verification/src/drivemotor.h	/^	PIVOTRIGHT,$/;"	e	enum:drive_status
 PIVOTRIGHT	main/src/drivemotor.h	/^	PIVOTRIGHT,$/;"	e	enum:drive_status
+PIVOTRIGHTBACK	hardware_verification/src/drivemotor.h	/^	PIVOTRIGHTBACK,$/;"	e	enum:drive_status
+PIVOTRIGHTBACK	main/src/drivemotor.h	/^	PIVOTRIGHTBACK,$/;"	e	enum:drive_status
 POSITIVE	main/lib/pid/pid.h	/^const bool POSITIVE = 1;$/;"	v
+PPP	main/src/nav.h	/^	PPP, \/\/ Pause$/;"	e	enum:motions
 PRESSED	main/lib/keypad/utility/Key.h	/^typedef enum{ IDLE, PRESSED, HOLD, RELEASED } KeyState;$/;"	e	enum:__anon1
 PhotoLineDetection	main/lib/legacy/photoLineDetection.cpp	/^PhotoLineDetection::PhotoLineDetection(int newSensorPin)$/;"	f	class:PhotoLineDetection
 PhotoLineDetection	main/lib/legacy/photoLineDetection.h	/^class PhotoLineDetection$/;"	c
@@ -157,21 +168,22 @@ REG_MODE2	main/lib/grove/rgb_lcd.h	48;"	d
 REG_OUTPUT	main/lib/grove/rgb_lcd.h	49;"	d
 REG_RED	main/lib/grove/rgb_lcd.h	43;"	d
 RELEASED	main/lib/keypad/utility/Key.h	/^typedef enum{ IDLE, PRESSED, HOLD, RELEASED } KeyState;$/;"	e	enum:__anon1
+RFG	main/src/nav.h	/^	RFG, \/\/ Rotate off grid$/;"	e	enum:motions
 RGB_ADDRESS	main/lib/grove/rgb_lcd.h	34;"	d
-ROTATEOFFGRID	main/src/nav.h	/^	ROTATEOFFGRID,$/;"	e	enum:motions
-ROTATEONGRID	main/src/nav.h	/^	ROTATEONGRID,$/;"	e	enum:motions
-Rw	main/.build/mega2560/src/main.cpp	/^int TaskManager::Rw = 1.905; \/\/ Wheel radii$/;"	m	class:TaskManager	file:
-SERIALDEBUG	main/.build/mega2560/src/main.cpp	31;"	d	file:
+ROG	main/src/nav.h	/^	ROG, \/\/ Rotate on grid$/;"	e	enum:motions
+SENSORSCOUNT	main/src/nav.h	/^	SENSORSCOUNT$/;"	e	enum:sensors
+STOPPED	hardware_verification/src/drivemotor.h	/^	STOPPED$/;"	e	enum:drive_status
 STOPPED	main/src/drivemotor.h	/^	STOPPED$/;"	e	enum:drive_status
 SafetyMode	main/lib/EventManager/EventManager.h	/^    enum SafetyMode { kNotInterruptSafe, kInterruptSafe };$/;"	g	class:EventManager
 Sensor	main/lib/sensing/sensor.cpp	/^Sensor::Sensor(int pin) $/;"	f	class:Sensor
 Sensor	main/lib/sensing/sensor.h	/^		Sensor() {};$/;"	f	class:Sensor
 Sensor	main/lib/sensing/sensor.h	/^class Sensor$/;"	c
-TIMER	main/src/nav.h	/^	TIMER$/;"	e	enum:sensors
+TIMER	main/src/nav.h	/^	TIMER,$/;"	e	enum:sensors
+TM	main/src/taskmanager.h	/^namespace TM	\/\/ TaskManager$/;"	n
+TURNINGLEFT	hardware_verification/src/drivemotor.h	/^	TURNINGLEFT,$/;"	e	enum:drive_status
 TURNINGLEFT	main/src/drivemotor.h	/^	TURNINGLEFT,$/;"	e	enum:drive_status
+TURNINGRIGHT	hardware_verification/src/drivemotor.h	/^	TURNINGRIGHT,$/;"	e	enum:drive_status
 TURNINGRIGHT	main/src/drivemotor.h	/^	TURNINGRIGHT,$/;"	e	enum:drive_status
-TaskManager	main/src/taskmanager.h	/^namespace TaskManager$/;"	n
-Tr	main/.build/mega2560/src/main.cpp	/^int TaskManager::Tr = 8;$/;"	m	class:TaskManager	file:
 UNKNOWN	main/lib/sensing/sensor.h	15;"	d
 WHITE	main/lib/legacy/photoLineDetection.h	12;"	d
 WHITE	main/lib/sensing/sensor.h	12;"	d
@@ -185,8 +197,8 @@ _initialized	main/lib/grove/rgb_lcd.h	/^  uint8_t _initialized;$/;"	m	class:rgb_
 _mypinMode	main/lib/keypad/Keypad.h	51;"	d
 _numlines	main/lib/grove/rgb_lcd.h	/^  uint8_t _numlines,_currline;$/;"	m	class:rgb_lcd
 _overflow	main/lib/FlexiTimer2/FlexiTimer2.cpp	/^void FlexiTimer2::_overflow() {$/;"	f	class:FlexiTimer2
+absEncDistance	main/src/nav.cpp	/^unsigned int Nav::absEncDistance()$/;"	f	class:Nav
 addEventListener	main/lib/keypad/Keypad.cpp	/^void Keypad::addEventListener(void (*listener)(char)){$/;"	f	class:Keypad
-addEvents	main/.build/mega2560/src/main.cpp	/^void addEvents()$/;"	f
 addListener	main/lib/EventManager/EventManager.cpp	/^boolean EventManager::ListenerList::addListener( int eventCode, EventListener* listener ) $/;"	f	class:EventManager::ListenerList
 addListener	main/lib/EventManager/EventManager.h	/^inline boolean EventManager::addListener( int eventCode, EventListener* listener )$/;"	f	class:EventManager
 adjustSpeed	hardware_verification/src/motor.cpp	/^void motor::adjustSpeed(int speed)$/;"	f	class:motor
@@ -197,30 +209,26 @@ begin	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::begin(uint8_t cols, uint8_t lin
 begin	main/lib/keypad/Keypad.cpp	/^void Keypad::begin(char *userKeymap) {$/;"	f	class:Keypad
 bitMap	main/lib/keypad/Keypad.h	/^	uint bitMap[MAPSIZE];	\/\/ 10 row x 16 column array of bits. Except Due which has 32 columns.$/;"	m	class:Keypad
 black	main/lib/legacy/photoLineDetection.h	/^	int black;$/;"	m	struct:PhotoThresholdValues
-blackthresh	main/.build/mega2560/src/main.cpp	/^const int blackthresh = 700; \/\/ Threshold for black line$/;"	v
 blackthresh	main/lib/sensing/irsensor.h	/^		int blackthresh; \/\/ for ~4.7k$/;"	m	class:IRSensor
 blink	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::blink()$/;"	f	class:rgb_lcd
 blink	main/lib/queuearray/QueueArray.h	/^void QueueArray<T>::blink () const {$/;"	f	class:QueueArray
-btnCalibrate	main/.build/mega2560/src/main.cpp	/^const int btnCalibrate = 10;$/;"	v
-calcOffGrid	main/src/taskmanager.cpp	/^drcoord TaskManager::calcOffGrid(drcoord lastPos)$/;"	f	class:TaskManager
+calcOffGrid	main/src/taskmanager.cpp	/^drcoord calcOffGrid(drcoord lastPos)$/;"	f
 calibrate	main/lib/legacy/photoLineDetection.cpp	/^void PhotoLineDetection::calibrate(int calibrate_color)$/;"	f	class:PhotoLineDetection
 calibrate	main/lib/sensing/sensor.cpp	/^void Sensor::calibrate(int color)$/;"	f	class:Sensor
-calibrate_all	main/.build/mega2560/src/main.cpp	/^void calibrate_all() \/\/ TODO terrible hack$/;"	f
 callback	main/lib/EventManager/EventManager.h	/^            EventListener*	callback;		\/\/ The listener function$/;"	m	struct:EventManager::ListenerList::ListenerItem
 check	main/lib/Metro/Metro.cpp	/^uint8_t Metro::check()$/;"	f	class:Metro
 checkSensor	main/lib/legacy/photoLineDetection.cpp	/^int PhotoLineDetection::checkSensor()$/;"	f	class:PhotoLineDetection
-checkTaskComplete	main/src/taskmanager.cpp	/^bool TaskManager::checkTaskComplete() $/;"	f	class:TaskManager
 check_validity	main/src/nav.cpp	/^bool Nav::check_validity(grid coordinates)$/;"	f	class:Nav
 clamp	main/lib/pid/pid.cpp	/^void PID::clamp(int& parameter) {$/;"	f	class:PID
-clarm	main/src/drivemotor.h	/^		motor port, starboard, clarm;$/;"	m	class:DriveMotor
-clarmPin	main/.build/mega2560/src/main.cpp	/^const int clarmPin = 13;$/;"	v
-claw_pwm	main/.build/mega2560/src/main.cpp	/^const int claw_pwm = 100;$/;"	v
 clear	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::clear()$/;"	f	class:rgb_lcd
 code	main/lib/EventManager/EventManager.h	/^            int code;	\/\/ each event is represented by an integer code$/;"	m	struct:EventManager::EventQueue::EventElement
 color_define	main/lib/grove/rgb_lcd.cpp	/^const unsigned char color_define[4][3] = $/;"	v
 columnPins	main/lib/keypad/Keypad.h	/^    byte *columnPins;$/;"	m	class:Keypad
 columns	main/lib/keypad/Keypad.h	/^    byte columns;$/;"	m	struct:__anon2
 command	main/lib/grove/rgb_lcd.cpp	/^inline void rgb_lcd::command(uint8_t value)$/;"	f	class:rgb_lcd
+complete	main/src/taskmanager.cpp	/^	bool complete()$/;"	f	class:motionMIR	file:
+complete	main/src/taskmanager.cpp	/^	bool complete()$/;"	f	class:motionMOG	file:
+complete	main/src/taskmanager.cpp	/^	virtual void complete() {}$/;"	f	class:Motion	file:
 compute	main/lib/pid/pid.cpp	/^bool PID::compute() {$/;"	f	class:PID
 computeRectilinearPath	main/src/nav.cpp	/^int Nav::computeRectilinearPath(grid new_destination)$/;"	f	class:Nav
 contents	main/lib/queuearray/QueueArray.h	/^    T * contents;    \/\/ the array of the queue.$/;"	m	class:QueueArray
@@ -229,8 +237,10 @@ count	main/lib/queuearray/QueueArray.h	/^int QueueArray<T>::count () const {$/;"
 countRemaining	main/src/nav.cpp	/^int Nav::countRemaining() { return tasklist.count(); }$/;"	f	class:Nav
 createChar	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::createChar(uint8_t location, uint8_t charmap[])$/;"	f	class:rgb_lcd
 currentGrid	main/src/nav.h	/^		grid currentGrid;$/;"	m	class:Nav
+currentStatus	hardware_verification/src/drivemotor.h	/^		drive_status currentStatus;$/;"	m	class:DriveMotor
 currentStatus	main/src/drivemotor.h	/^		drive_status currentStatus;$/;"	m	class:DriveMotor
-current_heading	main/.build/mega2560/src/main.cpp	/^int current_heading;$/;"	v
+currentTime	main/src/nav.h	/^		long currentTime;$/;"	m	class:Nav
+current_heading	hardware_verification/src/drivemotor.h	/^		int current_heading;$/;"	m	class:DriveMotor
 current_heading	main/src/drivemotor.h	/^		int current_heading;$/;"	m	class:DriveMotor
 cursor	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::cursor() {$/;"	f	class:rgb_lcd
 cycle_time	main/lib/pid/pid.h	/^		unsigned int cycle_time;	\/\/ 100ms 0.1s$/;"	m	class:PID
@@ -238,25 +248,30 @@ cyclesPast	main/lib/sensing/irsensor.h	/^		int cyclesPast;$/;"	m	class:IRSensor
 d	main/src/nav.h	/^	double d;$/;"	m	struct:drcoord
 d	main/src/nav.h	/^	int d;	\/\/ 0 to 359, N:0, E:90, S:180, W:270$/;"	m	struct:grid
 debounceTime	main/lib/keypad/Keypad.h	/^	uint debounceTime;$/;"	m	class:Keypad
+departingpoint	main/src/taskmanager.cpp	/^drcoord departingpoint = tkNav->offgridpos;$/;"	v
 dequeue	main/lib/queuearray/QueueArray.h	/^T QueueArray<T>::dequeue () {$/;"	f	class:QueueArray
 destination	main/src/nav.h	/^		grid destination;$/;"	m	class:Nav
 detect	main/lib/legacy/photoLineDetection.cpp	/^int PhotoLineDetection::detect()$/;"	f	class:PhotoLineDetection
 detect	main/lib/sensing/irsensor.cpp	/^int IRSensor::detect()$/;"	f	class:IRSensor
 detect	main/lib/sensing/sensor.cpp	/^int Sensor::detect()$/;"	f	class:Sensor
-dirLineInc	main/src/taskmanager.cpp	/^grid TaskManager::dirLineInc(int i)$/;"	f	class:TaskManager
+digL	hardware_verification/.build/mega2560/src/motor_test.cpp	/^void digL()$/;"	f
+digR	hardware_verification/.build/mega2560/src/motor_test.cpp	/^void digR()$/;"	f
+dirLineInc	main/src/taskmanager.cpp	/^grid dirLineInc(int i)$/;"	f
 direction	hardware_verification/src/motor.h	/^		int direction;$/;"	m	class:motor
 direction	main/lib/motor/motor.h	/^		int direction;$/;"	m	class:motor
-display	main/.build/mega2560/src/main.cpp	/^void display()$/;"	f
 display	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::display() {$/;"	f	class:rgb_lcd
-displayTimer	main/.build/mega2560/src/main.cpp	/^Metro displayTimer = Metro(200);$/;"	v
-dmotor_initial	main/.build/mega2560/src/main.cpp	/^const int dmotor_initial = 2;$/;"	v
-dmotor_scaling	main/.build/mega2560/src/main.cpp	/^const int dmotor_scaling = 50; $/;"	v
+dmotor_initial	hardware_verification/.build/mega2560/src/motor_test.cpp	/^const int dmotor_initial = 2;$/;"	v
+dmotor_scaling	hardware_verification/.build/mega2560/src/motor_test.cpp	/^const int dmotor_scaling = 50; $/;"	v
 do_now	main/src/nav.h	/^	motions do_now;$/;"	m	struct:task
 doneTasks	main/src/nav.cpp	/^bool Nav::doneTasks() { return tasklist.count() == 0; }$/;"	f	class:Nav
 drcoord	main/src/nav.h	/^	drcoord() {}$/;"	f	struct:drcoord
 drcoord	main/src/nav.h	/^	drcoord(double a, double b, double c): x(a), y(b), d(c) {}$/;"	f	struct:drcoord
 drcoord	main/src/nav.h	/^struct drcoord : grid $/;"	s
-driveStraight	main/src/drivemotor.cpp	/^void DriveMotor::driveStraight()$/;"	f	class:DriveMotor
+driveReverse	hardware_verification/src/drivemotor.cpp	/^void DriveMotor::driveReverse(int speed)$/;"	f	class:DriveMotor
+driveReverse	main/src/drivemotor.cpp	/^void DriveMotor::driveReverse(int speed)$/;"	f	class:DriveMotor
+driveStraight	hardware_verification/src/drivemotor.cpp	/^void DriveMotor::driveStraight(int speed)$/;"	f	class:DriveMotor
+driveStraight	main/src/drivemotor.cpp	/^void DriveMotor::driveStraight(int speed)$/;"	f	class:DriveMotor
+drive_status	hardware_verification/src/drivemotor.h	/^enum drive_status$/;"	g
 drive_status	main/src/drivemotor.h	/^enum drive_status$/;"	g
 dynamicCalibration	main/lib/sensing/irsensor.cpp	/^void IRSensor::dynamicCalibration()$/;"	f	class:IRSensor
 enable	hardware_verification/src/motor.h	/^		int enable;$/;"	m	class:motor
@@ -266,11 +281,10 @@ enableDefaultListener	main/lib/EventManager/EventManager.h	/^inline void EventMa
 enableListener	main/lib/EventManager/EventManager.cpp	/^boolean EventManager::ListenerList::enableListener( int eventCode, EventListener* listener, boolean enable ) $/;"	f	class:EventManager::ListenerList
 enableListener	main/lib/EventManager/EventManager.h	/^inline boolean EventManager::enableListener( int eventCode, EventListener* listener, boolean enable )$/;"	f	class:EventManager
 enabled	main/lib/EventManager/EventManager.h	/^            boolean			enabled;			\/\/ Each listener can be enabled or disabled$/;"	m	struct:EventManager::ListenerList::ListenerItem
-encLeftPin	main/.build/mega2560/src/main.cpp	/^void encLeftPin()$/;"	f
-encPortCNT	main/src/drivemotor.h	/^		unsigned int encPortCNT, encStarboardCNT;$/;"	m	class:DriveMotor
-encRightPin	main/.build/mega2560/src/main.cpp	/^void encRightPin()$/;"	f
-encStarboardCNT	main/src/drivemotor.h	/^		unsigned int encPortCNT, encStarboardCNT;$/;"	m	class:DriveMotor
+encPortCNT	main/src/nav.h	/^		unsigned int encPortCNT, encStarboardCNT;$/;"	m	class:Nav
+encStarboardCNT	main/src/nav.h	/^		unsigned int encPortCNT, encStarboardCNT;$/;"	m	class:Nav
 enqueue	main/lib/queuearray/QueueArray.h	/^void QueueArray<T>::enqueue (const T i) {$/;"	f	class:QueueArray
+euclideanDist	main/src/taskmanager.cpp	/^double euclideanDist(int x, int y) { return sqrt(x*x + y*y); }$/;"	f
 eventCode	main/lib/EventManager/EventManager.h	/^            int				eventCode;		\/\/ The event code$/;"	m	struct:EventManager::ListenerList::ListenerItem
 exit	main/lib/queuearray/QueueArray.h	/^void QueueArray<T>::exit (const char * m) const {$/;"	f	class:QueueArray
 f	main/lib/EventManager/EventManager.h	/^    F* f;$/;"	m	class:GenericCallable
@@ -280,8 +294,8 @@ findInList	main/lib/keypad/Keypad.cpp	/^int Keypad::findInList (int keyCode) {$/
 front	main/lib/queuearray/QueueArray.h	/^T QueueArray<T>::front () const {$/;"	f	class:QueueArray
 func	main/lib/FlexiTimer2/FlexiTimer2.cpp	/^void (*FlexiTimer2::func)();$/;"	v
 getDestination	main/src/nav.cpp	/^grid Nav::getDestination() { return destination; }$/;"	f	class:Nav
-getEncPortCNT	main/src/drivemotor.cpp	/^unsigned int DriveMotor::getEncPortCNT() { return encPortCNT; }$/;"	f	class:DriveMotor
-getEncStarboardCNT	main/src/drivemotor.cpp	/^unsigned int DriveMotor::getEncStarboardCNT() { return encStarboardCNT; }$/;"	f	class:DriveMotor
+getEncPortCNT	main/src/nav.cpp	/^unsigned int Nav::getEncPortCNT() { return encPortCNT; }$/;"	f	class:Nav
+getEncStarboardCNT	main/src/nav.cpp	/^unsigned int Nav::getEncStarboardCNT() { return encStarboardCNT; }$/;"	f	class:Nav
 getGrid	main/src/nav.cpp	/^grid Nav::getGrid() { return currentGrid; }$/;"	f	class:Nav
 getKey	main/lib/keypad/Keypad.cpp	/^char Keypad::getKey() {$/;"	f	class:Keypad
 getKeys	main/lib/keypad/Keypad.cpp	/^bool Keypad::getKeys() {$/;"	f	class:Keypad
@@ -290,12 +304,14 @@ getNumEntries	main/lib/EventManager/EventManager.h	/^inline int EventManager::Li
 getNumEvents	main/lib/EventManager/EventManager.h	/^inline int EventManager::EventQueue::getNumEvents() $/;"	f	class:EventManager::EventQueue
 getNumEventsInQueue	main/lib/EventManager/EventManager.h	/^inline int EventManager::getNumEventsInQueue( EventPriority pri ) $/;"	f	class:EventManager
 getState	main/lib/keypad/Keypad.cpp	/^KeyState Keypad::getState() {$/;"	f	class:Keypad
+getTaskValue	main/src/nav.cpp	/^int Nav::getTaskValue()$/;"	f	class:Nav
 getValue	main/lib/sensing/sensor.cpp	/^int Sensor::getValue() { return sensorVal; }$/;"	f	class:Sensor
-getValue	main/src/nav.cpp	/^int Nav::getValue()$/;"	f	class:Nav
+get_motion	main/src/taskmanager.cpp	/^	motions get_motion() { return mymotion; }$/;"	f	class:Motion	file:
 get_onoff	main/lib/pid/pid.cpp	/^bool PID::get_onoff() const {return on;}$/;"	f	class:PID
 get_response	main/lib/pid/pid.cpp	/^bool PID::get_response() const {return response;}$/;"	f	class:PID
-get_status	hardware_verification/src/motor.cpp	/^motor_states motor::get_status() $/;"	f	class:motor
-get_status	main/lib/motor/motor.cpp	/^motor_states motor::get_status() $/;"	f	class:motor
+get_status	hardware_verification/src/drivemotor.cpp	/^drive_status DriveMotor::get_status() { return currentStatus; } $/;"	f	class:DriveMotor
+get_status	hardware_verification/src/motor.cpp	/^motor_states motor::get_status() { return status; }$/;"	f	class:motor
+get_status	main/lib/motor/motor.cpp	/^motor_states motor::get_status() { return status; }$/;"	f	class:motor
 get_status	main/src/drivemotor.cpp	/^drive_status DriveMotor::get_status() { return currentStatus; } $/;"	f	class:DriveMotor
 grid	main/src/nav.h	/^	grid() {}$/;"	f	struct:grid
 grid	main/src/nav.h	/^	grid(int a, int b, int c) : x(a), y(b), d(c) {}$/;"	f	struct:grid
@@ -305,22 +321,25 @@ high	main/lib/pid/pid.h	/^		int low, high;$/;"	m	class:PID
 holdTime	main/lib/keypad/Keypad.h	/^	uint holdTime;$/;"	m	class:Keypad
 holdTimer	main/lib/keypad/Keypad.h	/^	unsigned long holdTimer;$/;"	m	class:Keypad
 home	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::home()$/;"	f	class:rgb_lcd
-hopperBerthing	main/src/nav.cpp	/^int Nav::hopperBerthing()$/;"	f	class:Nav
+hopperDocking	main/src/nav.cpp	/^int Nav::hopperDocking()$/;"	f	class:Nav
 hopperEast	main/src/nav.h	/^		grid hopperEast;$/;"	m	class:Nav
+hopperUndocking	main/src/nav.cpp	/^int Nav::hopperUndocking()$/;"	f	class:Nav
 hopperWest	main/src/nav.h	/^		grid hopperWest;$/;"	m	class:Nav
 i2c_send_byte	main/lib/grove/rgb_lcd.cpp	/^void i2c_send_byte(unsigned char dta)$/;"	f
 i2c_send_byteS	main/lib/grove/rgb_lcd.cpp	/^void i2c_send_byteS(unsigned char *dta, unsigned char len)$/;"	f
-incEncPortCNT	main/src/drivemotor.cpp	/^void DriveMotor::incEncPortCNT() { ++encPortCNT; }$/;"	f	class:DriveMotor
-incEncStarboardCNT	main/src/drivemotor.cpp	/^void DriveMotor::incEncStarboardCNT() { ++encStarboardCNT; }$/;"	f	class:DriveMotor
+incEncPortCNT	main/src/nav.cpp	/^void Nav::incEncPortCNT() { ++encPortCNT; }$/;"	f	class:Nav
+incEncStarboardCNT	main/src/nav.cpp	/^void Nav::incEncStarboardCNT() { ++encStarboardCNT; }$/;"	f	class:Nav
+initial	hardware_verification/src/drivemotor.h	/^		int scaling, initial;$/;"	m	class:DriveMotor
 initial	main/src/drivemotor.h	/^		int scaling, initial;$/;"	m	class:DriveMotor
 initialSize	main/lib/queuearray/QueueArray.h	/^    static const int initialSize = 2;$/;"	m	class:QueueArray
 input	main/lib/pid/pid.h	/^		const int* input;$/;"	m	class:PID
 input_prev	main/lib/pid/pid.h	/^		int integral, input_prev;$/;"	m	class:PID
 integral	main/lib/pid/pid.h	/^		int integral, input_prev;$/;"	m	class:PID
-interrupt	main/src/taskmanager.cpp	/^int TaskManager::interrupt(sensors senInt)$/;"	f	class:TaskManager
+internalcount	main/src/taskmanager.cpp	/^int internalcount = 0;$/;"	v
+interrupt	main/src/taskmanager.cpp	/^	virtual void interrupt() {}$/;"	f	class:Motion	file:
+interrupt	main/src/taskmanager.cpp	/^	void interrupt(sensors intsensor)$/;"	f	class:motionMOG	file:
 interval	main/lib/Metro/Metro.cpp	/^void Metro::interval(unsigned long interval_millis)$/;"	f	class:Metro
 interval_millis	main/lib/Metro/Metro.h	/^  unsigned long  previous_millis, interval_millis;$/;"	m	class:Metro
-irsen	main/.build/mega2560/src/main.cpp	/^IRSensor irsen[NUMPINS];$/;"	v
 isEmpty	main/lib/EventManager/EventManager.h	/^inline boolean EventManager::EventQueue::isEmpty() $/;"	f	class:EventManager::EventQueue
 isEmpty	main/lib/EventManager/EventManager.h	/^inline boolean EventManager::ListenerList::isEmpty() $/;"	f	class:EventManager::ListenerList
 isEmpty	main/lib/queuearray/QueueArray.h	/^bool QueueArray<T>::isEmpty () const {$/;"	f	class:QueueArray
@@ -377,14 +396,15 @@ keypadEventListener	main/lib/keypad/Keypad.h	/^	void (*keypadEventListener)(char
 ki	main/lib/pid/pid.h	/^		double kp, ki, kd;$/;"	m	class:PID
 kp	main/lib/pid/pid.h	/^		double kp, ki, kd;$/;"	m	class:PID
 kstate	main/lib/keypad/utility/Key.h	/^	KeyState kstate;$/;"	m	class:Key
-lcd	main/.build/mega2560/src/main.cpp	/^rgb_lcd lcd;$/;"	v
+l	hardware_verification/.build/mega2560/src/motor_test.cpp	/^volatile int l = 0;$/;"	v
 ledPin	main/lib/queuearray/QueueArray.h	/^    static const int ledPin = 13;$/;"	m	class:QueueArray
 left	hardware_verification/src/motor.cpp	/^void motor::left(int speed)$/;"	f	class:motor
 left	main/lib/motor/motor.cpp	/^void motor::left(int speed)$/;"	f	class:motor
 leftToRight	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::leftToRight(void)$/;"	f	class:rgb_lcd
-lineMotorScaling	main/src/drivemotor.cpp	/^int DriveMotor::lineMotorScaling()$/;"	f	class:DriveMotor
+lineMotorScaling	hardware_verification/src/drivemotor.cpp	/^int DriveMotor::lineMotorScaling(int baseSpeed)$/;"	f	class:DriveMotor
+lineMotorScaling	main/src/drivemotor.cpp	/^int DriveMotor::lineMotorScaling(int baseSpeed)$/;"	f	class:DriveMotor
+linecount	main/src/taskmanager.h	/^			int linecount;$/;"	m	class:TM::motionMOG
 loop	hardware_verification/.build/mega2560/src/motor_test.cpp	/^void loop()$/;"	f
-loop	main/.build/mega2560/src/main.cpp	/^void loop()$/;"	f
 low	main/lib/pid/pid.h	/^		int low, high;$/;"	m	class:PID
 mDefaultCallback	main/lib/EventManager/EventManager.h	/^        EventListener* mDefaultCallback;$/;"	m	class:EventManager::ListenerList
 mDefaultCallbackEnabled	main/lib/EventManager/EventManager.h	/^        boolean mDefaultCallbackEnabled;$/;"	m	class:EventManager::ListenerList
@@ -398,10 +418,17 @@ mListeners	main/lib/EventManager/EventManager.h	/^    ListenerList		mListeners;$
 mLowPriorityQueue	main/lib/EventManager/EventManager.h	/^    EventQueue 	mLowPriorityQueue;$/;"	m	class:EventManager
 mNumEvents	main/lib/EventManager/EventManager.h	/^        int mNumEvents;$/;"	m	class:EventManager::EventQueue
 mNumListeners	main/lib/EventManager/EventManager.h	/^        int mNumListeners;$/;"	m	class:EventManager::ListenerList
-main_lap	main/.build/mega2560/src/main.cpp	/^long main_lap = 0;$/;"	v
 makeKeymap	main/lib/keypad/Keypad.h	78;"	d
+mapLine	hardware_verification/src/drivemotor.cpp	/^int DriveMotor::mapLine(bool l, bool m, bool r) $/;"	f	class:DriveMotor
 mapLine	main/src/drivemotor.cpp	/^int DriveMotor::mapLine(bool l, bool m, bool r) $/;"	f	class:DriveMotor
 memberf_pointer	main/lib/EventManager/EventManager.h	/^    typedef void (C::*memberf_pointer)(int, int);$/;"	t	class:MemberFunctionCallable
+motionMIR	main/src/taskmanager.cpp	/^class motionMIR \/\/2 Move in reverse$/;"	c	file:
+motionMIR	main/src/taskmanager.h	/^	class motionMIR : Motion $/;"	c	namespace:TM
+motionMOG	main/src/taskmanager.cpp	/^class motionMOG \/\/ Move on grid$/;"	c	file:
+motionMOG	main/src/taskmanager.h	/^	class motionMOG : Motion $/;"	c	namespace:TM
+motionNOE	main/src/taskmanager.cpp	/^class motionNOE {};$/;"	c	file:
+motionNOE	main/src/taskmanager.h	/^	class motionNOE : Motion {};$/;"	c	namespace:TM
+motionlist	main/src/taskmanager.h	/^	Motion *motionlist[MOTIONSCOUNT];$/;"	m	namespace:TM
 motions	main/src/nav.h	/^enum motions$/;"	g
 motor	hardware_verification/src/motor.cpp	/^motor::motor(int pin_enable, int pin_direction, int speed)$/;"	f	class:motor
 motor	hardware_verification/src/motor.h	/^		motor() {}$/;"	f	class:motor
@@ -413,15 +440,25 @@ motor_states	hardware_verification/src/motor.h	/^enum motor_states$/;"	g
 motor_states	main/lib/motor/motor.h	/^enum motor_states$/;"	g
 motorspeed	hardware_verification/src/motor.h	/^		int motorspeed;$/;"	m	class:motor
 motorspeed	main/lib/motor/motor.h	/^		int motorspeed;$/;"	m	class:motor
-navDelayTimer	main/.build/mega2560/src/main.cpp	/^Metro navDelayTimer = Metro(3600000); \/\/ Set to 1 hour when unused$/;"	v
-navProcessTimer	main/.build/mega2560/src/main.cpp	/^Metro navProcessTimer = Metro(50);$/;"	v
-nav_timer	main/.build/mega2560/src/main.cpp	/^int nav_timer;$/;"	v
+myCEX	main/src/taskmanager.cpp	/^motionCEX myCEX = motionNOE(NOE); \/\/ Claw extend$/;"	v
+myCRT	main/src/taskmanager.cpp	/^motionCRT myCRT = motionNOE(NOE); \/\/ Claw retract$/;"	v
+myGAL	main/src/taskmanager.cpp	/^motionGAL myGAL = motionNOE(NOE); \/\/ Gameboard alignment$/;"	v
+myGFG	main/src/taskmanager.cpp	/^motionGFG myGFG = motionNOE(NOE); \/\/ Go off grid$/;"	v
+myHAL	main/src/taskmanager.cpp	/^motionHAL myHAL = motionNOE(NOE); \/\/ Hopper alignment$/;"	v
+myMIR	main/src/taskmanager.cpp	/^motionMIR myMIR = motionMIR(MIR); \/\/ Move in reverse$/;"	v
+myMOI	main/src/taskmanager.cpp	/^motionMOI myMOI = motionMOI(MOI); \/\/ Motion idle$/;"	v
+myOGB	main/src/taskmanager.cpp	/^motionOGB myOGB = motionNOE(NOE); \/\/ Off grid outbound$/;"	v
+myOGR	main/src/taskmanager.cpp	/^motionOGR myOGR = motionNOE(NOE); \/\/ Off grid return$/;"	v
+myPPP	main/src/taskmanager.cpp	/^motionPPP myPPP = motionPPP(PPP); \/\/ Pause$/;"	v
+myRFG	main/src/taskmanager.cpp	/^motionRFG myRFG = motionNOE(NOE); \/\/ Rotate off grid$/;"	v
+myROG	main/src/taskmanager.cpp	/^motionROG myROG = motionNOE(NOE); \/\/ Rotate on grid$/;"	v
+mymotion	main/src/taskmanager.cpp	/^	Motion(motions m) mymotion(m)$/;"	f	class:Motion	file:
+mymotion	main/src/taskmanager.h	/^			motions mymotion;$/;"	m	class:TM::Motion
 nextKeyState	main/lib/keypad/Keypad.cpp	/^void Keypad::nextKeyState(byte idx, boolean button) {$/;"	f	class:Keypad
 noAutoscroll	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::noAutoscroll(void)$/;"	f	class:rgb_lcd
 noBlink	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::noBlink()$/;"	f	class:rgb_lcd
 noCursor	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::noCursor()$/;"	f	class:rgb_lcd
 noDisplay	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::noDisplay()$/;"	f	class:rgb_lcd
-numCyclesTrack	main/.build/mega2560/src/main.cpp	/^const int numCyclesTrack = 4;$/;"	v
 numCyclesTrack	main/lib/sensing/irsensor.h	/^		int numCyclesTrack;$/;"	m	class:IRSensor
 numKeys	main/lib/keypad/Keypad.cpp	/^byte Keypad::numKeys() {$/;"	f	class:Keypad
 numListeners	main/lib/EventManager/EventManager.cpp	/^int EventManager::ListenerList::numListeners()$/;"	f	class:EventManager::ListenerList
@@ -443,20 +480,33 @@ pinMode	main/lib/keypad/Keypad.h	50;"	d
 pin_mode	main/lib/keypad/Keypad.h	/^	virtual void pin_mode(byte pinNum, byte mode) { pinMode(pinNum, mode); }$/;"	f	class:Keypad
 pin_read	main/lib/keypad/Keypad.h	/^	virtual int  pin_read(byte pinNum) { return digitalRead(pinNum); }$/;"	f	class:Keypad
 pin_write	main/lib/keypad/Keypad.h	/^	virtual void pin_write(byte pinNum, boolean level) { digitalWrite(pinNum, level); }$/;"	f	class:Keypad
+pivotLeft	hardware_verification/src/drivemotor.cpp	/^void DriveMotor::pivotLeft()$/;"	f	class:DriveMotor
 pivotLeft	main/src/drivemotor.cpp	/^void DriveMotor::pivotLeft()$/;"	f	class:DriveMotor
+pivotLeftReverse	hardware_verification/src/drivemotor.cpp	/^void DriveMotor::pivotLeftReverse()$/;"	f	class:DriveMotor
+pivotLeftReverse	main/src/drivemotor.cpp	/^void DriveMotor::pivotLeftReverse()$/;"	f	class:DriveMotor
+pivotRight	hardware_verification/src/drivemotor.cpp	/^void DriveMotor::pivotRight()$/;"	f	class:DriveMotor
 pivotRight	main/src/drivemotor.cpp	/^void DriveMotor::pivotRight()$/;"	f	class:DriveMotor
+pivotRightReverse	hardware_verification/src/drivemotor.cpp	/^void DriveMotor::pivotRightReverse()$/;"	f	class:DriveMotor
+pivotRightReverse	main/src/drivemotor.cpp	/^void DriveMotor::pivotRightReverse()$/;"	f	class:DriveMotor
 pop	main/lib/queuearray/QueueArray.h	/^T QueueArray<T>::pop () {$/;"	f	class:QueueArray
 popEvent	main/lib/EventManager/EventManager.cpp	/^boolean EventManager::EventQueue::popEvent( int* eventCode, int* eventParam ) $/;"	f	class:EventManager::EventQueue
-port	main/src/drivemotor.h	/^		motor port, starboard, clarm;$/;"	m	class:DriveMotor
+predockingheading	main/src/taskmanager.cpp	/^int predockingheading = 0;$/;"	v
 prevState	main/lib/sensing/irsensor.h	/^		int prevState;$/;"	m	class:IRSensor
 previous_millis	main/lib/Metro/Metro.h	/^  unsigned long  previous_millis, interval_millis;$/;"	m	class:Metro
 printer	main/lib/queuearray/QueueArray.h	/^    Print * printer; \/\/ the printer of the queue.$/;"	m	class:QueueArray
+process	main/src/taskmanager.cpp	/^	virtual void process() {}$/;"	f	class:Motion	file:
+process	main/src/taskmanager.cpp	/^	void process()$/;"	f	class:motionMIR	file:
+process	main/src/taskmanager.cpp	/^	void process()$/;"	f	class:motionMOG	file:
 processAllEvents	main/lib/EventManager/EventManager.cpp	/^int EventManager::processAllEvents() $/;"	f	class:EventManager
 processEvent	main/lib/EventManager/EventManager.cpp	/^int EventManager::processEvent() $/;"	f	class:EventManager
-processTask	main/src/taskmanager.cpp	/^void TaskManager::processTask()$/;"	f	class:TaskManager
+ptr_port	hardware_verification/src/drivemotor.h	/^		motor *ptr_port;$/;"	m	class:DriveMotor
+ptr_port	main/src/drivemotor.h	/^		motor *ptr_port;$/;"	m	class:DriveMotor
+ptr_starboard	hardware_verification/src/drivemotor.h	/^		motor *ptr_starboard;$/;"	m	class:DriveMotor
+ptr_starboard	main/src/drivemotor.h	/^		motor *ptr_starboard;$/;"	m	class:DriveMotor
 push	main/lib/queuearray/QueueArray.h	/^void QueueArray<T>::push (const T i) {$/;"	f	class:QueueArray
 queueEvent	main/lib/EventManager/EventManager.cpp	/^boolean EventManager::EventQueue::queueEvent( int eventCode, int eventParam ) $/;"	f	class:EventManager::EventQueue
 queueEvent	main/lib/EventManager/EventManager.h	/^inline boolean EventManager::queueEvent( int eventCode, int eventParam, EventPriority pri ) $/;"	f	class:EventManager
+r	hardware_verification/.build/mega2560/src/motor_test.cpp	/^volatile int r = 0;$/;"	v
 readSensor	main/lib/sensing/irsensor.cpp	/^int IRSensor::readSensor()$/;"	f	class:IRSensor
 readSensor	main/lib/sensing/sensor.cpp	/^int Sensor::readSensor()$/;"	f	class:Sensor
 readingSize	main/lib/sensing/irsensor.h	/^		static const int readingSize = 3;$/;"	m	class:IRSensor
@@ -470,11 +520,12 @@ removeListener	main/lib/EventManager/EventManager.h	/^inline boolean EventManage
 removeListener	main/lib/EventManager/EventManager.h	/^inline int EventManager::removeListener( EventListener* listener )$/;"	f	class:EventManager
 reset	main/lib/Metro/Metro.cpp	/^void Metro::reset() $/;"	f	class:Metro
 reset	main/src/nav.cpp	/^int Nav::reset(grid new_position)$/;"	f	class:Nav
-resetEncCNT	main/src/drivemotor.cpp	/^void DriveMotor::resetEncCNT() $/;"	f	class:DriveMotor
+resetEncCNT	main/src/nav.cpp	/^void Nav::resetEncCNT() $/;"	f	class:Nav
+resetOffGridToZero	main/src/nav.cpp	/^void Nav::resetOffGridToZero() $/;"	f	class:Nav
 resize	main/lib/queuearray/QueueArray.h	/^void QueueArray<T>::resize (const int s) {$/;"	f	class:QueueArray
 response	main/lib/pid/pid.h	/^		bool response;$/;"	m	class:PID
-reverseDirection	hardware_verification/src/motor.cpp	/^void motor::reverseDirection()$/;"	f	class:motor
-reverseDirection	main/lib/motor/motor.cpp	/^void motor::reverseDirection()$/;"	f	class:motor
+reverseDirection	hardware_verification/src/motor.cpp	/^void motor::reverseDirection(int speed)$/;"	f	class:motor
+reverseDirection	main/lib/motor/motor.cpp	/^void motor::reverseDirection(int speed)$/;"	f	class:motor
 rgb_lcd	main/lib/grove/rgb_lcd.cpp	/^rgb_lcd::rgb_lcd()$/;"	f	class:rgb_lcd
 rgb_lcd	main/lib/grove/rgb_lcd.h	/^class rgb_lcd : public Print $/;"	c
 right	hardware_verification/src/motor.cpp	/^void motor::right(int speed)$/;"	f	class:motor
@@ -482,6 +533,7 @@ right	main/lib/motor/motor.cpp	/^void motor::right(int speed)$/;"	f	class:motor
 rightToLeft	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::rightToLeft(void)$/;"	f	class:rgb_lcd
 rowPins	main/lib/keypad/Keypad.h	/^    byte *rowPins;$/;"	m	class:Keypad
 rows	main/lib/keypad/Keypad.h	/^    byte rows;$/;"	m	struct:__anon2
+scaling	hardware_verification/src/drivemotor.h	/^		int scaling, initial;$/;"	m	class:DriveMotor
 scaling	main/src/drivemotor.h	/^		int scaling, initial;$/;"	m	class:DriveMotor
 scanKeys	main/lib/keypad/Keypad.cpp	/^void Keypad::scanKeys() {$/;"	f	class:Keypad
 scrollDisplayLeft	main/lib/grove/rgb_lcd.cpp	/^void rgb_lcd::scrollDisplayLeft(void)$/;"	f	class:rgb_lcd
@@ -490,12 +542,9 @@ searchEventCode	main/lib/EventManager/EventManager.cpp	/^int EventManager::Liste
 searchListeners	main/lib/EventManager/EventManager.cpp	/^int EventManager::ListenerList::searchListeners( EventListener* listener ) $/;"	f	class:EventManager::ListenerList
 searchListeners	main/lib/EventManager/EventManager.cpp	/^int EventManager::ListenerList::searchListeners( int eventCode, EventListener* listener ) $/;"	f	class:EventManager::ListenerList
 senPins	hardware_verification/.build/mega2560/src/motor_test.cpp	/^const int senPins[NUMPINS] = {A13,A14,A15,A12}; \/\/ l,m,r,offset$/;"	v
-senPins	main/.build/mega2560/src/main.cpp	/^const int senPins[NUMPINS] = {A13,A14,A15,A12}; \/\/ l,m,r,offset$/;"	v
 sendEvent	main/lib/EventManager/EventManager.cpp	/^int EventManager::ListenerList::sendEvent( int eventCode, int param ) $/;"	f	class:EventManager::ListenerList
 sensorPin	main/lib/legacy/photoLineDetection.h	/^		int sensorPin;$/;"	m	class:PhotoLineDetection
 sensorPin	main/lib/sensing/sensor.h	/^		int sensorPin;$/;"	m	class:Sensor
-sensorPollTimer	main/.build/mega2560/src/main.cpp	/^Metro sensorPollTimer = Metro(30);$/;"	v
-sensorPollingFunction	main/.build/mega2560/src/main.cpp	/^void sensorPollingFunction()$/;"	f
 sensorReadings	main/lib/sensing/irsensor.h	/^		int sensorReadings[readingSize]; \/\/ Perform 3 readings$/;"	m	class:IRSensor
 sensorVal	main/lib/sensing/sensor.h	/^		int sensorVal;$/;"	m	class:Sensor
 sensor_h	main/lib/sensing/sensor.h	7;"	d
@@ -524,18 +573,19 @@ set_limits	main/lib/pid/pid.cpp	/^void PID::set_limits(int l, int h) {$/;"	f	cla
 set_response	main/lib/pid/pid.cpp	/^void PID::set_response(bool r) {$/;"	f	class:PID
 setpoint	main/lib/pid/pid.h	/^		const int* setpoint;$/;"	m	class:PID
 setup	hardware_verification/.build/mega2560/src/motor_test.cpp	/^void setup()$/;"	f
-setup	main/.build/mega2560/src/main.cpp	/^void setup()$/;"	f
 single_key	main/lib/keypad/Keypad.h	/^	bool single_key;$/;"	m	class:Keypad
 size	main/lib/queuearray/QueueArray.h	/^    int size;        \/\/ the size of the queue.$/;"	m	class:QueueArray
 sizeKpd	main/lib/keypad/Keypad.h	/^	KeypadSize sizeKpd;$/;"	m	class:Keypad
-starboard	main/src/drivemotor.h	/^		motor port, starboard, clarm;$/;"	m	class:DriveMotor
+sketchyTimer	main/src/nav.h	/^		long sketchyTimer;$/;"	m	class:Nav
 start	main/lib/FlexiTimer2/FlexiTimer2.cpp	/^void FlexiTimer2::start() {$/;"	f	class:FlexiTimer2
 start	main/lib/pid/pid.cpp	/^void PID::start() {$/;"	f	class:PID
-startTask	main/src/taskmanager.cpp	/^void TaskManager::startTask(int& timer)$/;"	f	class:TaskManager
+start	main/src/taskmanager.cpp	/^	virtual void start() {}$/;"	f	class:Motion	file:
+start	main/src/taskmanager.cpp	/^	void start()$/;"	f	class:motionMOG	file:
 startTime	main/lib/keypad/Keypad.h	/^	unsigned long startTime;$/;"	m	class:Keypad
 stateChanged	main/lib/keypad/utility/Key.h	/^	boolean stateChanged;$/;"	m	class:Key
 status	hardware_verification/src/motor.h	/^		motor_states status;$/;"	m	class:motor
 status	main/lib/motor/motor.h	/^		motor_states status;$/;"	m	class:motor
+stop	hardware_verification/src/drivemotor.cpp	/^void DriveMotor::stop()$/;"	f	class:DriveMotor
 stop	hardware_verification/src/motor.cpp	/^void motor::stop()$/;"	f	class:motor
 stop	main/lib/FlexiTimer2/FlexiTimer2.cpp	/^void FlexiTimer2::stop() {$/;"	f	class:FlexiTimer2
 stop	main/lib/motor/motor.cpp	/^void motor::stop()$/;"	f	class:motor
@@ -544,28 +594,27 @@ stop	main/src/drivemotor.cpp	/^void DriveMotor::stop()$/;"	f	class:DriveMotor
 tail	main/lib/queuearray/QueueArray.h	/^    int tail;        \/\/ the tail of the queue.$/;"	m	class:QueueArray
 task	main/src/nav.h	/^	task(motions a, int v) : do_now(a), value(v) {}$/;"	f	struct:task
 task	main/src/nav.h	/^struct task$/;"	s
-taskClarm	main/.build/mega2560/src/main.cpp	/^motor* TaskManager::taskClarm = &clarm;$/;"	m	class:TaskManager	file:
-taskDriver	main/.build/mega2560/src/main.cpp	/^DriveMotor* TaskManager::taskDriver = &Driver;$/;"	m	class:TaskManager	file:
-taskNav	main/.build/mega2560/src/main.cpp	/^Nav* TaskManager::taskNav = &Navigator;$/;"	m	class:TaskManager	file:
-taskdestination	main/src/taskmanager.cpp	/^grid TaskManager::taskdestination = taskNav->getDestination();$/;"	m	class:TaskManager	file:
+taskdestination	main/src/taskmanager.cpp	/^grid taskdestination = tkNav->getDestination();$/;"	v
 tasklist	main/src/nav.h	/^		QueueArray <task> tasklist;$/;"	m	class:Nav
+taskval	main/src/taskmanager.h	/^			int taskval;$/;"	m	class:TM::Motion
 tcnt2	main/lib/FlexiTimer2/FlexiTimer2.cpp	/^volatile unsigned int FlexiTimer2::tcnt2;$/;"	m	class:FlexiTimer2	file:
 thresh	main/lib/legacy/photoLineDetection.h	/^		PhotoThresholdValues thresh;$/;"	m	class:PhotoLineDetection
 thresh	main/lib/sensing/sensor.h	/^		int thresh[3];$/;"	m	class:Sensor
-threshold_values	main/.build/mega2560/src/main.cpp	/^int threshold_values[3] = {0, 800, 0};$/;"	v
+timeElapsed	main/src/nav.cpp	/^long Nav::timeElapsed() { return currentTime - sketchyTimer; }$/;"	f	class:Nav
 time_prev	main/lib/pid/pid.h	/^		unsigned long time_prev;$/;"	m	class:PID
 time_units	main/lib/FlexiTimer2/FlexiTimer2.cpp	/^unsigned long FlexiTimer2::time_units;$/;"	m	class:FlexiTimer2	file:
 transitionTo	main/lib/keypad/Keypad.cpp	/^void Keypad::transitionTo(byte idx, KeyState nextState) {$/;"	f	class:Keypad
 tune	main/lib/pid/pid.cpp	/^void PID::tune(double p, double i, double d) {$/;"	f	class:PID
-turnLeft	main/src/drivemotor.cpp	/^void DriveMotor::turnLeft()$/;"	f	class:DriveMotor
-turnRight	main/src/drivemotor.cpp	/^void DriveMotor::turnRight()$/;"	f	class:DriveMotor
+turnLeft	hardware_verification/src/drivemotor.cpp	/^void DriveMotor::turnLeft(int speed)$/;"	f	class:DriveMotor
+turnLeft	main/src/drivemotor.cpp	/^void DriveMotor::turnLeft(int speed)$/;"	f	class:DriveMotor
+turnRight	hardware_verification/src/drivemotor.cpp	/^void DriveMotor::turnRight(int speed)$/;"	f	class:DriveMotor
+turnRight	main/src/drivemotor.cpp	/^void DriveMotor::turnRight(int speed)$/;"	f	class:DriveMotor
 uint	main/lib/keypad/Keypad.h	/^typedef unsigned int uint;$/;"	t
 uint	main/lib/keypad/utility/Key.h	/^typedef unsigned int uint;$/;"	t
 ulong	main/lib/keypad/Keypad.h	/^typedef unsigned long ulong;$/;"	t
 updateList	main/lib/keypad/Keypad.cpp	/^bool Keypad::updateList() {$/;"	f	class:Keypad
 value	main/src/nav.h	/^	int value;$/;"	m	struct:task
 waitForKey	main/lib/keypad/Keypad.cpp	/^char Keypad::waitForKey() {$/;"	f	class:Keypad
-wheel_pwm	main/.build/mega2560/src/main.cpp	/^const int wheel_pwm = 125;$/;"	v
 white	main/lib/legacy/photoLineDetection.h	/^	int white;$/;"	m	struct:PhotoThresholdValues
 write	main/lib/grove/rgb_lcd.cpp	/^inline size_t rgb_lcd::write(uint8_t value)$/;"	f	class:rgb_lcd
 x	main/src/nav.h	/^	double x;$/;"	m	struct:drcoord

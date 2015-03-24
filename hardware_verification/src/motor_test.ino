@@ -31,21 +31,20 @@ void setup()
 	attachInterrupt(5, digR, RISING);
 	Serial.begin(9600);
 	analogWrite(7, LOW);
-	starboard.left(40);
-	port.right(40);
+	analogWrite(10, 40);
+	digitalWrite(11, HIGH);
+	analogWrite(8, 40);
+	digitalWrite(9, LOW);
+	//starboard.left();
+	//port.right();
 }
 
 void loop()
 {	
-	int n = digitalRead(2);
-	if (n == true)
-		Serial.println("SWITCH");
-	digitalWrite(6, n);
-	/*
+	delay(500);
 	Serial.print(l);
 	Serial.print(" ");
 	Serial.println(r);
-	*/
 	/*
 	Serial.print(analogRead(4));
 	Serial.print(" ");

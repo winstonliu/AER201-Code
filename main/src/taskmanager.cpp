@@ -5,15 +5,15 @@ using namespace TM;
 // Create class instance list
 motionMOG myMOG = motionMOG(MOG); // Move on grid
 motionMIR myMIR = motionMIR(MIR); // Move in reverse
-motionGFG myGFG = motionNOE(NOE); // Go off grid
-motionOOB myOOB = motionNOE(NOE); // Off grid outbound
-motionOGR myOGR = motionNOE(NOE); // Off grid return
-motionROG myROG = motionNOE(NOE); // Rotate on grid
-motionRFG myRFG = motionNOE(NOE); // Rotate off grid
-motionHAL myHAL = motionNOE(NOE); // Hopper alignment
-motionGAL myGAL = motionNOE(NOE); // Gameboard alignment
-motionCEX myCEX = motionNOE(NOE); // Claw extend
-motionCRT myCRT = motionNOE(NOE); // Claw retract
+motionNOE myGFG = motionNOE(NOE); // Go off grid
+motionNOE myOGB = motionNOE(NOE); // Off grid outbound
+motionNOE myOGR = motionNOE(NOE); // Off grid return
+motionNOE myROG = motionNOE(NOE); // Rotate on grid
+motionNOE myRFG = motionNOE(NOE); // Rotate off grid
+motionNOE myHAL = motionNOE(NOE); // Hopper alignment
+motionNOE myGAL = motionNOE(NOE); // Gameboard alignment
+motionNOE myCEX = motionNOE(NOE); // Claw extend
+motionNOE myCRT = motionNOE(NOE); // Claw retract
 motionPPP myPPP = motionPPP(PPP); // Pause
 motionMOI myMOI = motionMOI(MOI); // Motion idle
 
@@ -23,7 +23,7 @@ motionlist =
 	&myMOG,
 	&myMIR,
 	&myGFG,
-	&myOOB,
+	&myOGB,
 	&myOGR,
 	&myROG,
 	&myRFG,
@@ -84,6 +84,7 @@ drcoord calcOffGrid(drcoord lastPos)
 }
 
 /*
+	Start
 	// Initialize tasks
 	int navVal = tkNav->getTaskValue();
 	grid navGrid = tkNav->getGrid();
@@ -332,64 +333,68 @@ int interrupt(sensors senInt)
 
 class Motion
 {
-	Motion(motions m) mymotion(m) {};
-	virtual void start() {};
-	virtual void interrupt() {};
-	virtual void process() {};
-	virtual void complete() {};
+	Motion(motions m) mymotion(m)
+	{
+		taskval = tkNav->getTaskValue();
+	}
+	virtual void start() {}
+	virtual void interrupt() {}
+	virtual void process() {}
+	virtual void complete() {}
 	motions get_motion() { return mymotion; }
 };
 
 class motionMOG // Move on grid
 {
-	mymotion = MOG;
-	void start()
-	{
-		tkDriver->driveStraight();
-		taskdestination = dirLineInc(navVal);
-	}
-	void process()
-	{
-		if (tkNav->absEncDistance() >= floor(lineSepTicks * 0.75))
-			baseSpeed = 125;
-		else
-			baseSpeed = 255;
-		debug_speed = tkDriver->lineMotorScaling(baseSpeed);
-		tkDriver->lineMotorScaling(baseSpeed);
-	}
-	void interrupt()
-	{
-		tkNav->resetOffGridToZero();
-		tkNav->setGrid(dirLineInc(1));
-	}
-	bool complete()
-	{
-		if (tkNav->currentGrid.x == taskdestination.x &&
-			tkNav->currentGrid.y == taskdestination.y)
-			return true;
-	}
+	public:
+		using Motion::Motion;
+		void start()
+		{
+			tkDriver->driveStraight();
+			linecount = taskval;
+		}
+		void process()
+		{
+			int basespeed = 255;
+			// Slow down on line approach
+			if (tkNav->absEncDistance() >= floor(lineSepTicks * 0.75))
+				baseSpeed = 125;
+			tkDriver->lineMotorScaling(baseSpeed);
+		}
+		void interrupt(sensors intsensor)
+		{
+			if (intsensor == LINE_ISR)
+				--linecount;
+		}
+		bool complete()
+		{
+			if (linecount == 0)
+				return true;
+		}
 };
 
-class motionMIR //2 Move in reverse
+class motionMIR // Move in reverse
 {
-	void start();
-	{
-		tkDriver->driveReverse();
-	}
-	void process()
-	{
-		if (tkNav->absEncDistance() >= floor(lineSepTicks * 0.75))
-			baseSpeed = 125;
-		else
-			baseSpeed = 255;
-		debug_speed = tkDriver->lineMotorScaling(baseSpeed);
-	}
-	bool complete()
-	{
-		if (tkDriver->get_status() == STOPPED 
-				&& tkNav->timeElapsed() > 1000)
-			return true;
-	}
+	public:
+		using Motion::Motion;
+		void start();
+		{
+			tkDriver->driveReverse();
+		}
+		void process()
+		{
+			if (tkNav->absEncDistance() >= floor(lineSepTicks * 0.75))
+				baseSpeed = 125;
+			else
+				baseSpeed = 255;
+			debug_speed = tkDriver->lineMotorScaling(baseSpeed);
+		}
+		bool complete()
+		{
+			if (tkDriver->get_status() == STOPPED 
+					&& tkNav->timeElapsed() > 1000)
+				return true;
+		}
 };
 
 class motionNOE {};
