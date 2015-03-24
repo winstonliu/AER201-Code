@@ -4,6 +4,21 @@
 
 namespace TM	// TaskManager
 {
+	class Motion
+	{
+		private:
+			motions mymotion;
+		public:
+			Motion(motions mymotion);
+			virtual void start();
+			virtual void process();
+			virtual void interrupt();
+			virtual bool complete();
+			motions get_motion();
+	};
+
+	Motion *motionlist[MOTIONSCOUNT];
+
 	// Flags
 	extern bool FLAG_clawextended;
 	extern bool FLAG_dockedboard;
@@ -29,11 +44,11 @@ namespace TM	// TaskManager
 	extern int internalcount;
 
 	// Stuff from nav class
-	extern DriveMotor* taskDriver;
-	extern motor* taskClarm;
-	extern motor* taskWheel;
-	extern Nav* taskNav;	
-	extern grid taskdestination;
+	extern DriveMotor* tkDriver;
+	extern motor* tkClarm;
+	extern motor* tkWheel;
+	extern Nav* tkNav;	
+	extern grid tkdestination;
 	extern drcoord departingpoint;
 
 	double euclideanDist(int x, int y);
@@ -41,107 +56,21 @@ namespace TM	// TaskManager
 	grid dirLineInc(int i);
 	drcoord calcOffGrid(drcoord lastPos);
 
-	void startTask(int& timer, grid& alfd, int& gg);
-	void processTask(int& debug_speed);
-	int interrupt(sensors sensor_interrupt);	
-	bool checkTaskComplete();
-
-	namespace GOG // 0  - Go on grid
+	// Move on grid
+	class motionMOG : Motion 
 	{
-		void start();
-		void process();
-		void interrupt();
-		void check();
-	}
-	namespace MOG // 1  - Move on grid
+   		void start();
+   		void process();
+   		void interrupt();
+   		void complete();
+	};
+	// Move in reverse
+	class motionMIR : Motion 
 	{
-		void start();
-		void process();
-		void interrupt();
-		void check();
-	}
-	namespace MIR // 2  - Move in reverse
-	{
-		void start();
-		void process();
-		void interrupt();
-		void check();
-	}
-	namespace GFG // 3  - Go off grid
-	{
-		void start();
-		void process();
-		void interrupt();
-		void check();
-	}
-	namespace OOB // 4  - Off grid outbound
-	{
-		void start();
-		void process();
-		void interrupt();
-		void check();
-	}
-	namespace OGR // 5  - Off grid return
-	{
-		void start();
-		void process();
-		void interrupt();
-		void check();
-	}
-	namespace ROG // 6  - Rotate on grid
-	{
-		void start();
-		void process();
-		void interrupt();
-		void check();
-	}
-	namespace RFG // 7  - Rotate off grid
-	{
-		void start();
-		void process();
-		void interrupt();
-		void check();
-	}
-	namespace HAL // 8  - Hopper alignment
-	{
-		void start();
-		void process();
-		void interrupt();
-		void check();
-	}
-	namespace GAL // 9  - Gameboard alignment
-	{
-		void start();
-		void process();
-		void interrupt();
-		void check();
-	}
-	namespace CEX // 10 - Claw extend
-	{
-		void start();
-		void process();
-		void interrupt();
-		void check();
-	}
-	namespace CRT // 11 - Claw retract
-	{
-		void start();
-		void process();
-		void interrupt();
-		void check();
-	}
-	namespace PPP // 12 - Pause
-	{
-		void start();
-		void process();
-		void interrupt();
-		void check();
-	}
-	namespace MOI // 13 - Motion idle
-	{
-		void start();
-		void process();
-		void interrupt();
-		void check();
-	}
+   		void start();
+   		void process();
+   		void interrupt();
+   		void complete();
+	};
+	class motionNOE : Motion {};
 }

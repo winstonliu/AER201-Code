@@ -347,15 +347,10 @@ void setup()
 	{
 	*/
 		// Start first task
-		grid blah;
-		int dope;
-		TM::startTask(nav_timer, blah, dope);
+		TM::motionlist[Navigator.getMotion()]->start();
 		Navigator.sketchyTimer = millis();
 		navDelayTimer.interval(nav_timer);
 		navDelayTimer.reset();
-		DEBUG("DOPE: ");
-		DEBUG(dope);
-		DEBUG("\r\n");
 	//}
 
 	
@@ -431,7 +426,7 @@ void loop()
 	*/
 
 	// Check if there are any tasks left to do
-	if (TM::checkTaskComplete() == true)
+	if (TM::motionlist[Navigator.getMotion()]->complete() == true)
 	{
 		nav_timer = 3600000; // default is 1 hour
 		DEBUG("FULL STOP");
@@ -440,15 +435,14 @@ void loop()
 		Navigator.advance();
 		if (Navigator.doneTasks() == false)
 		{
-			grid dest;
-			int gg;
 
 			Navigator.resetEncCNT();
-			TM::startTask(nav_timer, dest, gg);
+			TM::motionlist[Navigator.getMotion()]->start();
 			Navigator.sketchyTimer = millis();
 
 			DEBUG("Starting new task. ");
 			grid home_grid = Navigator.getGrid();
+			grid dest = Navigator.getDestination();
 			DEBUG(" CURR ");
 			DEBUG(" x: ");
 			DEBUG(home_grid.x);
@@ -463,8 +457,6 @@ void loop()
 			DEBUG(dest.y);
 			DEBUG(" d: ");
 			DEBUG(dest.d);
-			DEBUG(" NAVVAL: ");
-			DEBUG(gg);
 			DEBUG(" MOTION: ");
 			DEBUG(TM::taskNav->getMotion());
 			DEBUG("\r\n");
@@ -606,11 +598,12 @@ void addEvents()
 
 	if (navProcessTimer.check() == 1) 
 	{
-		TM::processTask(debug_speed);
+		TM::motionlist[Navigator.getMotion()]->process();
 	}
+
 	if (navDelayTimer.check() == 1) 
 	{
-		TM::interrupt(TIMER);
+		TM::motionlist[Navigator.getMotion()]->interrupt();
 		DEBUG("#");
 		DEBUG(main_lap);
 		DEBUG("# ");

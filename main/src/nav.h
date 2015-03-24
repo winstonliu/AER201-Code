@@ -9,25 +9,27 @@ enum sensors
 	BOARD_TOUCH,
 	HOPPER_TOUCH_LEFT,
 	HOPPER_TOUCH_RIGHT,
-	TIMER
+	TIMER,
+	SENSORSCOUNT
 };
 
 enum motions
 {
-	GOG, // 0  - Go on grid
-	MOG, // 1  - Move on grid
-	MIR, // 2  - Move in reverse
-	GFG, // 3  - Go off grid
-	OOB, // 4  - Off grid outbound
-	OGR, // 5  - Off grid return
-	ROG, // 6  - Rotate on grid
-	RFG, // 7  - Rotate off grid
-	HAL, // 8  - Hopper alignment
-	GAL, // 9  - Gameboard alignment
-	CEX, // 10 - Claw extend
-	CRT, // 11 - Claw retract
-	PPP, // 12 - Pause
-	MOI, // 13 - Motion idle
+	MOG, // Move on grid
+	MIR, // Move in reverse
+	GFG, // Go off grid
+	OOB, // Off grid outbound
+	OGR, // Off grid return
+	ROG, // Rotate on grid
+	RFG, // Rotate off grid
+	HAL, // Hopper alignment
+	GAL, // Gameboard alignment
+	CEX, // Claw extend
+	CRT, // Claw retract
+	PPP, // Pause
+	MOI, // Motion idle
+	MOTIONSCOUNT,
+	NOE
 };
 
 struct task
