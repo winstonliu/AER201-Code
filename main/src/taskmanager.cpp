@@ -18,8 +18,9 @@ motionPPP myPPP = motionPPP(PPP); // Pause
 motionMOI myMOI = motionMOI(MOI); // Motion idle
 
 
-motionlist = 
+TM::Motion *TM::listofmotions[MOTIONSCOUNT] = 
 {
+	// XXX Change this to reflect list in nav.h XXX
 	&myMOG,
 	&myMIR,
 	&myGFG,
@@ -35,20 +36,37 @@ motionlist =
 	&myMOI
 };
 
-bool FLAG_clawextended = true;
-bool FLAG_dockedboard = false;
-bool FLAG_pause = false;
-bool FLAG_hopperleft = false;
-bool FLAG_hopperright = false;
-grid taskdestination = tkNav->getDestination();
-drcoord departingpoint = tkNav->offgridpos;
+bool TM::FLAG_clawextended = true;
+bool TM::FLAG_dockedboard = false;
+bool TM::FLAG_pause = false;
+bool TM::FLAG_hopperleft = false;
+bool TM::FLAG_hopperright = false;
+grid TM::tkdestination = tkNav->getDestination();
+drcoord TM::departingpoint = tkNav->offgridpos;
 
-int predockingheading = 0;
-int internalcount = 0;
+int TM::predockingheading = 0;
+int TM::internalcount = 0;
 
-double euclideanDist(int x, int y) { return sqrt(x*x + y*y); }
+void TM::start()
+{
+	listofmotions[tkNav->getMotion()]->start();
+}
+void TM::process()
+{
+	listofmotions[tkNav->getMotion()]->process();
+}
+void TM::interrupt(sensors intsensor)
+{
+	listofmotions[tkNav->getMotion()]->interrupt(intsensor);
+}
+bool TM::iscomplete()
+{
+	return listofmotions[tkNav->getMotion()]->iscomplete();
+}
 
-grid dirLineInc(int i)
+
+double TM::euclideanDist(int x, int y) { return sqrt(x*x + y*y); }
+grid TM::dirLineInc(int i)
 {
 	grid temp_grid = tkNav->getGrid();
 	switch(temp_grid.d)
@@ -69,7 +87,7 @@ grid dirLineInc(int i)
 	return temp_grid;
 }
 
-drcoord calcOffGrid(drcoord lastPos)
+drcoord TM::calcOffGrid(drcoord lastPos)
 {
 	drcoord newPos = lastPos;
 	unsigned int encPort = tkNav->getEncPortCNT();
@@ -331,70 +349,71 @@ int interrupt(sensors senInt)
 }
 */
 
-class Motion
-{
-	Motion(motions m) mymotion(m)
-	{
-		taskval = tkNav->getTaskValue();
-	}
-	virtual void start() {}
-	virtual void interrupt() {}
-	virtual void process() {}
-	virtual void complete() {}
-	motions get_motion() { return mymotion; }
-};
+// ================================================================ //
 
-class motionMOG // Move on grid
-{
-	public:
-		using Motion::Motion;
-		void start()
-		{
-			tkDriver->driveStraight();
-			linecount = taskval;
-		}
-		void process()
-		{
-			int basespeed = 255;
-			// Slow down on line approach
-			if (tkNav->absEncDistance() >= floor(lineSepTicks * 0.75))
-				baseSpeed = 125;
-			tkDriver->lineMotorScaling(baseSpeed);
-		}
-		void interrupt(sensors intsensor)
-		{
-			if (intsensor == LINE_ISR)
-				--linecount;
-		}
-		bool complete()
-		{
-			if (linecount == 0)
-				return true;
-		}
-};
+TM::Motion::Motion(motions m) : mymotion(m) {}
+void TM::Motion::start() {}
+void TM::Motion::process() {}
+void TM::Motion::interrupt(sensors intsensor) {}
+bool TM::Motion::iscomplete() {}
+motions TM::Motion::get_motion() { return mymotion; }
 
-class motionMIR // Move in reverse
-{
-	public:
-		using Motion::Motion;
-		void start();
-		{
-			tkDriver->driveReverse();
-		}
-		void process()
-		{
-			if (tkNav->absEncDistance() >= floor(lineSepTicks * 0.75))
-				baseSpeed = 125;
-			else
-				baseSpeed = 255;
-			debug_speed = tkDriver->lineMotorScaling(baseSpeed);
-		}
-		bool complete()
-		{
-			if (tkDriver->get_status() == STOPPED 
-					&& tkNav->timeElapsed() > 1000)
-				return true;
-		}
-};
+// ================================================================ //
 
-class motionNOE {};
+TM::motionMOG::motionMOG(motions m) : Motion(m)
+{
+	taskval = tkNav->getTaskValue();
+}
+void TM::motionMOG::start()
+{
+	tkDriver->driveStraight();
+	linecount = taskval;
+}
+void TM::motionMOG::process()
+{
+	int basespeed = 255;
+	// Slow down on line approach
+	if (tkNav->absEncDistance() >= floor(lineSepTicks * 0.75))
+		basespeed = 125;
+	tkDriver->lineMotorScaling(basespeed);
+}
+void TM::motionMOG::interrupt(sensors intsensor)
+{
+	if (intsensor == LINE_ISR)
+		--linecount;
+}
+bool TM::motionMOG::iscomplete()
+{
+	if (linecount == 0)
+		return true;
+}
+
+// ================================================================ //
+
+TM::motionMIR::motionMIR(motions m) : Motion(m) 
+{
+	taskval = tkNav->getTaskValue();
+}
+void TM::motionMIR::start()
+{
+	tkDriver->driveReverse();
+}
+void TM::motionMIR::process()
+{
+}
+void TM::motionMIR::interrupt(sensors intsensor)
+{
+
+}
+bool TM::motionMIR::iscomplete()
+{
+	if (tkDriver->get_status() == STOPPED 
+			&& tkNav->timeElapsed() > 1000)
+		return true;
+}
+
+// ================================================================ //
+
+TM::motionPPP::motionPPP(motions m) : Motion(m) {}
+TM::motionMOI::motionMOI(motions m) : Motion(m) {}
+TM::motionNOE::motionNOE(motions m) : Motion(m) {}

@@ -115,10 +115,10 @@ rgb_lcd lcd;
 Nav Navigator(start_pos);
 IRSensor irsen[NUMPINS];
 
-DriveMotor* TM::taskDriver = &Driver;
-motor* TM::taskClarm = &clarm;
-motor* TM::taskWheel = &wheel;
-Nav* TM::taskNav = &Navigator;
+DriveMotor* TM::tkDriver = &Driver;
+motor* TM::tkClarm = &clarm;
+motor* TM::tkWheel = &wheel;
+Nav* TM::tkNav = &Navigator;
 int nav_timer = 3600000;
 
 
@@ -275,26 +275,26 @@ void setup()
 	attachInterrupt(INTencStarboardPin, encRightPin, RISING);
 
 	// DEBUG COMMANDS
-	Navigator.tasklist.push(task(PAUSE, 5000));
-	Navigator.tasklist.push(task(ROTATEOFFGRID, 90));
-	Navigator.tasklist.push(task(PAUSE, 2000));
-	Navigator.tasklist.push(task(OFFGRIDOUTBOUND, 0));
-	Navigator.tasklist.push(task(PAUSE, 2000));
-	Navigator.tasklist.push(task(HOPPERALIGN, 0));
-	Navigator.tasklist.push(task(PAUSE, 2000));
-	Navigator.tasklist.push(task(CLAWRETRACT, 0));
-	Navigator.tasklist.push(task(PAUSE, 2000));
-	Navigator.tasklist.push(task(MOVEINREVERSE, 5000));
-	Navigator.tasklist.push(task(CLAWEXTEND, 900));
-	//Navigator.tasklist.push(task(PAUSE, 5000));
-	//Navigator.tasklist.push(task(PAUSE, 2000));
-	//Navigator.tasklist.push(task(ROTATEONGRID, 270));
-	//Navigator.tasklist.push(task(ROTATEOFFGRID, 0));
-	//Navigator.tasklist.push(task(PAUSE, 1000));
-	//Navigator.tasklist.push(task(MOVEONGRID, 4));
-	//Navigator.tasklist.push(task(PAUSE, 1000));
-	//Navigator.tasklist.push(task(MOVEINREVERSE, 1));
-	//Navigator.tasklist.push(task(PAUSE, 1000));
+	Navigator.tasklist.push(task(PPP, 5000));
+	Navigator.tasklist.push(task(RFG, 90));
+	Navigator.tasklist.push(task(PPP, 2000));
+	Navigator.tasklist.push(task(OGB, 0));
+	Navigator.tasklist.push(task(PPP, 2000));
+	Navigator.tasklist.push(task(HAL, 0));
+	Navigator.tasklist.push(task(PPP, 2000));
+	Navigator.tasklist.push(task(CRT, 0));
+	Navigator.tasklist.push(task(PPP, 2000));
+	Navigator.tasklist.push(task(MIR, 5000));
+	Navigator.tasklist.push(task(CEX, 900));
+	//Navigator.tasklist.push(task(PPP, 5000));
+	//Navigator.tasklist.push(task(PPP, 2000));
+	//Navigator.tasklist.push(task(ROG, 270));
+	//Navigator.tasklist.push(task(RFG, 0));
+	//Navigator.tasklist.push(task(PPP, 1000));
+	//Navigator.tasklist.push(task(MOG, 4));
+	//Navigator.tasklist.push(task(PPP, 1000));
+	//Navigator.tasklist.push(task(MIR, 1));
+	//Navigator.tasklist.push(task(PPP, 1000));
 
 /* 
 	// Check for navigation error
@@ -349,7 +349,7 @@ void setup()
 	{
 	*/
 		// Start first task
-		TM::motionlist[Navigator.getMotion()]->start();
+		TM::start();
 		Navigator.sketchyTimer = millis();
 		navDelayTimer.interval(nav_timer);
 		navDelayTimer.reset();
@@ -370,7 +370,7 @@ void loop()
 
 	if (FLAG_NAVERR == true)
 		return;
-	else if (Navigator.getMotion() == MOTIONIDLE)
+	else if (Navigator.getMotion() == MOI)
 	{
 		// TODO, put in code to wait for further instructions
 		return;
@@ -428,7 +428,7 @@ void loop()
 	*/
 
 	// Check if there are any tasks left to do
-	if (TM::motionlist[Navigator.getMotion()]->complete() == true)
+	if (TM::iscomplete() == true)
 	{
 		nav_timer = 3600000; // default is 1 hour
 		DEBUG("FULL STOP");
@@ -439,7 +439,7 @@ void loop()
 		{
 
 			Navigator.resetEncCNT();
-			TM::motionlist[Navigator.getMotion()]->start();
+			TM::start();
 			Navigator.sketchyTimer = millis();
 
 			DEBUG("Starting new task. ");
@@ -460,7 +460,7 @@ void loop()
 			DEBUG(" d: ");
 			DEBUG(dest.d);
 			DEBUG(" MOTION: ");
-			DEBUG(TM::taskNav->getMotion());
+			DEBUG(TM::tkNav->getMotion());
 			DEBUG("\r\n");
 		}
 		else
@@ -475,7 +475,7 @@ void loop()
 		DEBUG(main_lap);
 		DEBUG("# ");
 		DEBUG("Task completed. ");
-		DEBUG(TM::taskNav->getMotion());
+		DEBUG(TM::tkNav->getMotion());
 		grid home_grid = Navigator.getGrid();
 		DEBUG(" CURR ");
 		DEBUG(" x: ");
@@ -484,7 +484,7 @@ void loop()
 		DEBUG(home_grid.y);
 		DEBUG(" d: ");
 		DEBUG(home_grid.d);
-		grid temp_grid = TM::taskdestination;
+		grid temp_grid = TM::tkdestination;
 		DEBUG(" DEST ");
 		DEBUG(" x: ");
 		DEBUG(temp_grid.x);
@@ -600,12 +600,12 @@ void addEvents()
 
 	if (navProcessTimer.check() == 1) 
 	{
-		TM::motionlist[Navigator.getMotion()]->process();
+		TM::process();
 	}
 
 	if (navDelayTimer.check() == 1) 
 	{
-		TM::motionlist[Navigator.getMotion()]->interrupt();
+		TM::interrupt(TIMER);
 		DEBUG("#");
 		DEBUG(main_lap);
 		DEBUG("# ");

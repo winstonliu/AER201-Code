@@ -42,6 +42,7 @@ int DriveMotor::lineMotorScaling(int baseSpeed)
 {
 	// If the heading is less than zero, then PWM the port (left) wheel and
 	// v.v. If the heading is zero, then full steam ahead.
+	// XXX Replace with QTR stuff
 	// DEBUG
 	int newSpeed;
 	if (current_heading < 0)

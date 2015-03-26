@@ -6,19 +6,19 @@ namespace TM	// TaskManager
 {
 	class Motion
 	{
-		private:
+		protected:
 			motions mymotion;
 			int taskval;
 		public:
 			Motion(motions mymotion);
 			virtual void start();
 			virtual void process();
-			virtual void interrupt();
-			virtual bool complete();
+			virtual void interrupt(sensors intsensor);
+			virtual bool iscomplete();
 			motions get_motion();
 	};
 
-	Motion *motionlist[MOTIONSCOUNT];
+	extern Motion *listofmotions[MOTIONSCOUNT];
 
 	// Flags
 	extern bool FLAG_clawextended;
@@ -52,29 +52,50 @@ namespace TM	// TaskManager
 	extern grid tkdestination;
 	extern drcoord departingpoint;
 
-	double euclideanDist(int x, int y);
+	void start();
+	void process();
+	void interrupt(sensors intsensor);
+	bool iscomplete();
 
+	double euclideanDist(int x, int y);
 	grid dirLineInc(int i);
 	drcoord calcOffGrid(drcoord lastPos);
 
 	// Move on grid
-	class motionMOG : Motion 
+	class motionMOG : public Motion 
 	{
 		private: 
 			int linecount;
 		public:
+			motionMOG(motions m);
 			void start();
 			void process();
 			void interrupt(sensors intsensor);
-			bool complete();
+			bool iscomplete();
 	};
 	// Move in reverse
-	class motionMIR : Motion 
+	class motionMIR : public Motion 
 	{
-   		void start();
-   		void process();
-   		void interrupt(sensors intsensor);
-   		bool complete();
+		public:
+			motionMIR(motions m);
+			void start();
+			void process();
+			void interrupt(sensors intsensor);
+			bool iscomplete();
 	};
-	class motionNOE : Motion {};
+	class motionPPP : public Motion 
+	{
+		public:
+			motionPPP(motions m);
+	};
+	class motionMOI : public Motion 
+	{
+		public:
+			motionMOI(motions m);
+	};
+	class motionNOE : public Motion 
+	{
+		public:
+			motionNOE(motions m);
+	};
 }
