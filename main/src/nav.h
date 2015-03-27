@@ -87,7 +87,7 @@ class Nav
 		// DEBUG
 		grid currentGrid;
 		grid destination;
-		unsigned int encPortCNT, encStarboardCNT;
+		int encPortCNT, encStarboardCNT;
 		grid hopperEast;
 		grid hopperWest;
 		QueueArray <task> tasklist;
@@ -108,10 +108,10 @@ class Nav
 		void incEncPortCNT();
 		void incEncStarboardCNT();
 		void resetEncCNT();
-		unsigned int getEncPortCNT();
-		unsigned int getEncStarboardCNT();
+		int getEncPortCNT();
+		int getEncStarboardCNT();
 
-		unsigned int absEncDistance();
+		int absEncDistance();
 
 		void resetOffGridToZero();
 		

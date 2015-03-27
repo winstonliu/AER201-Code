@@ -42,7 +42,7 @@ bool TM::FLAG_dockedboard = false;
 bool TM::FLAG_hopperleft = false;
 bool TM::FLAG_hopperright = false;
 
-grid TM::tkdestination = tkNav->getDestination();
+grid TM::tkdest = tkNav->getDestination();
 drcoord TM::departingpoint = tkNav->offgridpos;
 
 int TM::predockingheading = 0;
@@ -90,13 +90,27 @@ grid TM::dirLineInc(int i)
 
 drcoord TM::calcOffGrid(drcoord lastPos)
 {
+	int pcnt, scnt;
+	pcnt = tkNav->getEncPortCNT();
+	scnt = tkNav->getEncStarboardCNT();
 	drcoord newPos = lastPos;
-	unsigned int encPort = tkNav->getEncPortCNT();
-	unsigned int encStarboard = tkNav->getEncStarboardCNT();
 	// Turning to starboard is positive
-	newPos.d = 2 * M_PI * (Rw/D) * (encPort - encStarboard) / Tr;
-	newPos.x = Rw * cos(lastPos.d) * (encPort + encStarboard) * M_PI / Tr;
-	newPos.y = Rw * sin(lastPos.d) * (encPort + encStarboard) * M_PI / Tr;
+	switch(tkDriver->get_status())
+	{
+		case TURNINGRIGHT:
+			scnt *= -1;
+			break;
+		case TURNINGLEFT:
+			pcnt *= -1;
+			break;
+		case DRIVINGREVERSE:
+			scnt *= -1;	
+			pcnt *= -1;
+			break;
+	}
+	newPos.d += 360 * RwD * (pcnt - scnt) / Tr;
+	newPos.x += Rw * cos(lastPos.d) * (pcnt + scnt) * M_PI / Tr;
+	newPos.y += Rw * sin(lastPos.d) * (pcnt + scnt) * M_PI / Tr;
 	// Reset count
 	tkNav->resetEncCNT();
 	return newPos;
@@ -116,7 +130,7 @@ drcoord TM::calcOffGrid(drcoord lastPos)
 			break;
 		case MOVEONGRID:
 			tkDriver->driveStraight();
-			tkdestination = dirLineInc(navVal);
+			tkdest = dirLineInc(navVal);
 			break;
 		case OFFGRIDRETURN:
 			if (navVal > 0)
@@ -133,8 +147,8 @@ drcoord TM::calcOffGrid(drcoord lastPos)
 			tkDriver->driveStraight();
 			break;
 		case ROTATEONGRID:
-			tkdestination = navGrid;
-			tkdestination.d = navVal;
+			tkdest = navGrid;
+			tkdest.d = navVal;
 		case ROTATEOFFGRID:
 			// Determine direction of rotation
 			// Normalize current heading	
@@ -164,7 +178,7 @@ drcoord TM::calcOffGrid(drcoord lastPos)
 			tkNav->on_grid = false;
 			break;
 	}
-	alfd = tkdestination;
+	alfd = tkdest;
 	gg = navVal;
 }
 */
@@ -274,8 +288,8 @@ int interrupt(sensors senInt)
 			if (FLAG_pause == false) advance = true;	
 			break;
 		case MOVEONGRID:
-			if (tkNav->currentGrid.x == tkdestination.x &&
-					tkNav->currentGrid.y == tkdestination.y)
+			if (tkNav->currentGrid.x == tkdest.x &&
+					tkNav->currentGrid.y == tkdest.y)
 				advance = true;
 			break;
 		case MOVEINREVERSE:
@@ -283,7 +297,7 @@ int interrupt(sensors senInt)
 				advance = true;
 			break;
 		case ROTATEONGRID:
-			if (gridNow == tkdestination && tkNav->timeElapsed() > 2000) 
+			if (gridNow == tkdest && tkNav->timeElapsed() > 2000) 
 				advance = true;
 			break;
 		case ROTATEOFFGRID:
@@ -371,6 +385,7 @@ TM::motionMOG::motionMOG(motions m) : Motion(m)
 }
 void TM::motionMOG::start(int& timer)
 {
+	tkNav->resetOffGridToZero();
 	tkDriver->driveStraight();
 	linecount = taskval;
 }
@@ -378,8 +393,10 @@ void TM::motionMOG::process()
 {
 	int basespeed = 255;
 	// Slow down on line approach
+	/*
 	if (tkNav->absEncDistance() >= floor(lineSepTicks * 0.75))
 		basespeed = 125;
+	*/
 	tkDriver->lineMotorScaling(basespeed);
 }
 void TM::motionMOG::interrupt(sensors intsensor)
@@ -390,7 +407,10 @@ void TM::motionMOG::interrupt(sensors intsensor)
 bool TM::motionMOG::iscomplete()
 {
 	if (linecount == 0)
+	{
 		return true;
+	}
+	return false;
 }
 
 // ================================================================ //
@@ -414,19 +434,30 @@ bool TM::motionMIR::iscomplete()
 {
 	if (tkDriver->get_status() == STOPPED 
 			&& tkNav->timeElapsed() > 1000)
+	{
 		return true;
+	}
+	return false;
 }
 
 // ================================================================ //
 // ROG
 TM::motionROG::motionROG(motions m) : Motion(m)
 {
-	tkNav->resetOffGridToZero();
 }
 void TM::motionROG::start(int& timer)
 {
-	tkdestination = tkNav->getGrid();
-	tkdestination.d = taskval;
+	tkNav->resetOffGridToZero();
+	tkdest = tkNav->getGrid();
+	tkdest.d = taskval;
+	
+	// Normalize current heading 
+	taskval = (taskval - tkdest.d) % 360;
+	if (taskval > 180) 
+		tkDriver->turnLeft();
+	else
+		tkDriver->turnRight();
+
 }
 void TM::motionROG::interrupt(sensors intsensor)
 {
@@ -441,7 +472,7 @@ void TM::motionROG::interrupt(sensors intsensor)
 			if (tkNav->getEncPortCNT() + tkNav->getEncStarboardCNT() >= 20)
 			{
 				new_grid.d = (360 + new_grid.d - 90) % 360;
-				tkNav->resetOffGridToZero();	
+				//tkNav->resetOffGridToZero();	
 			}
 		}
 		else if (tkDriver->get_status() == TURNINGRIGHT)
@@ -449,7 +480,7 @@ void TM::motionROG::interrupt(sensors intsensor)
 			if (tkNav->getEncPortCNT() + tkNav->getEncStarboardCNT() >= 20)
 			{
 				new_grid.d = (360 + new_grid.d + 90) % 360;
-				tkNav->resetOffGridToZero();
+				//tkNav->resetOffGridToZero();
 			}
 		}
 		tkNav->setGrid(new_grid);
@@ -464,7 +495,7 @@ bool TM::motionROG::iscomplete()
 	{
 		return true;
 	}
-
+	return false;
 }
 
 // ================================================================ //
@@ -475,20 +506,26 @@ TM::motionRFG::motionRFG(motions m) : Motion(m)
 }
 void TM::motionRFG::start(int& timer)
 {
+	// Normalize current heading 
+	int tempval = (taskval - tkdest.d) % 360;
+	if (tempval > 180) 
+		tkDriver->turnLeft();
+	else
+		tkDriver->turnRight();
 }
 void TM::motionRFG::interrupt(sensors intsensor)
 {
 }
 bool TM::motionRFG::iscomplete()
 {
-	if ((tkDriver->get_status() == TURNINGRIGHT 
-			&& tkNav->offgridpos.d > taskval)
-		|| (tkDriver->get_status() == TURNINGLEFT 
-			&& tkNav->offgridpos.d < taskval))
+	if ((tkDriver->get_status()==TURNINGRIGHT)
+			&&(tkNav->offgridpos.d > tkNav->getTaskValue())
+		||((tkDriver->get_status()==TURNINGLEFT)
+			&&(tkNav->offgridpos.d < tkNav->getTaskValue())))
 	{
 		return true;
 	}
-
+	return false;
 }
 
 // ================================================================ //
@@ -519,6 +556,7 @@ bool TM::motionCEX::iscomplete()
 		wheel_pwm = 255;
 		return true;
 	}
+	return false;
 }
 
 // ================================================================ //
@@ -545,6 +583,7 @@ bool TM::motionCRT::iscomplete()
 	{
 		return true;
 	}
+	return false;
 }
 
 // ================================================================ //
@@ -582,6 +621,7 @@ bool TM::motionHAL::iscomplete()
 	//			tkNav->encPortCNT));
 		return true;
 	}
+	return false;
 }
 
 // ================================================================ //
@@ -601,6 +641,7 @@ bool TM::motionPPP::iscomplete()
 {
 	if (FLAG_pause == false)
 		return true;
+	return false;
 }
 
 // ================================================================ //

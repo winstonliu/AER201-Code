@@ -124,9 +124,9 @@ void Nav::resetEncCNT()
 	encPortCNT = 0; 
 	encStarboardCNT = 0;
 }
-unsigned int Nav::getEncPortCNT() { return encPortCNT; }
-unsigned int Nav::getEncStarboardCNT() { return encStarboardCNT; }
-unsigned int Nav::absEncDistance()
+int Nav::getEncPortCNT() { return encPortCNT; }
+int Nav::getEncStarboardCNT() { return encStarboardCNT; }
+int Nav::absEncDistance()
 {
 	// Return the absolute distance
 	return abs((int)sqrt(offgridpos.x*offgridpos.x 

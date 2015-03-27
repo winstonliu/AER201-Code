@@ -34,12 +34,13 @@ namespace TM	// TaskManager
 	extern int timeforaline;
 
 	extern double lineSep;
-	extern unsigned int lineSepTicks;
+	extern int lineSepTicks;
 
-	extern double Rw; // Wheel radii
-	extern double D; // Wheel separation
-	extern double Tr; // ticks per rotation
-	extern double Tr_TRD; // ticks per degree turning
+	extern const double RwD; // 1.905 / 24.5
+	extern const double Rw; // Wheel radii
+	extern const double D; // Wheel separation
+	extern const double Tr; // ticks per rotation
+	extern const double Tr_TRD; // ticks per degree turning
 
 	extern int offGridTicks;
 	extern int predockingheading;
@@ -50,7 +51,7 @@ namespace TM	// TaskManager
 	extern motor* tkClarm;
 	extern motor* tkWheel;
 	extern Nav* tkNav;	
-	extern grid tkdestination;
+	extern grid tkdest;
 	extern drcoord departingpoint;
 
 	void start(int& timer);

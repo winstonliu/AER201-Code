@@ -45,13 +45,14 @@ const int INTencStarboardPin = 5; // 18
 // Playing field constants (cm)
 
 double TM::lineSep = 20;
-unsigned int TM::lineSepTicks = floor(lineSep / (2*M_PI*Rw) * Tr);
+int TM::lineSepTicks = floor(lineSep / (2*M_PI*Rw) * Tr);
 
 // Task Manager (cm)
-double TM::Rw = 1.905; // Wheel radii
-double TM::D = 24.5; // Wheel separation
-double TM::Tr = 8; // Ticks per rotation
-double TM::Tr_TRD = 0.1429; // Ticks per turning radius degree
+const double TM::Rw = 1.905; // Wheel radii
+const double TM::D = 24.5; // Wheel separation
+const double TM::RwD = 0.0777; // 1.905 / 24.5
+const double TM::Tr = 8; // Ticks per rotation
+const double TM::Tr_TRD = 0.1429; // Ticks per turning radius degree
 
 // XXX SET THIS
 int TM::timeforaline;
@@ -126,6 +127,7 @@ int nav_timer = 3600000;
 // ================================================================ //
 // Timers
 
+Metro encoderTimer = Metro(500);
 Metro displayTimer = Metro(500);
 Metro sensorPollTimer = Metro(30);
 Metro navProcessTimer = Metro(50);
@@ -169,24 +171,10 @@ void sensorPollingFunction()
 
 		TM::interrupt(LINE_ISR);
 		Navigator.setGrid(TM::dirLineInc(1));	// Update locationheading
-		Navigator.resetOffGridToZero();
-
-		/* DEBUG("#");
-		DEBUG(main_lap);
-		DEBUG("# ");
-		DEBUG("Line interrupt tripped. ");
-		DEBUG(irsen[0].getValue());
-		DEBUG(" ");
-		DEBUG(irsen[1].getValue());
-		DEBUG(" ");
-		DEBUG(irsen[2].getValue());
-		DEBUG(" ");
-		DEBUG(irsen[3].getValue());
-		DEBUG("\r\n"); */
+		//Navigator.resetOffGridToZero();
 	}
 	pastPin = currentPin;
 
-	Navigator.offgridpos = TM::calcOffGrid(Navigator.offgridpos);
 
 	// Update heading
 	current_heading = Driver.mapLine(
@@ -279,7 +267,7 @@ void setup()
 
 	// DEBUG COMMANDS
 	Navigator.tasklist.push(task(PPP, 5000));
-	Navigator.tasklist.push(task(RFG, 90));
+	Navigator.tasklist.push(task(RFG, 270));
 
 	/* 
 	// Check for navigation error
@@ -337,6 +325,8 @@ void setup()
 		TM::start(nav_timer);
 		DEBUG("Starting at ");
 		DEBUG(nav_timer);
+		DEBUG(" PAUSE ");
+		DEBUG(TM::FLAG_pause);
 		DEBUG("\r\n");
 		Navigator.sketchyTimer = millis();
 		navDelayTimer.interval(nav_timer);
@@ -419,10 +409,11 @@ void loop()
 	if (TM::iscomplete() == true)
 	{
 		nav_timer = 3600000; // default is 1 hour
-		DEBUG("FULL STOP ");
-		DEBUG(Navigator.getMotion());
+		DEBUG("FULL STOP VAL ");
+		DEBUG((int)Navigator.offgridpos.d % 360);
 		DEBUG("\r\n");
 		Driver.stop();
+
 		Navigator.advance();
 		if (Navigator.doneTasks() == false)
 		{
@@ -452,7 +443,9 @@ void loop()
 			DEBUG(" d: ");
 			DEBUG(dest.d);
 			DEBUG(" MOTION: ");
-			DEBUG(TM::tkNav->getMotion());
+			DEBUG(Navigator.getMotion());
+			DEBUG(" Value: ");
+			DEBUG(Navigator.getTaskValue());
 			DEBUG("\r\n");
 		}
 		else
@@ -473,7 +466,7 @@ void loop()
 		DEBUG(home_grid.y);
 		DEBUG(" d: ");
 		DEBUG(home_grid.d);
-		grid temp_grid = TM::tkdestination;
+		grid temp_grid = TM::tkdest;
 		DEBUG(" DEST ");
 		DEBUG(" x: ");
 		DEBUG(temp_grid.x);
@@ -481,6 +474,12 @@ void loop()
 		DEBUG(temp_grid.y);
 		DEBUG(" d: ");
 		DEBUG(temp_grid.d);
+		DEBUG(" OPOS X ");
+		DEBUG(Navigator.offgridpos.x);
+		DEBUG(" Y ");
+		DEBUG(Navigator.offgridpos.y);
+		DEBUG(" D ");
+		DEBUG(Navigator.offgridpos.d);
 		DEBUG("\r\n");
 	}	
 	// Event manager processing
@@ -526,19 +525,6 @@ void display()
 	DEBUG(irsen[3].detect());
 	*/
 
-	DEBUG("GPOS X ");
-	DEBUG(Navigator.currentGrid.x);
-	DEBUG(" Y ");
-	DEBUG(Navigator.currentGrid.y);
-	DEBUG(" D ");
-	DEBUG(Navigator.currentGrid.d);
-	DEBUG("OPOS X ");
-	DEBUG(Navigator.offgridpos.x);
-	DEBUG(" Y ");
-	DEBUG(Navigator.offgridpos.y);
-	DEBUG(" D ");
-	DEBUG(Navigator.offgridpos.d);
-
 	DEBUG(" PMS ");
 	DEBUG(port.motorspeed);
 	DEBUG(" SMS ");
@@ -561,6 +547,18 @@ void display()
 	*/
 	DEBUG(" WPWM ");
 	DEBUG(TM::wheel_pwm);
+	DEBUG(" GPOS X ");
+	DEBUG(Navigator.currentGrid.x);
+	DEBUG(" Y ");
+	DEBUG(Navigator.currentGrid.y);
+	DEBUG(" D ");
+	DEBUG(Navigator.currentGrid.d);
+	DEBUG(" OPOS X ");
+	DEBUG(Navigator.offgridpos.x);
+	DEBUG(" Y ");
+	DEBUG(Navigator.offgridpos.y);
+	DEBUG(" D ");
+	DEBUG(Navigator.offgridpos.d);
 	DEBUG("\r\n");
 
 	// DEBUG
@@ -586,7 +584,13 @@ void addEvents()
 	static int btnCal_state = digitalRead(btnCalibrate);
 
 	// Display event
-	if (displayTimer.check() == 1) display();
+	if (displayTimer.check() == 1) 
+		display();
+
+	if (encoderTimer.check() == 1)
+	{
+		Navigator.offgridpos = TM::calcOffGrid(Navigator.offgridpos);
+	}
 
 	// Poll sensors
 	if (sensorPollTimer.check() == 1) // 20
