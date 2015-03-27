@@ -38,8 +38,8 @@ const int hopperlPin = 5;
 const int hopperrPin = 4;
 const int solenoidPin = 6;
 
-const int INTencPortPin= 5;
-const int INTencStarboardPin = 4;
+const int INTencPortPin= 4; // 19
+const int INTencStarboardPin = 5; // 18
 
 
 // Playing field constants (cm)
@@ -51,6 +51,7 @@ unsigned int TM::lineSepTicks = floor(lineSep / (2*M_PI*Rw) * Tr);
 double TM::Rw = 1.905; // Wheel radii
 double TM::D = 24.5; // Wheel separation
 double TM::Tr = 8; // Ticks per rotation
+double TM::Tr_TRD = 0.1429; // Ticks per turning radius degree
 
 // XXX SET THIS
 int TM::timeforaline;
@@ -185,6 +186,8 @@ void sensorPollingFunction()
 	}
 	pastPin = currentPin;
 
+	Navigator.offgridpos = TM::calcOffGrid(Navigator.offgridpos);
+
 	// Update heading
 	current_heading = Driver.mapLine(
 		irsen[0].detect(),
@@ -277,26 +280,8 @@ void setup()
 	// DEBUG COMMANDS
 	Navigator.tasklist.push(task(PPP, 5000));
 	Navigator.tasklist.push(task(RFG, 90));
-	Navigator.tasklist.push(task(PPP, 2000));
-	Navigator.tasklist.push(task(OGB, 0));
-	Navigator.tasklist.push(task(PPP, 2000));
-	Navigator.tasklist.push(task(HAL, 0));
-	Navigator.tasklist.push(task(PPP, 2000));
-	Navigator.tasklist.push(task(CRT, 0));
-	Navigator.tasklist.push(task(PPP, 2000));
-	Navigator.tasklist.push(task(MIR, 5000));
-	Navigator.tasklist.push(task(CEX, 900));
-	//Navigator.tasklist.push(task(PPP, 5000));
-	//Navigator.tasklist.push(task(PPP, 2000));
-	//Navigator.tasklist.push(task(ROG, 270));
-	//Navigator.tasklist.push(task(RFG, 0));
-	//Navigator.tasklist.push(task(PPP, 1000));
-	//Navigator.tasklist.push(task(MOG, 4));
-	//Navigator.tasklist.push(task(PPP, 1000));
-	//Navigator.tasklist.push(task(MIR, 1));
-	//Navigator.tasklist.push(task(PPP, 1000));
 
-/* 
+	/* 
 	// Check for navigation error
 	int ret_err = Navigator.computeRectilinearPath(end_pos);
 	DEBUG("Computation result: ");
@@ -349,7 +334,10 @@ void setup()
 	{
 	*/
 		// Start first task
-		TM::start();
+		TM::start(nav_timer);
+		DEBUG("Starting at ");
+		DEBUG(nav_timer);
+		DEBUG("\r\n");
 		Navigator.sketchyTimer = millis();
 		navDelayTimer.interval(nav_timer);
 		navDelayTimer.reset();
@@ -431,7 +419,8 @@ void loop()
 	if (TM::iscomplete() == true)
 	{
 		nav_timer = 3600000; // default is 1 hour
-		DEBUG("FULL STOP");
+		DEBUG("FULL STOP ");
+		DEBUG(Navigator.getMotion());
 		DEBUG("\r\n");
 		Driver.stop();
 		Navigator.advance();
@@ -439,7 +428,10 @@ void loop()
 		{
 
 			Navigator.resetEncCNT();
-			TM::start();
+			TM::start(nav_timer);
+			navDelayTimer.interval(nav_timer);
+			navDelayTimer.reset();
+
 			Navigator.sketchyTimer = millis();
 
 			DEBUG("Starting new task. ");
@@ -468,10 +460,7 @@ void loop()
 			FLAG_DONE = true;	
 		}
 
-		navDelayTimer.interval(nav_timer);
-		navDelayTimer.reset();
-
-		DEBUG("#");
+				DEBUG("#");
 		DEBUG(main_lap);
 		DEBUG("# ");
 		DEBUG("Task completed. ");
@@ -516,6 +505,9 @@ void display()
 	DEBUG(Driver.current_heading);
 	DEBUG(" ADJSPD: ");
 	DEBUG(debug_speed);
+
+	// IR READINGS
+	/*
 	DEBUG(" RAW ");
 	DEBUG(irsen[0].readSensor());
 	DEBUG(" ");
@@ -532,6 +524,21 @@ void display()
 	DEBUG(irsen[2].detect());
 	DEBUG(" ");
 	DEBUG(irsen[3].detect());
+	*/
+
+	DEBUG("GPOS X ");
+	DEBUG(Navigator.currentGrid.x);
+	DEBUG(" Y ");
+	DEBUG(Navigator.currentGrid.y);
+	DEBUG(" D ");
+	DEBUG(Navigator.currentGrid.d);
+	DEBUG("OPOS X ");
+	DEBUG(Navigator.offgridpos.x);
+	DEBUG(" Y ");
+	DEBUG(Navigator.offgridpos.y);
+	DEBUG(" D ");
+	DEBUG(Navigator.offgridpos.d);
+
 	DEBUG(" PMS ");
 	DEBUG(port.motorspeed);
 	DEBUG(" SMS ");
@@ -544,28 +551,17 @@ void display()
 	DEBUG(Navigator.encPortCNT);
 	DEBUG(" SENC ");
 	DEBUG(Navigator.encStarboardCNT);
+
+	// Hopper flags
+	/*
 	DEBUG(" HR ");
 	DEBUG(TM::FLAG_hopperright);
 	DEBUG(" HL ");
 	DEBUG(TM::FLAG_hopperleft);
+	*/
 	DEBUG(" WPWM ");
 	DEBUG(TM::wheel_pwm);
 	DEBUG("\r\n");
-	/*
-	DEBUG("GPOS X ");
-	DEBUG(Navigator.currentGrid.x);
-	DEBUG(" Y ");
-	DEBUG(Navigator.currentGrid.y);
-	DEBUG(" D ");
-	DEBUG(Navigator.currentGrid.d);
-	DEBUG("OPOS X ");
-	DEBUG(Navigator.offgridpos.x);
-	DEBUG(" Y ");
-	DEBUG(Navigator.offgridpos.y);
-	DEBUG(" D ");
-	DEBUG(Navigator.offgridpos.d)
-	DEBUG("\r\n");
-	*/
 
 	// DEBUG
 	lcd.clear();
