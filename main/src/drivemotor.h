@@ -19,14 +19,15 @@ enum drive_status
 class DriveMotor
 {
 	private:
-		int scaling, initial;
+		int prop, deriv;
 		motor *ptr_port;
 		motor *ptr_starboard;
 		drive_status currentStatus;
 	public:
 		int current_heading;
+		int newSpeed;
 		DriveMotor(motor& port, motor& starboard, 
-				int scaling = 4, int initial = 10);
+				int prop, int deriv);
 		int mapLine(bool left, bool middle, bool right);
 		int lineMotorScaling(int baseSpeed = 255);
 

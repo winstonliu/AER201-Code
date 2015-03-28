@@ -1,9 +1,8 @@
 #include <Wire.h>
 #include <rgb_lcd.h>
-#include <irsensor.h>
 #include <Keypad.h>
 #include <motor.h>
-//#include <EventManager.h>
+#include <QTRSensors.h>
 #include <Metro.h>
 
 #include "nav.h"
@@ -23,8 +22,6 @@
 // ADJUSTABLE PARAMETERS
 
 const int btnCalibrate = 10;
-const int NUMPINS = 4; // Initialize irsensors
-const int senPins[NUMPINS] = {A15,A14,A13,A12}; // l,m,r,offset
 const int numCyclesTrack = 2;
 const int blackthresh = 600; // Threshold for black line
 
@@ -103,9 +100,8 @@ motor port(10,11);
 motor wheel(7,50,TM::wheel_pwm);
 motor clarm(12,13,TM::clarm_pwm); // Claw arm
 
-int current_heading;
-
-DriveMotor Driver(port, starboard, dmotor_scaling, dmotor_initial);
+// Port, starboard, P, D of proportional-derivative adjustment
+DriveMotor Driver(port, starboard, 0.1, 5);
 // ================================================================ //
 // Important stuff
 
@@ -115,7 +111,16 @@ bool FLAG_CANSTART = false;
 
 rgb_lcd lcd;
 Nav Navigator(start_pos);
-IRSensor irsen[NUMPINS];
+
+// Line sensing thresh = 200 out of 1000
+const int NUMPINS = 4; // Initialize irsensors
+const int NUMEXT = 2;
+unsigned char senPins[NUMPINS] = {15,13,12,11};
+unsigned char senExt[NUMEXT] = {14,10};
+unsigned int senPinVal[NUMPINS];
+unsigned int senExtVal[NUMEXT];
+QTRSensorsAnalog qtrline(senPins, NUMPINS);
+QTRSensorsAnalog qtrext(senExt, NUMEXT);
 
 DriveMotor* TM::tkDriver = &Driver;
 motor* TM::tkClarm = &clarm;
@@ -135,53 +140,22 @@ Metro navDelayTimer = Metro(3600000); // Set to 1 hour when unused
 
 // ================================================================ //
 
-// XXX DEBUG CODE
+// DEBUG CODE
 int debug_speed;
 long main_lap = 0;
-// XXX
+// 
 
 void sensorPollingFunction()
 {
-	int sum_lines = 0;
-	// Read sensors
-	for (int i = 0; i < NUMPINS; ++i) 
-	{
-		irsen[i].readSensor(); 
-		sum_lines += irsen[i].pastEncounters();
-	}
-
-	// If all sensors have been triggered in the past n cycles,
-	// then trigger line detected
-	/*
-	DEBUG("Sum pins ");
-	DEBUG(sum_lines);
-	DEBUG("\r\n");
-	*/
+	Driver.current_heading = qtrline.readLine(senPinVal);
+	qtrext.readCalibrated(senExtVal);
 
 	// Check the offset sensor for line pass detection, look for rising edge
-	static int pastPin = WHITE;
-	int currentPin = irsen[3].detect();
-	/*
-	if (currentPin == BLACK && pastPin == WHITE 
-		&& Driver.get_status() != STOPPED && sum_lines == NUMPINS)
+	if (senExtVal[0] > 200 && senExtVal[1] > 200)
 	{
-	*/
-	if (currentPin == BLACK)
-	{
-
 		TM::interrupt(LINE_ISR);
-		Navigator.setGrid(TM::dirLineInc(1));	// Update locationheading
-		//Navigator.resetOffGridToZero();
+		Navigator.setGrid(TM::dirLineInc(1));	// Update location heading
 	}
-	pastPin = currentPin;
-
-
-	// Update heading
-	current_heading = Driver.mapLine(
-		irsen[0].detect(),
-		irsen[1].detect(),
-		irsen[2].detect()
-	);
 }
 void encLeftPin() 
 { 
@@ -247,19 +221,41 @@ void setup()
 	Serial.begin(9600);
 	lcd.begin(16,2);
 
-	//wheel.left();	
+	// ~ 2 seconds for calibration
+	DEBUG("Calibrating now...\r\n");
+	delay(100);
+	Driver.driveStraight();
+	for (int i = 0; i < 100; ++i)
+	{
+		qtrline.calibrate();
+		qtrext.calibrate();
+	}
+	DEBUG("Done calibration:\r\n");
+	
+	// Min max debug code
+	for (int i = 0; i < NUMPINS; ++i)
+	{
+		DEBUG(" LIN");
+		DEBUG(i);
+		DEBUG(" ");
+		DEBUG(qtrline.calibratedMinimumOn[i]);
+		DEBUG(" ");
+		DEBUG(qtrline.calibratedMaximumOn[i]);
+	}
+	for (int i = 0; i < NUMEXT; ++i)
+	{
+		DEBUG(" EXT");
+		DEBUG(i);
+		DEBUG(" ");
+		DEBUG(qtrext.calibratedMinimumOn[i]);
+		DEBUG(" ");
+		DEBUG(qtrext.calibratedMaximumOn[i]);
+	}
+	DEBUG("\r\n");
 
 	// Pins
 	pinMode(btnCalibrate, INPUT);
 	pinMode(clarmPin, INPUT);
-
-	// Set threshold values for irsensor
-	for (int i = 0; i < NUMPINS; ++i)
-	{
-		// Make new IRSensor
-		irsen[i] = IRSensor(senPins[i], numCyclesTrack, blackthresh);
-		irsen[i].setThresh(threshold_values);
-	}
 
 	// Interrupts
 	attachInterrupt(INTencPortPin, encLeftPin, RISING);
@@ -267,7 +263,8 @@ void setup()
 
 	// DEBUG COMMANDS
 	Navigator.tasklist.push(task(PPP, 5000));
-	Navigator.tasklist.push(task(RFG, 270));
+	Navigator.tasklist.push(task(PPP, 5000));
+	Navigator.tasklist.push(task(MOG, 1000));
 
 	/* 
 	// Check for navigation error
@@ -496,6 +493,9 @@ void display()
 	DEBUG("#");
 	DEBUG(main_lap);
 	DEBUG("# ");
+	DEBUG("NS ");
+	DEBUG(Driver.newSpeed);
+	/*
 	DEBUG("MOT: ");
 	DEBUG(Navigator.getMotion());
 	DEBUG(" DRV: ");
@@ -504,26 +504,23 @@ void display()
 	DEBUG(Driver.current_heading);
 	DEBUG(" ADJSPD: ");
 	DEBUG(debug_speed);
+	*/
 
 	// IR READINGS
-	/*
-	DEBUG(" RAW ");
-	DEBUG(irsen[0].readSensor());
+	DEBUG(" EXT ");
+	DEBUG(senExtVal[0]);
+	DEBUG(" LIN ");
+	DEBUG(senPinVal[0]);
 	DEBUG(" ");
-	DEBUG(irsen[1].readSensor());
+	DEBUG(senPinVal[1]);
 	DEBUG(" ");
-	DEBUG(irsen[2].readSensor());
+	DEBUG(senPinVal[2]);
 	DEBUG(" ");
-	DEBUG(irsen[3].readSensor());
-	DEBUG(" DET ");
-	DEBUG(irsen[0].detect());
-	DEBUG(" ");
-	DEBUG(irsen[1].detect());
-	DEBUG(" ");
-	DEBUG(irsen[2].detect());
-	DEBUG(" ");
-	DEBUG(irsen[3].detect());
-	*/
+	DEBUG(senPinVal[3]);
+	DEBUG(" EXT ");
+	DEBUG(senExtVal[1]);
+	DEBUG(" HEADING ");
+	DEBUG(Driver.current_heading);
 
 	DEBUG(" PMS ");
 	DEBUG(port.motorspeed);
@@ -545,6 +542,7 @@ void display()
 	DEBUG(" HL ");
 	DEBUG(TM::FLAG_hopperleft);
 	*/
+	/*
 	DEBUG(" WPWM ");
 	DEBUG(TM::wheel_pwm);
 	DEBUG(" GPOS X ");
@@ -559,23 +557,11 @@ void display()
 	DEBUG(Navigator.offgridpos.y);
 	DEBUG(" D ");
 	DEBUG(Navigator.offgridpos.d);
+	*/
 	DEBUG("\r\n");
 
 	// DEBUG
-	lcd.clear();
-	lcd.print(irsen[1].readSensor());
-	lcd.print(" ");
-	lcd.print(irsen[2].readSensor());
-	lcd.print(" ");
-	lcd.print(irsen[3].readSensor());
-	lcd.setCursor(0,1);
-	lcd.print(irsen[1].detect());
-	lcd.print(" ");
-	lcd.print(irsen[2].detect());
-	lcd.print(" ");
-	lcd.print(irsen[3].detect());
-	lcd.print(" ");
-	lcd.print(current_heading);
+	//lcd.clear();
 }
 
 void addEvents()
@@ -618,24 +604,10 @@ void addEvents()
 	int calRead = digitalRead(btnCalibrate);
 	if (btnCal_state == LOW && calRead == HIGH)
 	{
-		calibrate_all();
+		qtrline.calibrate();
+		qtrext.calibrate();
 		lcd.clear();
 		lcd.print("Calibrated");
 	}
 	btnCal_state = calRead;
-}
-
-void calibrate_all() // TODO terrible hack
-{
-	// Middle sensor calibrates for black
-	// Right and left sensor averages calibrate for white
-	//threshold_values[BLACK] = irsen[2].readSensor();	
-	threshold_values[WHITE] = ( irsen[1].readSensor() 
-								+ irsen[3].readSensor()) / 2;
-
-	// Set values
-	for (int i = 0; i < NUMPINS; ++i)
-	{
-		irsen[i].setThresh(threshold_values);
-	}
 }

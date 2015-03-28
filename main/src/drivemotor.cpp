@@ -1,7 +1,7 @@
 #include "drivemotor.h"
 
-DriveMotor::DriveMotor(motor& p, motor& s, int ds, int di) : 
-	scaling(ds), initial(di) 
+DriveMotor::DriveMotor(motor& p, motor& s, int kp, int kd) :
+	prop(kp), deriv(kd)
 {
 	ptr_port = &p;
 	ptr_starboard = &s;
@@ -42,31 +42,34 @@ int DriveMotor::lineMotorScaling(int baseSpeed)
 {
 	// If the heading is less than zero, then PWM the port (left) wheel and
 	// v.v. If the heading is zero, then full steam ahead.
-	// XXX Replace with QTR stuff
-	// DEBUG
+	
+	// For four pins
+	static int lastError = 0;
+	int error = current_heading - 1500;
+	newSpeed = prop * error + deriv * (error - lastError);
+	lastError = error;
+
+	ptr_port->adjustSpeed(newSpeed);
+	ptr_starboard->adjustSpeed(newSpeed);
+
+	/*
 	int newSpeed;
-	if (current_heading < 0)
+	if (current_heading != 0)
 	{
-		newSpeed = baseSpeed + current_heading*scaling*initial;
+		newSpeed = baseSpeed - current_heading*scaling*initial;
 		//ptr_port->adjustSpeed(newSpeed); 
 		if (newSpeed < 0) newSpeed = 0;
 		ptr_port->adjustSpeed(newSpeed);
 		ptr_starboard->adjustSpeed(baseSpeed);
-	}
-	else if (current_heading > 0)
-	{
-		newSpeed = baseSpeed - current_heading*scaling*initial;
-		//ptr_starboard->adjustSpeed(newSpeed); 
-		if (newSpeed < 0) newSpeed = 0;
-		ptr_port->adjustSpeed(baseSpeed);
-		ptr_starboard->adjustSpeed(newSpeed);
-	}
 	else
 	{
 		newSpeed = baseSpeed;
 		ptr_port->adjustSpeed(newSpeed);
 		ptr_starboard->adjustSpeed(newSpeed);
 	}
+	return newSpeed;
+	*/
+
 	return newSpeed;
 }
 
