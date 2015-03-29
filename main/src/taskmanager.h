@@ -47,6 +47,7 @@ namespace TM	// TaskManager
 	extern int offGridTicks;
 	extern int predockingheading;
 	extern int internalcount;
+	extern int numloops;
 
 	// Stuff from nav class
 	extern DriveMotor* tkDriver;

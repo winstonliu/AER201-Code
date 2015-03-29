@@ -47,6 +47,7 @@ drcoord TM::departingpoint = tkNav->offgridpos;
 
 int TM::predockingheading = 0;
 int TM::internalcount = 0;
+int TM::numloops = 0;
 
 void TM::start(int& timer)
 {
@@ -132,6 +133,7 @@ motions TM::Motion::get_motion() { return mymotion; }
 TM::motionMOG::motionMOG(motions m) : Motion(m) {}
 void TM::motionMOG::start(int& timer)
 {
+	numloops = tkNav->getTaskValue();
 	tkNav->resetOffGridToZero();
 	tkDriver->driveStraight();
 	tkdest = dirLineInc(tkNav->getTaskValue());
@@ -156,11 +158,13 @@ void TM::motionMOG::interrupt(sensors intsensor)
 }
 bool TM::motionMOG::iscomplete()
 {
-	if (tkNav->currentGrid >= tkdest)
+	if ((tkNav->currentGrid >= tkdest) || (numloops == 0))
 	{
+		tkDriver->stop();
 		return true;
 	}
 	return false;
+	--numloops;
 }
 
 // ================================================================ //

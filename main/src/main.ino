@@ -118,7 +118,7 @@ motor wheel(7,50,TM::wheel_pwm);
 motor clarm(12,13,TM::clarm_pwm); // Claw arm
 
 // Port, starboard, P, D of proportional-derivative adjustment
-DriveMotor Driver(port, starboard, 0.4, 7);
+DriveMotor Driver(port, starboard, 0.4, 5);
 // ================================================================ //
 // Important stuff
 
@@ -172,13 +172,13 @@ void sensorPollingFunction()
 	// Check the offset sensor for line pass detection, look for rising edge
 	// XXX Reconfig line sensor detection
 	if ((senExtVal[0] > 300) && (senExtVal[1] > 300) 
-		&& (Navigator.timeElapsed() > 200)
+		//&& (Navigator.timeElapsed() > 200)
 		&& (online == false))
 	{ 
 		TM::interrupt(LINE_ISR);
 		Serial.println("LINEINT\r\n");
 		Navigator.setGrid(TM::dirLineInc(1));	// Update location heading
-		Navigator.sketchyTimer = millis();
+		//Navigator.sketchyTimer = millis();
 		online = true;
 	}
 	else
@@ -186,12 +186,12 @@ void sensorPollingFunction()
 		online = false;
 	}
 }
-void encLeftPin() 
+void encLeftPin()
 { 
 	//Serial.println("INTLEFT");
 	Navigator.incEncPortCNT(); 
 }
-void encRightPin() 
+void encRightPin()
 { 
 	//Serial.println("INTRIGHT");
 	Navigator.incEncStarboardCNT(); 
@@ -292,8 +292,8 @@ void setup()
 
 	// DEBUG COMMANDS
 	Navigator.tasklist.push(task(PPP, 1000));
-	//Navigator.tasklist.push(task(MOG, 4));
-	Navigator.hopperDocking();
+	Navigator.tasklist.push(task(MOG, 4));
+	//Navigator.hopperDocking();
 
 	/* 
 	// Check for navigation error
