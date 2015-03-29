@@ -32,6 +32,16 @@ enum motions
 	NOE
 };
 
+enum macro_motion
+{
+	mMTC, // move to corner hopper
+	mCBL, // collect ball
+	mMTB, // move to gameboard
+	mMTH, // move to closes hopper
+	mDDD, // done
+	mMOTIONSCOUNT
+};
+
 struct task
 {
 	motions do_now;
@@ -61,6 +71,11 @@ struct grid
 	{
 		return (x == a.x && y == a.y && d == a.d);
 	}
+	bool operator>=(const grid& a) const
+	{
+		return (x >= a.x && y >= a.y && d >= a.d);
+	}
+
 };
 
 // dead-reckoning coordinates, name change to avoid confusion

@@ -11,12 +11,28 @@
 
 // Enable debug messages through serial
 #define SERIALDEBUG
+#define IRSEN_DEBUG
+//#define ENC_DEBUG
 
 #ifdef SERIALDEBUG
 #define DEBUG( x ) Serial.print( x )
 #else
 #define DEBUG( x )
 #endif
+
+#ifdef IRSEN_DEBUG
+#define DEBUG_IR( x ) Serial.print( x )
+#else
+#define DEBUG_IR( x )
+#endif
+
+#ifdef ENC_DEBUG
+#define DEBUG_ENC( x ) Serial.print( x )
+#else
+#define DEBUG_ENC( x )
+#endif
+
+
 
 // ================================================================ //
 // ADJUSTABLE PARAMETERS
@@ -25,7 +41,7 @@ const int btnCalibrate = 10;
 const int numCyclesTrack = 2;
 const int blackthresh = 600; // Threshold for black line
 
-int TM::board_now;
+int TM::board_now = LOW;
 
 // PINS
 
@@ -33,7 +49,7 @@ const int clarmPin = 3;
 const int boardPin = 2;
 const int hopperlPin = 5;
 const int hopperrPin = 4;
-const int solenoidPin = 6;
+const int servoPin = 6;
 
 const int INTencPortPin= 4; // 19
 const int INTencStarboardPin = 5; // 18
@@ -45,11 +61,11 @@ double TM::lineSep = 20;
 int TM::lineSepTicks = floor(lineSep / (2*M_PI*Rw) * Tr);
 
 // Task Manager (cm)
-const double TM::Rw = 1.905; // Wheel radii
-const double TM::D = 24.5; // Wheel separation
-const double TM::RwD = 0.0777; // 1.905 / 24.5
+const double TM::Rw = 3.44; // Wheel radii
+const double TM::D = 26; // Wheel separation
+const double TM::RwD = TM::Rw/TM::D; // 4.5 / 25
 const double TM::Tr = 8; // Ticks per rotation
-const double TM::Tr_TRD = 0.1429; // Ticks per turning radius degree
+const double TM::Tr_TRD = 0.079; // Ticks per turning radius degree
 
 // XXX SET THIS
 int TM::timeforaline;
@@ -91,8 +107,9 @@ byte colPins[cols] = {39, 41, 43};
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, rows, cols);
 // ================================================================ //
 // MOTOR initialization
+const int TM::wheel_norm = 50;
 int TM::wheel_pwm = 0;
-int TM::clarm_pwm = 200;
+int TM::clarm_pwm = 225;
 
 // Initialize motors (en, dir)
 motor starboard(8,9);
@@ -101,7 +118,7 @@ motor wheel(7,50,TM::wheel_pwm);
 motor clarm(12,13,TM::clarm_pwm); // Claw arm
 
 // Port, starboard, P, D of proportional-derivative adjustment
-DriveMotor Driver(port, starboard, 0.1, 5);
+DriveMotor Driver(port, starboard, 0.4, 7);
 // ================================================================ //
 // Important stuff
 
@@ -132,7 +149,7 @@ int nav_timer = 3600000;
 // ================================================================ //
 // Timers
 
-Metro encoderTimer = Metro(500);
+Metro encoderTimer = Metro(300);
 Metro displayTimer = Metro(500);
 Metro sensorPollTimer = Metro(30);
 Metro navProcessTimer = Metro(50);
@@ -147,14 +164,26 @@ long main_lap = 0;
 
 void sensorPollingFunction()
 {
+	static bool online = false;
+	
 	Driver.current_heading = qtrline.readLine(senPinVal);
 	qtrext.readCalibrated(senExtVal);
 
 	// Check the offset sensor for line pass detection, look for rising edge
-	if (senExtVal[0] > 200 && senExtVal[1] > 200)
-	{
+	// XXX Reconfig line sensor detection
+	if ((senExtVal[0] > 300) && (senExtVal[1] > 300) 
+		&& (Navigator.timeElapsed() > 200)
+		&& (online == false))
+	{ 
 		TM::interrupt(LINE_ISR);
+		Serial.println("LINEINT\r\n");
 		Navigator.setGrid(TM::dirLineInc(1));	// Update location heading
+		Navigator.sketchyTimer = millis();
+		online = true;
+	}
+	else
+	{
+		online = false;
 	}
 }
 void encLeftPin() 
@@ -221,16 +250,16 @@ void setup()
 	Serial.begin(9600);
 	lcd.begin(16,2);
 
-	// ~ 2 seconds for calibration
+	// ~ 3 seconds for calibration
 	DEBUG("Calibrating now...\r\n");
 	delay(100);
-	Driver.driveStraight();
-	for (int i = 0; i < 100; ++i)
+	for (int i = 0; i < 400; ++i)
 	{
 		qtrline.calibrate();
 		qtrext.calibrate();
 	}
 	DEBUG("Done calibration:\r\n");
+	analogWrite(servoPin, 90);
 	
 	// Min max debug code
 	for (int i = 0; i < NUMPINS; ++i)
@@ -262,9 +291,9 @@ void setup()
 	attachInterrupt(INTencStarboardPin, encRightPin, RISING);
 
 	// DEBUG COMMANDS
-	Navigator.tasklist.push(task(PPP, 5000));
-	Navigator.tasklist.push(task(PPP, 5000));
-	Navigator.tasklist.push(task(MOG, 1000));
+	Navigator.tasklist.push(task(PPP, 1000));
+	//Navigator.tasklist.push(task(MOG, 4));
+	Navigator.hopperDocking();
 
 	/* 
 	// Check for navigation error
@@ -333,11 +362,6 @@ void setup()
 	
 }
 
-void poop()
-{
-	Driver.driveReverse(125);
-}
-
 void loop()
 {
 	wheel.left(TM::wheel_pwm);
@@ -356,8 +380,7 @@ void loop()
 	int clarm_now = digitalRead(clarmPin);
 	if (clarm_now == HIGH && clarm_last == LOW)
 	{
-		TM::interrupt(CLAW_TOUCH);	
-		//Serial.println("LINEINT");
+		TM::interrupt(CLAW_TOUCH);
 	}
 	clarm_last = clarm_now;
 
@@ -365,19 +388,40 @@ void loop()
 	static int board_last = LOW;
 	TM::board_now = digitalRead(boardPin);
 	if (TM::board_now == HIGH && board_last == LOW)
+	{
+		DEBUG("BOARDTOUCH\r\n");
 		TM::interrupt(BOARD_TOUCH);	
+		analogWrite(servoPin, 45);
+	}
+	else
+	{
+		analogWrite(servoPin, 90);
+	}
 	board_last = TM::board_now;
+	//
 
 	// Solenoid pin
-	digitalWrite(solenoidPin, TM::board_now);
-	//Serial.println(TM::board_now);
 
 	// Check for rising hopper left interrupt
-	if(TM::FLAG_hopperleft = digitalRead(hopperlPin) == true)
+	if(digitalRead(hopperlPin) == HIGH)
+	{
+		TM::FLAG_hopperleft = true;
 		TM::interrupt(HOPPER_TOUCH_LEFT);	
+	}
+	else
+	{
+		TM::FLAG_hopperleft = false;
+	}
 
-	if(TM::FLAG_hopperright = digitalRead(hopperrPin) == true)
+	if(digitalRead(hopperrPin) == HIGH)
+	{
+		TM::FLAG_hopperright = true;
 		TM::interrupt(HOPPER_TOUCH_RIGHT);	
+	}
+	else
+	{
+		TM::FLAG_hopperright = false;
+	}
 	// XXX
 	/*
 	static int hopperl_last = LOW;
@@ -447,10 +491,10 @@ void loop()
 		}
 		else
 		{
-			FLAG_DONE = true;	
+			FLAG_DONE = true;
 		}
 
-				DEBUG("#");
+		DEBUG("#");
 		DEBUG(main_lap);
 		DEBUG("# ");
 		DEBUG("Task completed. ");
@@ -493,47 +537,45 @@ void display()
 	DEBUG("#");
 	DEBUG(main_lap);
 	DEBUG("# ");
-	DEBUG("NS ");
-	DEBUG(Driver.newSpeed);
-	/*
+	DEBUG_IR(" NS ");
+	DEBUG_IR(Driver.newSpeed);
 	DEBUG("MOT: ");
 	DEBUG(Navigator.getMotion());
 	DEBUG(" DRV: ");
 	DEBUG(Driver.get_status());
 	DEBUG(" HED: ");
 	DEBUG(Driver.current_heading);
-	DEBUG(" ADJSPD: ");
+	DEBUG(" DS: ");
 	DEBUG(debug_speed);
-	*/
 
 	// IR READINGS
-	DEBUG(" EXT ");
-	DEBUG(senExtVal[0]);
-	DEBUG(" LIN ");
-	DEBUG(senPinVal[0]);
-	DEBUG(" ");
-	DEBUG(senPinVal[1]);
-	DEBUG(" ");
-	DEBUG(senPinVal[2]);
-	DEBUG(" ");
-	DEBUG(senPinVal[3]);
-	DEBUG(" EXT ");
-	DEBUG(senExtVal[1]);
-	DEBUG(" HEADING ");
-	DEBUG(Driver.current_heading);
+	DEBUG_IR(" EXT ");
+	DEBUG_IR(senExtVal[0]);
+	DEBUG_IR(" LIN ");
+	DEBUG_IR(senPinVal[0]);
+	DEBUG_IR(" ");
+	DEBUG_IR(senPinVal[1]);
+	DEBUG_IR(" ");
+	DEBUG_IR(senPinVal[2]);
+	DEBUG_IR(" ");
+	DEBUG_IR(senPinVal[3]);
+	DEBUG_IR(" EXT ");
+	DEBUG_IR(senExtVal[1]);
+	DEBUG_IR(" HEADING ");
+	DEBUG_IR(Driver.current_heading);
+	DEBUG_IR(" PMS ");
+	DEBUG_IR(port.motorspeed);
+	DEBUG_IR(" SMS ");
+	DEBUG_IR(starboard.motorspeed);
+	DEBUG_IR(" PT ");
+	DEBUG_IR(port.get_status());
+	DEBUG_IR(" ST ");
+	DEBUG_IR(starboard.get_status());
 
-	DEBUG(" PMS ");
-	DEBUG(port.motorspeed);
-	DEBUG(" SMS ");
-	DEBUG(starboard.motorspeed);
-	DEBUG(" PT ");
-	DEBUG(port.get_status());
-	DEBUG(" ST ");
-	DEBUG(starboard.get_status());
-	DEBUG(" PENC ");
-	DEBUG(Navigator.encPortCNT);
-	DEBUG(" SENC ");
-	DEBUG(Navigator.encStarboardCNT);
+	DEBUG_ENC(" PENC ");
+	DEBUG_ENC(Navigator.encPortCNT);
+	DEBUG_ENC(" SENC ");
+	DEBUG_ENC(Navigator.encStarboardCNT);
 
 	// Hopper flags
 	/*
@@ -541,10 +583,12 @@ void display()
 	DEBUG(TM::FLAG_hopperright);
 	DEBUG(" HL ");
 	DEBUG(TM::FLAG_hopperleft);
-	*/
-	/*
 	DEBUG(" WPWM ");
 	DEBUG(TM::wheel_pwm);
+	DEBUG(" TMR ");
+	DEBUG(Navigator.timeElapsed());
+	*/
+
 	DEBUG(" GPOS X ");
 	DEBUG(Navigator.currentGrid.x);
 	DEBUG(" Y ");
@@ -557,7 +601,7 @@ void display()
 	DEBUG(Navigator.offgridpos.y);
 	DEBUG(" D ");
 	DEBUG(Navigator.offgridpos.d);
-	*/
+
 	DEBUG("\r\n");
 
 	// DEBUG

@@ -26,6 +26,8 @@ namespace TM	// TaskManager
 	extern bool FLAG_dockedboard;
 	extern bool FLAG_hopperleft;
 	extern bool FLAG_hopperright;
+
+	extern const int wheel_norm;
 	
 	extern int wheel_pwm;
 	extern int clarm_pwm;
@@ -119,11 +121,16 @@ namespace TM	// TaskManager
 	};
 	class motionHAL : public Motion
 	{
-		private:
-			bool FLAG_hopperleft;
-			bool FLAG_hopperright;
 		public:
 			motionHAL(motions m);
+			void start(int& timer);
+			void interrupt(sensors intsensor);
+			bool iscomplete();
+	};
+	class motionGAL : public Motion
+	{
+		public:
+			motionGAL(motions m);
 			void start(int& timer);
 			void interrupt(sensors intsensor);
 			bool iscomplete();

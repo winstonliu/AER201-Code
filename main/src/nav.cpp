@@ -93,12 +93,12 @@ int Nav::computeRectilinearPath(grid new_destination)
 
 int Nav::hopperDocking()
 {
-	tasklist.push(task(RFG, 315)); // Move until interrupt
-	tasklist.push(task(OGB, 0)); // Move until interrupt
+	//tasklist.push(task(RFG, 315)); // Move until interrupt
+	//tasklist.push(task(OGB, 0)); // Move until interrupt
 	tasklist.push(task(HAL, 0)); // Align with hopper
 	tasklist.push(task(CRT, 0)); // Retract claw
-	tasklist.push(task(OGR, 0)); // Reverse
-	tasklist.push(task(CEX, 0)); // Extend claw
+	tasklist.push(task(MIR, 0)); // Reverse
+	tasklist.push(task(CEX, 500)); // Extend claw
 }
 
 int Nav::hopperUndocking()

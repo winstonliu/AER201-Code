@@ -49,8 +49,8 @@ int DriveMotor::lineMotorScaling(int baseSpeed)
 	newSpeed = prop * error + deriv * (error - lastError);
 	lastError = error;
 
-	ptr_port->adjustSpeed(newSpeed);
-	ptr_starboard->adjustSpeed(newSpeed);
+	ptr_port->adjustSpeed(baseSpeed + newSpeed);
+	ptr_starboard->adjustSpeed(baseSpeed - newSpeed);
 
 	/*
 	int newSpeed;

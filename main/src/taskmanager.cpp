@@ -11,7 +11,7 @@ motionNOE myOGR = motionNOE(NOE); // Off grid return
 motionROG myROG = motionROG(ROG); // Rotate on grid
 motionRFG myRFG = motionRFG(RFG); // Rotate off grid
 motionHAL myHAL = motionHAL(HAL); // Hopper alignment
-motionNOE myGAL = motionNOE(NOE); // Gameboard alignment
+motionGAL myGAL = motionGAL(GAL); // Gameboard alignment
 motionCEX myCEX = motionCEX(CEX); // Claw extend
 motionCRT myCRT = motionCRT(CRT); // Claw retract
 motionPPP myPPP = motionPPP(PPP); // Pause
@@ -129,15 +129,12 @@ motions TM::Motion::get_motion() { return mymotion; }
 // ================================================================ //
 // MOG
 
-TM::motionMOG::motionMOG(motions m) : Motion(m)
-{
-	taskval = tkNav->getTaskValue();
-}
+TM::motionMOG::motionMOG(motions m) : Motion(m) {}
 void TM::motionMOG::start(int& timer)
 {
 	tkNav->resetOffGridToZero();
 	tkDriver->driveStraight();
-	linecount = taskval;
+	tkdest = dirLineInc(tkNav->getTaskValue());
 }
 void TM::motionMOG::process()
 {
@@ -152,12 +149,17 @@ void TM::motionMOG::process()
 void TM::motionMOG::interrupt(sensors intsensor)
 {
 	if (intsensor == LINE_ISR)
-		--linecount;
+	{
+		tkNav->resetOffGridToZero();
+		tkNav->setGrid(dirLineInc(1));
+	}
 }
 bool TM::motionMOG::iscomplete()
 {
-	//if (linecount == 0)
-	//	return true;
+	if (tkNav->currentGrid >= tkdest)
+	{
+		return true;
+	}
 	return false;
 }
 
@@ -173,9 +175,10 @@ void TM::motionMIR::process() {}
 void TM::motionMIR::interrupt(sensors intsensor) {}
 bool TM::motionMIR::iscomplete()
 {
-	if (tkDriver->get_status() == STOPPED 
-			&& tkNav->timeElapsed() > 1000)
+	if (tkNav->timeElapsed() > 1000)
 	{
+		tkDriver->stop();
+		wheel_pwm = wheel_norm;	
 		return true;
 	}
 	return false;
@@ -183,17 +186,15 @@ bool TM::motionMIR::iscomplete()
 
 // ================================================================ //
 // ROG - Rotate on grid to position
-TM::motionROG::motionROG(motions m) : Motion(m)
-{
-}
+TM::motionROG::motionROG(motions m) : Motion(m) {}
 void TM::motionROG::start(int& timer)
 {
 	tkNav->resetOffGridToZero();
-	
+	//int turndir = (tkNav->offgridpos.d - tkNav->getTaskValue()) % 180;
 	// Normalize current heading 
-	if (taskval > 180)
-		tkDriver->turnLeft();
-	else
+	//if (tkNav->getTaskValue() > 0)
+	//	tkDriver->turnLeft();
+	//else
 		tkDriver->turnRight();
 
 }
@@ -210,8 +211,10 @@ void TM::motionROG::interrupt(sensors intsensor)
 }
 bool TM::motionROG::iscomplete()
 {
-	if (tkNav->getGrid().d == taskval)	
+	if (tkNav->getGrid().d >= tkNav->getTaskValue())	
+	{
 		return true;
+	}
 	return false;
 }
 
@@ -224,28 +227,30 @@ TM::motionRFG::motionRFG(motions m) : Motion(m)
 void TM::motionRFG::start(int& timer)
 {
 	// Normalize current heading 
-	if (taskval > 180) 
-		tkDriver->turnLeft();
-	else
+	//if (tkNav->getTaskValue() > 180) 
+	//	tkDriver->turnLeft();
+	//else
 		tkDriver->turnRight();
 }
 void TM::motionRFG::interrupt(sensors intsensor) {}
 bool TM::motionRFG::iscomplete()
 {
-	if (abs(tkNav->offgridpos.d - taskval) < 15)
+	if (tkNav->offgridpos.d > tkNav->getTaskValue())
+	{
 		return true;
+	}
 	return false;
 }
 
 // ================================================================ //
-// CEX
+// CEXfunc
 
 TM::motionCEX::motionCEX(motions m) : Motion(m) {}
 void TM::motionCEX::start(int& timer)
 {
 	tkClarm->right(clarm_pwm);
 	wheel_pwm = 0;
-	timer = taskval;
+	timer = tkNav->getTaskValue();
 }
 void TM::motionCEX::interrupt(sensors intsensor)
 {
@@ -260,7 +265,7 @@ bool TM::motionCEX::iscomplete()
 	if (FLAG_clawextended == true)
 	{
 		tkWheel->left();
-		wheel_pwm = 255;
+		wheel_pwm = wheel_norm;
 		return true;
 	}
 	return false;
@@ -296,28 +301,39 @@ bool TM::motionCRT::iscomplete()
 TM::motionHAL::motionHAL(motions m) : Motion(m) {}
 void TM::motionHAL::start(int& timer)
 {
-	tkDriver->driveReverse();
+	tkDriver->driveStraight();
 }
 void TM::motionHAL::interrupt(sensors intsensor)
 {
 	if (intsensor == HOPPER_TOUCH_LEFT)
 	{
 		if (FLAG_hopperright == true)
+		{
+			FLAG_hopperleft = true;
 			tkDriver->stop();
+		}
 		else
+		{
 			tkDriver->pivotLeft();
+		}
 	}	
 	else if (intsensor == HOPPER_TOUCH_RIGHT)
 	{
 		if (FLAG_hopperleft == true)
+		{
+			FLAG_hopperright = true;
 			tkDriver->stop();
+		}
 		else
+		{
 			tkDriver->pivotRight();
+		}
+		FLAG_hopperright = true;
 	}
 }
 bool TM::motionHAL::iscomplete()
 {
-	if ((FLAG_hopperleft && FLAG_hopperright) == true) 
+	if ((FLAG_hopperleft & FLAG_hopperright) == true) 
 	{
 		tkDriver->stop();
 		//internalcount = floor(euclideanDist(tkNav->encStarboardCNT, 
@@ -326,6 +342,13 @@ bool TM::motionHAL::iscomplete()
 	}
 	return false;
 }
+
+// ================================================================ //
+
+TM::motionGAL::motionGAL(motions m) : Motion(m) {}
+void TM::motionGAL::start(int& timer) {}
+void TM::motionGAL::interrupt(sensors intsensor) {}
+bool TM::motionGAL::iscomplete() {} 
 
 // ================================================================ //
 
