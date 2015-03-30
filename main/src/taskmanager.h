@@ -26,6 +26,7 @@ namespace TM	// TaskManager
 	extern bool FLAG_dockedboard;
 	extern bool FLAG_hopperleft;
 	extern bool FLAG_hopperright;
+	extern bool FLAG_ball_dropped;
 
 	extern const int wheel_norm;
 	
@@ -46,7 +47,7 @@ namespace TM	// TaskManager
 
 	extern int offGridTicks;
 	extern int predockingheading;
-	extern int internalcount;
+	extern double internalcount;
 	extern int numloops;
 
 	// Stuff from nav class
@@ -83,6 +84,15 @@ namespace TM	// TaskManager
 	{
 		public:
 			motionMIR(motions m);
+			void start(int& timer);
+			void process();
+			void interrupt(sensors intsensor);
+			bool iscomplete();
+	};
+	class motionOGR : public Motion
+	{
+		public:
+			motionOGR(motions m);
 			void start(int& timer);
 			void process();
 			void interrupt(sensors intsensor);
@@ -125,6 +135,7 @@ namespace TM	// TaskManager
 		public:
 			motionHAL(motions m);
 			void start(int& timer);
+			void process();
 			void interrupt(sensors intsensor);
 			bool iscomplete();
 	};
@@ -133,7 +144,6 @@ namespace TM	// TaskManager
 		public:
 			motionGAL(motions m);
 			void start(int& timer);
-			void interrupt(sensors intsensor);
 			bool iscomplete();
 	};
 	class motionPPP : public Motion 

@@ -113,7 +113,7 @@ void DriveMotor::pivotLeft()
 void DriveMotor::pivotLeftReverse()
 {
 	ptr_starboard->left(255);
-	ptr_port->stop();
+	ptr_port->left(125);
 	currentStatus = PIVOTLEFTBACK;
 }
 
@@ -126,8 +126,8 @@ void DriveMotor::pivotRight()
 
 void DriveMotor::pivotRightReverse()
 {
-	ptr_starboard->stop();
-	ptr_port->right(125);
+	ptr_starboard->right(125);
+	ptr_port->right(255);
 	currentStatus = PIVOTRIGHTBACK;
 }
 

@@ -18,7 +18,7 @@ enum motions
 	MOG, // Move on grid
 	MIR, // Move in reverse
 	GFG, // Go off grid
-	OGB, // Off grid outbound
+	NOE, // Not enabled
 	OGR, // Off grid return
 	ROG, // Rotate on grid
 	RFG, // Rotate off grid
@@ -29,7 +29,6 @@ enum motions
 	PPP, // Pause
 	MOI, // Motion idle
 	MOTIONSCOUNT,
-	NOE
 };
 
 enum macro_motion
@@ -114,11 +113,15 @@ class Nav
 		int computeRectilinearPath(grid new_destination);
 		int hopperDocking();
 		int hopperUndocking();
+		int gameboardAlign();
 		void advance();
 
 		int reset(grid);
 		int set_destination(grid new_destination);
 		int setGrid(grid new_grid);
+		void setOffGridPos(drcoord newpos);
+		void setOffGridPos(double d);
+		drcoord getOffGridPos();
 
 		void incEncPortCNT();
 		void incEncStarboardCNT();
@@ -128,7 +131,7 @@ class Nav
 
 		int absEncDistance();
 
-		void resetOffGridToZero();
+		void zeroOGXY();
 		
 		int getTaskValue();
 		grid getGrid();

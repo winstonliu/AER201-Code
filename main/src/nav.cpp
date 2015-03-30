@@ -94,13 +94,11 @@ int Nav::computeRectilinearPath(grid new_destination)
 int Nav::hopperDocking()
 {
 	//tasklist.push(task(RFG, 315)); // Move until interrupt
-	//tasklist.push(task(OGB, 0)); // Move until interrupt
 	tasklist.push(task(HAL, 0)); // Align with hopper
 	tasklist.push(task(CRT, 0)); // Retract claw
 	tasklist.push(task(MIR, 0)); // Reverse
 	tasklist.push(task(CEX, 500)); // Extend claw
 }
-
 int Nav::hopperUndocking()
 {
 	// Using cosine law to calculate degrees of rotation
@@ -113,10 +111,17 @@ int Nav::hopperUndocking()
 		/ (2*len_b*len_c)));
 	*/
 
-	// negative implies use counted lines
-	tasklist.push(task(OGR, -1));
+	tasklist.push(task(OGR, 0));
 	tasklist.push(task(RFG, currentGrid.d)); // Move until interrupt
 }
+int Nav::gameboardAlign()
+{
+	// at 4,8,90/180
+	tasklist.push(task(ROG, 180)); // Rotate to face y
+	tasklist.push(task(GAL, 0));
+	tasklist.push(task(PPP, 1000));
+}
+
 void Nav::incEncPortCNT() { ++encPortCNT; }
 void Nav::incEncStarboardCNT() { ++encStarboardCNT; }
 void Nav::resetEncCNT() 
@@ -132,16 +137,17 @@ int Nav::absEncDistance()
 	return abs((int)sqrt(offgridpos.x*offgridpos.x 
 				+ offgridpos.y*offgridpos.y)); 
 }
-void Nav::resetOffGridToZero() 
+void Nav::zeroOGXY() 
 { 
 	offgridpos.x = 0; 
 	offgridpos.y = 0; 
-	offgridpos.d = 0; 
+	//offgridpos.d = 0; 
 }
 int Nav::setGrid(grid new_grid)
 {
 	if (check_validity(new_grid) == true)
 	{
+		setOffGridPos(new_grid.d);
 		currentGrid = new_grid;
 		return 0;
 	}
@@ -160,6 +166,16 @@ int Nav::getTaskValue()
 	return tasklist.isEmpty() ? 0 : tasklist.peek().value; 
 }
 grid Nav::getGrid() { return currentGrid; }
+void Nav::setOffGridPos(drcoord newpos)
+{
+	newpos.d = fmod((720 + newpos.d), 360);
+	offgridpos = newpos;
+}
+void Nav::setOffGridPos(double d)
+{
+	offgridpos.d = fmod((720 + d), 360);
+}
+drcoord Nav::getOffGridPos() { return offgridpos; }
 grid Nav::getDestination() { return destination; }
 bool Nav::doneTasks() { return tasklist.count() == 0; }
 int Nav::countRemaining() { return tasklist.count(); }
