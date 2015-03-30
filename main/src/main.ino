@@ -93,7 +93,7 @@ const double TM::Tr_TRD = 0.079; // Ticks per turning radius degree
 int TM::timeforaline;
 
 // Initialize nav x,y,d
-grid start_pos(4, 8, 90);
+grid start_pos(3, 8, 90);
 grid end_pos(6, 5, 90);
 
 int threshold_values[3] = {0, 800, 0};
@@ -193,9 +193,21 @@ void sensorPollingFunction()
 
 	// Check the offset sensor for line pass detection, look for rising edge
 	// XXX Reconfig line sensor detection
-	if ((senExtVal[0] > (qtrext.calibratedMaximumOn[0] * 0.5)) 
-		&& (senExtVal[1] > (qtrext.calibratedMaximumOn[1] * 0.5))
-		&& ((Navigator.currentTime - pollTime) > 200))
+	bool extLeft = (senExtVal[0] > (qtrext.calibratedMaximumOn[0] * 0.5));
+	bool extRight = (senExtVal[1] > (qtrext.calibratedMaximumOn[1] * 0.5));
+	bool minTime = ((Navigator.currentTime - pollTime) > 200);
+	bool lineTime = (TM::dirLineInc(1).x == 4) 
+		&& (Navigator.absEncDistance() >= TM::lineSep);
+
+
+	DEBUG("PF ");
+	DEBUG(extLeft);
+	DEBUG(extRight);
+	DEBUG(minTime);
+	DEBUG(lineTime);
+	DEBUG("\r\n");
+
+	if ((extLeft && extRight && minTime) || lineTime)
 	{ 
 		TM::interrupt(LINE_ISR);
 		Serial.println("LINEINT\r\n");
@@ -310,8 +322,6 @@ void setup()
 
 	// DEBUG COMMANDS
 	Navigator.tasklist.push(task(PPP, 2000));
-	Navigator.tasklist.push(task(GAL, 0));
-	Navigator.tasklist.push(task(PPP, 1000));
 	Navigator.tasklist.push(task(MOG, 1));
 	/*
 	Navigator.tasklist.push(task(HAL, 0));
