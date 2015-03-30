@@ -93,6 +93,7 @@ grid TM::dirLineInc(int i)
 drcoord TM::calcOffGrid(drcoord lastPos)
 {
 	int pcnt, scnt;
+	double turnnow;
 	pcnt = tkNav->getEncPortCNT();
 	scnt = tkNav->getEncStarboardCNT();
 	drcoord newPos = lastPos;
@@ -102,16 +103,21 @@ drcoord TM::calcOffGrid(drcoord lastPos)
 		case PIVOTLEFTBACK:
 		case TURNINGRIGHT:
 			scnt *= -1;
+			//turnnow = 6.61;
 			break;
 		case PIVOTRIGHTBACK:
 		case TURNINGLEFT:
 			pcnt *= -1;
+			//turnnow = -6.61;
 			break;
 		case DRIVINGREVERSE:
 			scnt *= -1;	
 			pcnt *= -1;
 			break;
 	}
+	//tkNav->turncoord += fmod((360 + turnnow), 360);
+	tkNav->turncoord += fmod((360 * RwD * (pcnt - scnt) / Tr), 360);
+
 	newPos.d += fmod((360 * RwD * (pcnt - scnt) / Tr), 360);
 	newPos.x += Rw * cos(lastPos.d) * (pcnt + scnt) * M_PI / Tr;
 	newPos.y += Rw * sin(lastPos.d) * (pcnt + scnt) * M_PI / Tr;
@@ -190,7 +196,8 @@ void TM::motionMIR::interrupt(sensors intsensor)
 bool TM::motionMIR::iscomplete()
 {
 
-	if ((tkNav->timeElapsed() > 1000) || (tkDriver->get_status() == STOPPED))
+	if ((tkNav->timeElapsed() > 1000) 
+			|| (tkDriver->get_status() == STOPPED))
 	{
 		tkDriver->stop();
 		wheel_pwm = wheel_norm;	
@@ -238,15 +245,38 @@ TM::motionRFG::motionRFG(motions m) : Motion(m) {}
 void TM::motionRFG::start(int& timer)
 {
 	// Calculate turning direction
-	int turndir = (int)(tkNav->getTaskValue() - tkNav->getOffGridPos().d) % 360;
+	int turndir = (int)(tkNav->getTaskValue()
+		   - tkNav->getOffGridPos().d) % 360;
 	if ((turndir >= 180) || ((-180 < turndir) && (turndir < 0)))
 		tkDriver->turnLeft();
 	else if ((turndir < -180) || ((0 <= turndir) && (turndir < 180)))
 		tkDriver->turnRight();
+	/*
+	if (tkNav->getTaskValue() > 180)
+		tkDriver->turnLeft();
+	else
+		tkDriver->turnRight();
+	*/
+	tkNav->turncoord = 0;
 }
 void TM::motionRFG::interrupt(sensors intsensor) {}
 bool TM::motionRFG::iscomplete()
 {
+	int diff = tkNav->getOffGridPos().d - tkNav->getTaskValue();
+	if (((diff < 0) & (tkDriver->turnLeft == true)) == true)
+	{
+			
+	}
+	/*
+	bool greater = tkNav->turncoord > tkNav->getTaskValue();
+	bool lesser = tkNav->turncoord < tkNav->getTaskValue();
+
+	if (((tkDriver->get_status() == TURNINGLEFT) && lesser) 
+		|| ((tkDriver->get_status() == TURNINGRIGHT) && greater))
+	{
+		return true;
+	}
+	*/
 	if (abs(tkNav->getOffGridPos().d - tkNav->getTaskValue()) < 15)
 	{
 		return true;

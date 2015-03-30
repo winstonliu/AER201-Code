@@ -31,13 +31,12 @@ enum motions
 	MOTIONSCOUNT,
 };
 
-enum macro_motion
+enum macromotion
 {
 	mMTC, // move to corner hopper
 	mCBL, // collect ball
 	mMTB, // move to gameboard
-	mMTH, // move to closes hopper
-	mDDD, // done
+	mMTH, // move to closest hopper
 	mMOTIONSCOUNT
 };
 
@@ -107,6 +106,7 @@ class Nav
 		QueueArray <task> tasklist;
 		bool check_validity(grid new_position);
 		drcoord offgridpos;
+		double turncoord;
 		bool on_grid;
 
 		Nav(grid start_position);
@@ -114,6 +114,7 @@ class Nav
 		int hopperDocking();
 		int hopperUndocking();
 		int gameboardAlign();
+		int boardAndBack();
 		void advance();
 
 		int reset(grid);

@@ -112,7 +112,7 @@ int Nav::hopperUndocking()
 	*/
 
 	tasklist.push(task(OGR, 0));
-	tasklist.push(task(RFG, currentGrid.d)); // Move until interrupt
+	tasklist.push(task(RFG, currentGrid.d));
 }
 int Nav::gameboardAlign()
 {
@@ -121,7 +121,38 @@ int Nav::gameboardAlign()
 	tasklist.push(task(GAL, 0));
 	tasklist.push(task(PPP, 1000));
 }
-
+int Nav::boardAndBack()
+{
+	tasklist.push(task(RFG, 135));
+	hopperDocking();
+	hopperUndocking();
+	tasklist.push(task(MOG, 1));
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(ROG, 0));
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(MOG, 6));
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(ROG, 270));
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(MOG, 3));
+	gameboardAlign();
+	// Return 
+	tasklist.push(task(MOG, 1));
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(ROG, 90));
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(MOG, 3));
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(ROG, 180));
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(MOG, 6));
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(ROG, 270));
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(MOG, 1));
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(ROG, 180));
+}
 void Nav::incEncPortCNT() { ++encPortCNT; }
 void Nav::incEncStarboardCNT() { ++encStarboardCNT; }
 void Nav::resetEncCNT() 
