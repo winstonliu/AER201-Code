@@ -259,14 +259,9 @@ void TM::motionRFG::start(int& timer)
 	*/
 	tkNav->turncoord = 0;
 }
-void TM::motionRFG::interrupt(sensors intsensor) {}
+void TM::motionRFG::interrupt(sensorr intsensor) {}
 bool TM::motionRFG::iscomplete()
 {
-	int diff = tkNav->getOffGridPos().d - tkNav->getTaskValue();
-	if (((diff < 0) & (tkDriver->turnLeft == true)) == true)
-	{
-			
-	}
 	/*
 	bool greater = tkNav->turncoord > tkNav->getTaskValue();
 	bool lesser = tkNav->turncoord < tkNav->getTaskValue();
@@ -277,7 +272,9 @@ bool TM::motionRFG::iscomplete()
 		return true;
 	}
 	*/
-	if (abs(tkNav->getOffGridPos().d - tkNav->getTaskValue()) < 15)
+
+	int todiff = abs(tkNav->getOffGridPos().d - tkNav->getTaskValue());
+	if (((todiff < 180) ? todiff : 360 - todiff) < 10)
 	{
 		return true;
 	}

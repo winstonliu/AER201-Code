@@ -4,6 +4,7 @@
 #include <motor.h>
 #include <QTRSensors.h>
 #include <Metro.h>
+#include <Servo.h>
 
 #include "nav.h"
 #include "taskmanager.h"
@@ -60,7 +61,7 @@
 
 const int btnCalibrate = 10;
 const int numCyclesTrack = 2;
-const double bthresh = 0.5; // Percentage threshold for black line
+const double bthresh = 0.6; // Percentage threshold for black line
 
 int TM::board_now = LOW;
 
@@ -92,7 +93,7 @@ const double TM::Tr_TRD = 0.079; // Ticks per turning radius degree
 int TM::timeforaline;
 
 // Initialize nav x,y,d
-grid start_pos(4, 1, 0);
+grid start_pos(4, 1, 90);
 grid end_pos(6, 5, 90);
 
 int threshold_values[3] = {0, 800, 0};
@@ -230,7 +231,7 @@ bool checkOnLine()
 	bool online = true;
 	for (int i = 0; i < NUMPINS; ++i)
 	{
-		online = online & (senPinVal[i] > (qtrline.calibratedMaximumOn[i]*bthresh));
+		online = online & (senPinVal[i]>(qtrline.calibratedMaximumOn[i]*bthresh));
 	}
 
 	if ((extLeft & extLeft & online) == true)
@@ -340,6 +341,7 @@ void setup()
 	lcd.begin(16,2);
 
 	myservo.attach(servoPin, 1000, 2000);
+	myservo.write(0);
 	
 	// Pins
 	pinMode(btnCalibrate, INPUT);
@@ -354,17 +356,18 @@ void setup()
 	lineCalibrate();
 	Navigator.tasklist.push(task(PPP, 2000));
 	//Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(RFG, 270));
-	Navigator.tasklist.push(task(PPP, 1000));
+	//Navigator.tasklist.push(task(RFG, 95));
+	//Navigator.tasklist.push(task(PPP, 1000));
 	Navigator.tasklist.push(task(MOG, 2));
 	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(RFG, 0));
+	Navigator.tasklist.push(task(RFG, 355));
 	Navigator.tasklist.push(task(PPP, 1000));
 	Navigator.tasklist.push(task(MOG, 1));
 	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(RFG, 270));
+	Navigator.tasklist.push(task(RFG, 95));
 	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(RFG, 230));
+	Navigator.tasklist.push(task(RFG, 145));
+	Navigator.boardAndBack();
 	/*
 	Navigator.tasklist.push(task(ROG, 0));
 	Navigator.tasklist.push(task(PPP, 1000));
@@ -494,10 +497,8 @@ void loop()
 	// Check for rising gameboard interrupt
 	// Solenoid pin
 	TM::board_now = digitalRead(boardPin);
-	if (board_now == HIGH)
+	if (TM::board_now == HIGH)
 		myservo.write(180);
-	else
-		myservo.write(0);
 
 	// Check for rising hopper left interrupt
 	if(digitalRead(hopperlPin) == HIGH)
