@@ -18,7 +18,7 @@ enum motions
 	MOG, // Move on grid
 	MIR, // Move in reverse
 	NOE, // Go off grid
-	ROL, // Reobtain the line
+	LCK, // Reobtain the line
 	OGR, // Off grid return
 	ROG, // Rotate on grid
 	RFG, // Rotate off grid

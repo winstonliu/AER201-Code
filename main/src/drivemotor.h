@@ -39,6 +39,8 @@ class DriveMotor
 		void pivotLeftReverse();
 		void pivotRight();
 		void pivotRightReverse();
+		void adjustSpeed(int speed);	
+		void doOpposite();
 		drive_status get_status();
 		void stop();
 };

@@ -15,9 +15,9 @@
 
 #ifdef SERIALDEBUG
 #define DEBUG( x ) Serial.print( x )
-//#define IRSEN_DEBUG
+#define IRSEN_DEBUG
 #define ENC_DEBUG
-//#define INT_DEBUG
+#define INT_DEBUG
 #define MOTO_DEBUG
 #define NAV_DEBUG
 //#define HOPPER_DEBUG
@@ -68,7 +68,7 @@
 
 const int btnCalibrate = 10;
 const int numCyclesTrack = 2;
-const double bthresh = 0.9; // Percentage threshold for black line
+const double bthresh = 0.65; // Percentage threshold for black line
 
 int TM::board_now = LOW;
 
@@ -100,7 +100,7 @@ const double TM::Tr_TRD = 0.079; // Ticks per turning radius degree
 int TM::timeforaline;
 
 // Initialize nav x,y,d
-grid start_pos(4, 1, 0);
+grid start_pos(3, 1, 0);
 grid end_pos(6, 5, 90);
 
 int threshold_values[3] = {0, 800, 0};
@@ -204,7 +204,7 @@ void sensorPollingFunction()
 	TM::extLeft = (senExtVal[0] > (qtrext.calibratedMaximumOn[0] * bthresh));
 	TM::extRight = (senExtVal[1] > (qtrext.calibratedMaximumOn[1] * bthresh));
 	bool driveStat = (Driver.get_status() != STOPPED);
-	bool minTime = (Navigator.currentTime - pollTime) > 500;
+	bool minTime = (Navigator.currentTime - pollTime) > 300;
 	bool lineTime = (TM::dirLineInc(1).x == 4) 
 		&& (Navigator.absEncDistance() >= TM::lineSep);
 
@@ -360,15 +360,46 @@ void setup()
 
 	// DEBUG COMMANDS
 	// Leaving home
-	//lineCalibrate();
+	lineCalibrate();
 	Navigator.tasklist.push(task(PPP, 5000));
-	//Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(ROG, 270));
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(MOG, 2));
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(MIR, 0));
+	Navigator.tasklist.push(task(PPP, 1000));
 	Navigator.tasklist.push(task(RFG, 90));
 	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(MOG, 2));
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(ROG, 0));
+	//Navigator.tasklist.push(task(LCK, 0));
+	/*
+	Navigator.tasklist.push(task(PPP, 1000));
+	//Navigator.tasklist.push(task(LCK, 0));
+	Navigator.tasklist.push(task(MIR, 0));
+	Navigator.tasklist.push(task(PPP, 1000));
+	//Navigator.tasklist.push(task(LCK, 0));
+	Navigator.tasklist.push(task(RFG, 90));
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(MOG, 1));
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(RFG, 0));
+	Navigator.tasklist.push(task(PPP, 1000));
+	//Navigator.tasklist.push(task(LCK, 0));
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(MOG, 2));
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(ROG, 90));
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(MOG, 2));
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(ROG, 0));
+	*/
 	/*
 	Navigator.tasklist.push(task(MOG, 2));
 	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(ROL, 90));
+	Navigator.tasklist.push(task(LCK, 90));
 	*/
 	/*
 	Navigator.tasklist.push(task(PPP, 1000));
@@ -577,7 +608,7 @@ void display()
 	DEBUG("# ");
 	DEBUG_IR("NS ");
 	DEBUG_IR(Driver.newSpeed);
-	DEBUG(" MOT ");
+	DEBUG("\tMOT ");
 	DEBUG(Navigator.getMotion());
 	DEBUG(" DRV ");
 	DEBUG(Driver.get_status());
@@ -588,7 +619,7 @@ void display()
 
 	// IR READINGS
 	DEBUG_IR("\tE ");
-	DEBUG_IR(extLeft);
+	DEBUG_IR(senExtVal[0]);
 	DEBUG_IR(" L ");
 	DEBUG_IR(senPinVal[0]);
 	DEBUG_IR(" ");
@@ -598,7 +629,7 @@ void display()
 	DEBUG_IR(" ");
 	DEBUG_IR(senPinVal[3]);
 	DEBUG_IR(" E ");
-	DEBUG_IR(extRight);
+	DEBUG_IR(senExtVal[1]);
 	DEBUG_MOTO(" PMS ");
 	DEBUG_MOTO(port.motorspeed);
 	DEBUG_MOTO(" SMS ");

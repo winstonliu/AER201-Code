@@ -182,7 +182,7 @@ int Nav::setGrid(grid new_grid)
 {
 	if (check_validity(new_grid) == true)
 	{
-		setOffGridPos(new_grid.d);
+		//setOffGridPos(new_grid.d);
 		currentGrid = new_grid;
 		return 0;
 	}

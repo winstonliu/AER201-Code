@@ -48,7 +48,6 @@ namespace TM	// TaskManager
 	extern int offGridTicks;
 	extern int predockingheading;
 	extern double internalcount;
-	extern int numloops;
 
 	extern bool extLeft;
 	extern bool extRight;
@@ -70,11 +69,11 @@ namespace TM	// TaskManager
 	grid dirLineInc(int i);
 	drcoord calcOffGrid(drcoord lastPos);
 
+	void turnDirInit();
+
 	// Move on grid
 	class motionMOG : public Motion 
 	{
-		private: 
-			int linecount;
 		public:
 			motionMOG(motions m);
 			void start(int& timer);
@@ -109,10 +108,10 @@ namespace TM	// TaskManager
 			void interrupt(sensors intsensor);
 			bool iscomplete();
 	};
-	class motionROL : public Motion
+	class motionLCK : public Motion
 	{
 		public:
-			motionROL(motions m);
+			motionLCK(motions m);
 			void start(int& timer);
 			void process();
 			void interrupt(sensors intsensor);
@@ -132,6 +131,7 @@ namespace TM	// TaskManager
 		public:
 			motionROG(motions m);
 			void start(int& timer);
+			void process();
 			void interrupt(sensors intsensor);
 			bool iscomplete();
 	};
