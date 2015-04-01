@@ -15,9 +15,10 @@
 
 #ifdef SERIALDEBUG
 #define DEBUG( x ) Serial.print( x )
-#define IRSEN_DEBUG
+//#define IRSEN_DEBUG
 #define ENC_DEBUG
-//#define MOTO_DEBUG
+//#define INT_DEBUG
+#define MOTO_DEBUG
 #define NAV_DEBUG
 //#define HOPPER_DEBUG
 #else
@@ -54,6 +55,12 @@
 #define DEBUG_ENC( x )
 #endif
 
+#ifdef INT_DEBUG
+#define DEBUG_INT( x ) Serial.print( x )
+#else
+#define DEBUG_INT( x )
+#endif
+
 
 
 // ================================================================ //
@@ -61,7 +68,7 @@
 
 const int btnCalibrate = 10;
 const int numCyclesTrack = 2;
-const double bthresh = 0.6; // Percentage threshold for black line
+const double bthresh = 0.9; // Percentage threshold for black line
 
 int TM::board_now = LOW;
 
@@ -93,7 +100,7 @@ const double TM::Tr_TRD = 0.079; // Ticks per turning radius degree
 int TM::timeforaline;
 
 // Initialize nav x,y,d
-grid start_pos(4, 1, 90);
+grid start_pos(4, 1, 0);
 grid end_pos(6, 5, 90);
 
 int threshold_values[3] = {0, 800, 0};
@@ -140,7 +147,7 @@ motor wheel(7,50,TM::wheel_pwm);
 motor clarm(12,13,TM::clarm_pwm); // Claw arm
 
 // Port, starboard, P, D of proportional-derivative adjustment
-DriveMotor Driver(port, starboard, 0.05, 1);
+DriveMotor Driver(port, starboard, 0.1, 1.5);
 Servo myservo;
 // ================================================================ //
 // Important stuff
@@ -173,7 +180,7 @@ int nav_timer = 3600000;
 // ================================================================ //
 // Timers
 
-Metro encoderTimer = Metro(100);
+Metro encoderTimer = Metro(150);
 Metro displayTimer = Metro(500);
 Metro sensorPollTimer = Metro(30);
 Metro navProcessTimer = Metro(50);
@@ -194,31 +201,31 @@ void sensorPollingFunction()
 
 	// Check the offset sensor for line pass detection, look for rising edge
 	// XXX Reconfig line sensor detection
-	bool extLeft = (senExtVal[0] > (qtrext.calibratedMaximumOn[0] * bthresh));
-	bool extRight = (senExtVal[1] > (qtrext.calibratedMaximumOn[1] * bthresh));
+	TM::extLeft = (senExtVal[0] > (qtrext.calibratedMaximumOn[0] * bthresh));
+	TM::extRight = (senExtVal[1] > (qtrext.calibratedMaximumOn[1] * bthresh));
 	bool driveStat = (Driver.get_status() != STOPPED);
 	bool minTime = (Navigator.currentTime - pollTime) > 500;
 	bool lineTime = (TM::dirLineInc(1).x == 4) 
 		&& (Navigator.absEncDistance() >= TM::lineSep);
 
-	if (((extLeft & extRight & minTime & driveStat) == true) 
+	if (((TM::extLeft & TM::extRight & minTime & driveStat) == true) 
 		|| ((driveStat & lineTime) == true))
 	{ 
 		TM::interrupt(LINE_ISR);
 		pollTime = millis();
-		DEBUG("LINEINT EX ");
-		DEBUG(senExtVal[0]);
-		DEBUG(" ");
-		DEBUG(senExtVal[1]);
-		DEBUG(" LL ");
-		DEBUG(senPinVal[0]);
-		DEBUG(" ");
-		DEBUG(senPinVal[1]);
-		DEBUG(" ");
-		DEBUG(senPinVal[2]);
-		DEBUG(" ");
-		DEBUG(senPinVal[3]);
-		DEBUG("\r\n");
+		DEBUG_INT(">>> LINEINT EX ");
+		DEBUG_INT(senExtVal[0]);
+		DEBUG_INT(" ");
+		DEBUG_INT(senExtVal[1]);
+		DEBUG_INT(" LL ");
+		DEBUG_INT(senPinVal[0]);
+		DEBUG_INT(" ");
+		DEBUG_INT(senPinVal[1]);
+		DEBUG_INT(" ");
+		DEBUG_INT(senPinVal[2]);
+		DEBUG_INT(" ");
+		DEBUG_INT(senPinVal[3]);
+		DEBUG_INT("\r\n");
 	}
 }
 bool checkOnLine()
@@ -353,12 +360,17 @@ void setup()
 
 	// DEBUG COMMANDS
 	// Leaving home
-	lineCalibrate();
-	Navigator.tasklist.push(task(PPP, 2000));
+	//lineCalibrate();
+	Navigator.tasklist.push(task(PPP, 5000));
 	//Navigator.tasklist.push(task(PPP, 1000));
-	//Navigator.tasklist.push(task(RFG, 95));
-	//Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(RFG, 90));
+	Navigator.tasklist.push(task(PPP, 1000));
+	/*
 	Navigator.tasklist.push(task(MOG, 2));
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(ROL, 90));
+	*/
+	/*
 	Navigator.tasklist.push(task(PPP, 1000));
 	Navigator.tasklist.push(task(RFG, 355));
 	Navigator.tasklist.push(task(PPP, 1000));
@@ -368,6 +380,7 @@ void setup()
 	Navigator.tasklist.push(task(PPP, 1000));
 	Navigator.tasklist.push(task(RFG, 145));
 	Navigator.boardAndBack();
+	*/
 	/*
 	Navigator.tasklist.push(task(ROG, 0));
 	Navigator.tasklist.push(task(PPP, 1000));
@@ -389,19 +402,6 @@ void setup()
 	Navigator.tasklist.push(task(PPP, 1000));
 	Navigator.tasklist.push(task(RFG, 0));
 	*/
-	/*
-	Navigator.tasklist.push(task(MOG, 2));
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(ROG, 0));
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(MOG, 1));
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(ROG, 90));
-	*/
-	/*
-	Navigator.tasklist.push(task(OGR, 0));
-	*/
-	//Navigator.hopperDocking();
 
 	currentMM = mMTC;
 
@@ -459,6 +459,7 @@ void setup()
 	*/
 		// Start first task
 		TM::start(nav_timer);
+		Navigator.resetEncCNT();
 		DEBUG("Starting at ");
 		DEBUG(nav_timer);
 		DEBUG(" PAUSE ");
@@ -574,20 +575,20 @@ void display()
 	DEBUG("#");
 	DEBUG(main_lap);
 	DEBUG("# ");
-	DEBUG_IR("\tNS ");
+	DEBUG_IR("NS ");
 	DEBUG_IR(Driver.newSpeed);
 	DEBUG(" MOT ");
 	DEBUG(Navigator.getMotion());
 	DEBUG(" DRV ");
 	DEBUG(Driver.get_status());
-	DEBUG(" HED ");
-	DEBUG(Driver.current_heading);
-	DEBUG(" OL ");
-	DEBUG(checkOnLine());
+	//DEBUG(" HED ");
+	//DEBUG(Driver.current_heading);
+	//DEBUG(" OL ");
+	//DEBUG(checkOnLine());
 
 	// IR READINGS
-	DEBUG_IR(" E ");
-	DEBUG_IR(senExtVal[0]);
+	DEBUG_IR("\tE ");
+	DEBUG_IR(extLeft);
 	DEBUG_IR(" L ");
 	DEBUG_IR(senPinVal[0]);
 	DEBUG_IR(" ");
@@ -597,7 +598,7 @@ void display()
 	DEBUG_IR(" ");
 	DEBUG_IR(senPinVal[3]);
 	DEBUG_IR(" E ");
-	DEBUG_IR(senExtVal[1]);
+	DEBUG_IR(extRight);
 	DEBUG_MOTO(" PMS ");
 	DEBUG_MOTO(port.motorspeed);
 	DEBUG_MOTO(" SMS ");

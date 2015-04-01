@@ -6,7 +6,7 @@ using namespace TM;
 motionMOG myMOG = motionMOG(MOG); // Move on grid
 motionMIR myMIR = motionMIR(MIR); // Move in reverse
 motionNOE myGFG = motionNOE(NOE); // Go off grid
-motionNOE myOGB = motionNOE(NOE); // Off grid outbound
+motionROL myROL = motionROL(ROL); // Off grid outbound
 motionOGR myOGR = motionOGR(OGR); // Off grid return
 motionROG myROG = motionROG(ROG); // Rotate on grid
 motionRFG myRFG = motionRFG(RFG); // Rotate off grid
@@ -24,7 +24,7 @@ TM::Motion *TM::listofmotions[MOTIONSCOUNT] =
 	&myMOG,
 	&myMIR,
 	&myGFG,
-	&myOGB,
+	&myROL,
 	&myOGR,
 	&myROG,
 	&myRFG,
@@ -49,6 +49,9 @@ drcoord TM::departingpoint = tkNav->getOffGridPos();
 int TM::predockingheading = 0;
 double TM::internalcount = 0.0;
 int TM::numloops = 0;
+
+bool TM::extLeft = false;
+bool TM::extRight = false;
 
 void TM::start(int& timer)
 {
@@ -113,6 +116,10 @@ drcoord TM::calcOffGrid(drcoord lastPos)
 		case DRIVINGREVERSE:
 			scnt *= -1;	
 			pcnt *= -1;
+			break;
+		case STOPPED:
+			scnt = 0;
+			pcnt = 0;
 			break;
 	}
 	//tkNav->turncoord += fmod((360 + turnnow), 360);
@@ -259,7 +266,7 @@ void TM::motionRFG::start(int& timer)
 	*/
 	tkNav->turncoord = 0;
 }
-void TM::motionRFG::interrupt(sensorr intsensor) {}
+void TM::motionRFG::interrupt(sensors intsensor) {}
 bool TM::motionRFG::iscomplete()
 {
 	/*
@@ -378,6 +385,34 @@ void TM::motionHAL::interrupt(sensors intsensor)
 bool TM::motionHAL::iscomplete()
 {
 	if ((FLAG_hopperleft & FLAG_hopperright) == true) 
+	{
+		tkDriver->stop();
+		return true;
+	}
+	return false;
+}
+
+// ================================================================ //
+TM::motionROL::motionROL(motions m) : Motion(m) {}
+void TM::motionROL::start(int& timer)
+{
+	tkDriver->pivotLeftReverse();
+}
+void TM::motionROL::process() 
+{
+	if ((extLeft == true) && (extRight == false))
+	{
+		tkDriver->pivotRightReverse();
+	}
+	else if ((extLeft == false) && (extRight == true))
+	{
+		tkDriver->pivotLeftReverse();
+	}
+}
+void TM::motionROL::interrupt(sensors intsensor) {}
+bool TM::motionROL::iscomplete()
+{	
+	if ((extLeft & extRight) == true)
 	{
 		tkDriver->stop();
 		return true;

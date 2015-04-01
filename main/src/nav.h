@@ -17,8 +17,8 @@ enum motions
 {
 	MOG, // Move on grid
 	MIR, // Move in reverse
-	GFG, // Go off grid
-	NOE, // Not enabled
+	NOE, // Go off grid
+	ROL, // Reobtain the line
 	OGR, // Off grid return
 	ROG, // Rotate on grid
 	RFG, // Rotate off grid
@@ -133,6 +133,7 @@ class Nav
 		int absEncDistance();
 
 		void zeroOGXY();
+		void setOGPtoGrid();
 		
 		int getTaskValue();
 		grid getGrid();

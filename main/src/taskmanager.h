@@ -50,6 +50,9 @@ namespace TM	// TaskManager
 	extern double internalcount;
 	extern int numloops;
 
+	extern bool extLeft;
+	extern bool extRight;
+
 	// Stuff from nav class
 	extern DriveMotor* tkDriver;
 	extern motor* tkClarm;
@@ -106,6 +109,16 @@ namespace TM	// TaskManager
 			void interrupt(sensors intsensor);
 			bool iscomplete();
 	};
+	class motionROL : public Motion
+	{
+		public:
+			motionROL(motions m);
+			void start(int& timer);
+			void process();
+			void interrupt(sensors intsensor);
+			bool iscomplete();
+	};
+
 	class motionCRT : public Motion
 	{
 		public:

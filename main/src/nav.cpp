@@ -6,7 +6,7 @@ Nav::Nav(grid sp) : currentGrid(sp), destination(sp)
 	encStarboardCNT = 0;
 	hopperEast = grid(0,0,0);
 	hopperWest = grid(0,0,0);
-	offgridpos = drcoord(0,0,0);
+	offgridpos = drcoord(sp.x, sp.y, sp.d);
 }
 
 long Nav::timeElapsed() { return currentTime - sketchyTimer; }
@@ -173,6 +173,10 @@ void Nav::zeroOGXY()
 	offgridpos.x = 0; 
 	offgridpos.y = 0; 
 	//offgridpos.d = 0; 
+}
+void Nav::setOGPtoGrid()
+{
+	offgridpos.d = currentGrid.d;
 }
 int Nav::setGrid(grid new_grid)
 {
