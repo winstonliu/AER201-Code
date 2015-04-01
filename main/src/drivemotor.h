@@ -20,10 +20,10 @@ class DriveMotor
 {
 	private:
 		int prop, deriv;
-		motor *ptr_port;
-		motor *ptr_starboard;
 		drive_status currentStatus;
 	public:
+		motor *ptr_port;
+		motor *ptr_starboard;
 		int current_heading;
 		int newSpeed;
 		DriveMotor(motor& port, motor& starboard, 

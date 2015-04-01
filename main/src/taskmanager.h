@@ -9,6 +9,7 @@ namespace TM	// TaskManager
 		protected:
 			motions mymotion;
 			int taskval;
+			bool FLAG_done;
 		public:
 			Motion(motions mymotion);
 			virtual void start(int& timer);
@@ -91,6 +92,16 @@ namespace TM	// TaskManager
 			void interrupt(sensors intsensor);
 			bool iscomplete();
 	};
+	class motionMTL : public Motion
+	{
+		public:
+			motionMTL(motions m);
+			void start(int& timer);
+			void process();
+			void interrupt(sensors intsensor);
+			bool iscomplete();
+	};
+
 	class motionOGR : public Motion
 	{
 		public:
@@ -108,16 +119,7 @@ namespace TM	// TaskManager
 			void interrupt(sensors intsensor);
 			bool iscomplete();
 	};
-	class motionLCK : public Motion
-	{
-		public:
-			motionLCK(motions m);
-			void start(int& timer);
-			void process();
-			void interrupt(sensors intsensor);
-			bool iscomplete();
-	};
-
+	
 	class motionCRT : public Motion
 	{
 		public:

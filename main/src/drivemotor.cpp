@@ -105,29 +105,29 @@ void DriveMotor::turnRight(int speed)
 
 void DriveMotor::pivotLeft()
 {
-	ptr_starboard->right(125);
+	ptr_starboard->right(200);
 	ptr_port->stop();
 	currentStatus = PIVOTLEFT;
 }
 
 void DriveMotor::pivotLeftReverse()
 {
-	ptr_starboard->left(255);
-	ptr_port->left(125);
+	ptr_starboard->left(200);
+	ptr_port->stop();
 	currentStatus = PIVOTLEFTBACK;
 }
 
 void DriveMotor::pivotRight()
 {
 	ptr_starboard->stop();
-	ptr_port->left(125);
+	ptr_port->left(200);
 	currentStatus = PIVOTRIGHT;
 }
 
 void DriveMotor::pivotRightReverse()
 {
-	ptr_starboard->right(125);
-	ptr_port->right(255);
+	ptr_starboard->stop();
+	ptr_port->right(200);
 	currentStatus = PIVOTRIGHTBACK;
 }
 
@@ -143,10 +143,10 @@ void DriveMotor::adjustSpeed(int speed)
 			ptr_port->adjustSpeed(speed);
 			break;
 		case PIVOTLEFT:
-			ptr_starboard->adjustSpeed(speed / 2);
+			ptr_starboard->adjustSpeed(speed * 0.8);
 			break;
 		case PIVOTRIGHT:
-			ptr_port->adjustSpeed(speed / 2);
+			ptr_port->adjustSpeed(speed * 0.8);
 			break;
 	}
 }

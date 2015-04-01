@@ -153,6 +153,16 @@ int Nav::boardAndBack()
 	tasklist.push(task(PPP, 1000));
 	tasklist.push(task(ROG, 180));
 }
+void Nav::lineAlign()
+{
+	tasklist.push(task(MTL, -10));
+	tasklist.push(task(PPP, 500));
+	tasklist.push(task(MTL, 20));
+	tasklist.push(task(PPP, 500));
+	tasklist.push(task(MTL, -10));
+	tasklist.push(task(PPP, 500));
+	tasklist.push(task(MTL, 5));
+}
 void Nav::incEncPortCNT() { ++encPortCNT; }
 void Nav::incEncStarboardCNT() { ++encStarboardCNT; }
 void Nav::resetEncCNT() 

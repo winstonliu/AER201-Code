@@ -5,6 +5,8 @@
 enum sensors
 {
 	LINE_ISR,
+	IRLEFT,
+	IRRIGHT,
 	CLAW_TOUCH,
 	BOARD_TOUCH,
 	HOPPER_TOUCH_LEFT,
@@ -17,8 +19,8 @@ enum motions
 {
 	MOG, // Move on grid
 	MIR, // Move in reverse
-	NOE, // Go off grid
-	LCK, // Reobtain the line
+	MTL, // 
+	RTL, // 
 	OGR, // Off grid return
 	ROG, // Rotate on grid
 	RFG, // Rotate off grid
@@ -29,6 +31,7 @@ enum motions
 	PPP, // Pause
 	MOI, // Motion idle
 	MOTIONSCOUNT,
+	NOE
 };
 
 enum macromotion
@@ -107,7 +110,10 @@ class Nav
 		bool check_validity(grid new_position);
 		drcoord offgridpos;
 		double turncoord;
-		bool on_grid;
+
+		bool extLeft;
+		bool extRight;
+		bool online;
 
 		Nav(grid start_position);
 		int computeRectilinearPath(grid new_destination);
@@ -115,6 +121,8 @@ class Nav
 		int hopperUndocking();
 		int gameboardAlign();
 		int boardAndBack();
+		void lineAlign();
+
 		void advance();
 
 		int reset(grid);

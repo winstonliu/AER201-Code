@@ -5,8 +5,8 @@ using namespace TM;
 // Create class instance list
 motionMOG myMOG = motionMOG(MOG); // Move on grid
 motionMIR myMIR = motionMIR(MIR); // Move in reverse
-motionNOE myGFG = motionNOE(NOE); // Go off grid
-motionLCK myLCK = motionLCK(LCK); // Off grid outbound
+motionMTL myMTL = motionMTL(MTL); // Go off grid
+motionNOE myNOE = motionNOE(NOE); // Off grid outbound
 motionOGR myOGR = motionOGR(OGR); // Off grid return
 motionROG myROG = motionROG(ROG); // Rotate on grid
 motionRFG myRFG = motionRFG(RFG); // Rotate off grid
@@ -23,8 +23,8 @@ TM::Motion *TM::listofmotions[MOTIONSCOUNT] =
 	// XXX Change this to reflect list in nav.h XXX
 	&myMOG,
 	&myMIR,
-	&myGFG,
-	&myLCK,
+	&myMTL,
+	&myNOE,
 	&myOGR,
 	&myROG,
 	&myRFG,
@@ -48,9 +48,6 @@ drcoord TM::departingpoint = tkNav->getOffGridPos();
 
 int TM::predockingheading = 0;
 double TM::internalcount = 0.0;
-
-bool TM::extLeft = false;
-bool TM::extRight = false;
 
 void TM::start(int& timer)
 {
@@ -221,6 +218,91 @@ bool TM::motionMIR::iscomplete()
 }
 
 // ================================================================ //
+// MTL - moves off grid for x cm unless reaches line first.
+// Part of error correction suite
+
+TM::motionMTL::motionMTL(motions m) : Motion(m) {}
+void TM::motionMTL::start(int& timer)
+{
+	tkNav->zeroOGXY();
+	tkDriver->stop();
+	if (tkNav->getTaskValue() < 0)
+		tkDriver->driveReverse(180);
+	else
+		tkDriver->driveStraight(180);
+}
+void TM::motionMTL::process() {}
+void TM::motionMTL::interrupt(sensors intsensor) 
+{
+	int gospeed = 180;
+	if (intsensor == LINE_ISR)
+	{
+		tkDriver->stop();
+		this->FLAG_done = true;
+	}
+	else if (intsensor == IRLEFT)
+	{
+		tkDriver->ptr_starboard->adjustSpeed(gospeed);
+		tkDriver->ptr_port->adjustSpeed(0);
+	}
+	else if (intsensor == IRRIGHT)
+	{
+		tkDriver->ptr_starboard->adjustSpeed(0);
+		tkDriver->ptr_port->adjustSpeed(gospeed);
+	}
+}
+bool TM::motionMTL::iscomplete()
+{
+	if ((tkNav->absEncDistance() > abs(tkNav->getTaskValue()))
+			|| (this->FLAG_done == true))
+	{
+		return true;
+	}
+	return false;
+}
+
+// ================================================================ //
+// RTL
+
+/*
+TM::motionRTL::motionRTL(motions m) : Motion(m) {}
+void TM::motionRTL::start(int& timer) 
+{
+	tkNav->zeroOGXY();
+	if (tkNav->getTaskValue() < 0);
+		tkDriver->turnLeft();
+	else
+		tkDriver->turnRight();
+}
+void TM::motionRTL::process() {}
+void TM::motionRTL::interrupt(sensors intsensor)
+{
+	if (intsensor == LINE_ISR)
+	{
+		tkDriver->stop();
+		this->FLAG_done = true;
+	}
+	else if (intsensor == IRLEFT)
+	{
+		tkDriver->ptr_port->stop();
+	}
+	else if (intsensor == IRRIGHT)
+	{
+		tkDriver->ptr_starboard->stop();
+	}
+}
+bool TM::motionRTL::iscomplete() 
+{
+	if ((tkNav->absEncDistance() > abs(tkNav->getTaskValue()))
+			|| (this->FLAG_done == true))
+	{
+		return true;
+	}
+	return false;
+}
+*/
+
+// ================================================================ //
 // ROG - Rotate on grid to position
 TM::motionROG::motionROG(motions m) : Motion(m) {}
 void TM::motionROG::start(int& timer)
@@ -257,9 +339,10 @@ bool TM::motionROG::iscomplete()
 {
 	int todiff = abs(tkNav->getOffGridPos().d - tkNav->getTaskValue());
 	bool islineclose = (((todiff < 180) ? todiff : 360 - todiff) < 10);
-	if ((tkNav->getGrid().d == tkNav->getTaskValue()) && islineclose)
+	if ((tkNav->getGrid().d == tkNav->getTaskValue()))// && islineclose)
 	{
 		//tkNav->setOGPtoGrid();
+		tkDriver->stop();
 		return true;
 	}
 	return false;
@@ -295,7 +378,7 @@ bool TM::motionRFG::iscomplete()
 	*/
 
 	int todiff = abs(tkNav->getOffGridPos().d - tkNav->getTaskValue());
-	if (((todiff < 180) ? todiff : 360 - todiff) < 5)
+	if (((todiff < 180) ? todiff : 360 - todiff) < 8)
 	{
 		return true;
 	}
@@ -399,51 +482,6 @@ void TM::motionHAL::interrupt(sensors intsensor)
 bool TM::motionHAL::iscomplete()
 {
 	if ((FLAG_hopperleft & FLAG_hopperright) == true) 
-	{
-		tkDriver->stop();
-		return true;
-	}
-	return false;
-}
-
-// ================================================================ //
-// LCK
-
-TM::motionLCK::motionLCK(motions m) : Motion(m) {}
-void TM::motionLCK::start(int& timer) 
-{
-	if ((extLeft & extRight) == true)
-	{
-		return;
-	}
-	else if ((extRight & extLeft) == false) 
-	{
-		tkDriver->driveReverse();
-	}
-	else if ((extRight & !extLeft) == true)
-	{
-		tkDriver->pivotLeftReverse();
-	}
-	else if ((!extRight & extLeft) == true)
-	{
-		tkDriver->pivotRightReverse();
-	}
-}
-void TM::motionLCK::process() 
-{
-	static int encCnt = 0;
-
-	if (encCnt >= 8) 
-	{
-		encCnt = 0;
-		tkDriver->doOpposite();
-	}
-	encCnt += (tkNav->encStarboardCNT + tkNav->encPortCNT) / 2;
-}
-void TM::motionLCK::interrupt(sensors intsensor) {}
-bool TM::motionLCK::iscomplete()
-{	
-	if ((extLeft & extRight) == true)
 	{
 		tkDriver->stop();
 		return true;
