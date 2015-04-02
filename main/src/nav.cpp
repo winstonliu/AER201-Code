@@ -155,18 +155,28 @@ int Nav::boardAndBack()
 }
 void Nav::lineAlign()
 {
-	tasklist.push(task(MTL, -10));
+	tasklist.push(task(MTL, -2));
 	tasklist.push(task(PPP, 500));
-	tasklist.push(task(MTL, 20));
+	tasklist.push(task(MTL, 2));
 	tasklist.push(task(PPP, 500));
-	tasklist.push(task(MTL, -10));
+}
+void Nav::rotateAlign()
+{
+	tasklist.push(task(RTL, -10));
 	tasklist.push(task(PPP, 500));
-	tasklist.push(task(MTL, 5));
+	tasklist.push(task(RTL, 10));
+	tasklist.push(task(PPP, 500));
+	tasklist.push(task(RTL, -20));
+	tasklist.push(task(PPP, 500));
+	tasklist.push(task(RTL, 20));
+
 }
 void Nav::incEncPortCNT() { ++encPortCNT; }
 void Nav::incEncStarboardCNT() { ++encStarboardCNT; }
 void Nav::resetEncCNT() 
 { 
+	encPortLOG += encPortCNT;
+	encStarboardLOG += encStarboardCNT;
 	encPortCNT = 0; 
 	encStarboardCNT = 0;
 }

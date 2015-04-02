@@ -70,7 +70,7 @@ namespace TM	// TaskManager
 	grid dirLineInc(int i);
 	drcoord calcOffGrid(drcoord lastPos);
 
-	void turnDirInit();
+	void turnDirInit(int speed = 255);
 
 	// Move on grid
 	class motionMOG : public Motion 
@@ -101,7 +101,15 @@ namespace TM	// TaskManager
 			void interrupt(sensors intsensor);
 			bool iscomplete();
 	};
-
+	class motionRTL : public Motion
+	{
+		public:
+			motionRTL(motions m);
+			void start(int& timer);
+			void process();
+			void interrupt(sensors intsensor);
+			bool iscomplete();
+	};
 	class motionOGR : public Motion
 	{
 		public:

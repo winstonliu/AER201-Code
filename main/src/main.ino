@@ -68,7 +68,7 @@
 
 const int btnCalibrate = 10;
 const int numCyclesTrack = 2;
-const double bthresh = 0.75; // Percentage threshold for black line
+const double bthresh = 0.70; // Percentage threshold for black line
 
 int TM::board_now = LOW;
 
@@ -147,7 +147,7 @@ motor wheel(7,50,TM::wheel_pwm);
 motor clarm(12,13,TM::clarm_pwm); // Claw arm
 
 // Port, starboard, P, D of proportional-derivative adjustment
-DriveMotor Driver(port, starboard, 0.5, 5);
+DriveMotor Driver(port, starboard, 0.7, 7);
 Servo myservo;
 // ================================================================ //
 // Important stuff
@@ -208,7 +208,7 @@ void sensorPollingFunction()
 	// XXX Reconfig line sensor detection
 	bool driveStat = (Driver.get_status() != STOPPED);
 	// at least 300 ms between ISRs
-	bool minTime = (Navigator.currentTime - pollTime) > 300; 
+	bool minTime = (Navigator.currentTime - pollTime) > 250; 
 	bool lineTime = (TM::dirLineInc(1).x == 4) 
 		&& (Navigator.absEncDistance() >= TM::lineSep) 
 		&& (Navigator.getMotion() == MOG);
@@ -220,11 +220,13 @@ void sensorPollingFunction()
 			|| ((driveStat & lineTime) == true))
 		{ 
 			TM::interrupt(LINE_ISR);
-			pollTime = millis();
 
-			DEBUG_INT(">>> LINEINT");
+			DEBUG_INT(">>> LINEINT ");
+			DEBUG_INT(Navigator.currentTime - pollTime);
 			display();
 			DEBUG_INT("\r\n");
+
+			pollTime = millis();
 		}
 	}
 	else if (Navigator.extLeft == true)
@@ -255,7 +257,8 @@ bool checkOnLine()
 		online = online & (senPinVal[i]>(qtrline.calibratedMaximumOn[i]*bthresh));
 	}
 
-	if ((Navigator.extLeft & Navigator.extLeft & online) == true)
+//	if ((Navigator.extLeft & Navigator.extLeft & online) == true)
+	if ((Navigator.extLeft & Navigator.extLeft) == true)
 	{
 		return true;
 	}
@@ -300,14 +303,12 @@ void lineCalibrate()
 void encLeftPin()
 { 
 	//Serial.println("INTLEFT");
-	if (Driver.get_status() != STOPPED)
-		Navigator.incEncPortCNT(); 
+	++Navigator.encPortCNT;
 }
 void encRightPin()
 { 
 	//Serial.println("INTRIGHT");
-	if (Driver.get_status() != STOPPED)
-		Navigator.incEncStarboardCNT(); 
+	++Navigator.encStarboardCNT;
 }
 int getKeyStuff()
 {
@@ -367,7 +368,6 @@ void setup()
 	myservo.write(0);
 	
 	// Pins
-	pinMode(btnCalibrate, INPUT);
 	pinMode(clarmPin, INPUT);
 
 	// Interrupts
@@ -376,24 +376,27 @@ void setup()
 
 	// DEBUG COMMANDS
 	// Leaving home
-	//lineCalibrate();
+	lineCalibrate();
 	Navigator.tasklist.push(task(PPP, 5000));
+	Navigator.tasklist.push(task(RFG, 270));
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(MOG, 2));
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.lineAlign();
+	Navigator.tasklist.push(task(PPP, 1000));
 	Navigator.tasklist.push(task(RFG, 90));
 	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.lineAlign();
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(MOG, 2));
+	Navigator.lineAlign();
+	Navigator.tasklist.push(task(PPP, 1000));
 	Navigator.tasklist.push(task(RFG, 0));
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(RFG, 130));
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(RFG, 270));
 	/*
 	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(RFG, 180));
+	Navigator.lineAlign();
 	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(RFG, 0));
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(RFG, 50));
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(RFG, 270));
 	*/
 	currentMM = mMTC;
 
@@ -450,8 +453,8 @@ void setup()
 	{
 	*/
 		// Start first task
-		TM::start(nav_timer);
 		Navigator.resetEncCNT();
+		TM::start(nav_timer);
 		DEBUG("Starting at ");
 		DEBUG(nav_timer);
 		DEBUG(" PAUSE ");
@@ -519,7 +522,7 @@ void loop()
 	{
 		nav_timer = 3600000; // default is 1 hour
 
-		DEBUG("FULL STOP VAL ");
+		DEBUG("CEASE VAL ");
 		DEBUG(Navigator.getOffGridPos().d);
 		DEBUG("\r\n");
 
@@ -531,7 +534,6 @@ void loop()
 		DEBUG("Task completed. ");
 		DEBUG(TM::tkNav->getMotion());
 		DEBUG(" ");
-		grid home_grid = Navigator.getGrid();
 		display();
 		DEBUG("\r\n");
 
@@ -545,7 +547,9 @@ void loop()
 
 			Navigator.sketchyTimer = millis();
 
-			DEBUG(">>>Starting new task.\r\n");
+			DEBUG(">>>Starting new task ");
+			DEBUG(Navigator.offgridpos.d);
+			DEBUG("\r\n");
 		}
 		else
 		{
@@ -561,6 +565,40 @@ void loop()
 
 // ================================================================ //
 
+void addEvents()
+{
+	if (encoderTimer.check() == 1)
+	{
+		Navigator.setOffGridPos(TM::calcOffGrid(Navigator.getOffGridPos()));
+		Navigator.resetEncCNT();
+	}
+
+	// Display event
+	if (displayTimer.check() == 1) 
+		display();
+
+	// Poll sensors
+	if (sensorPollTimer.check() == 1) // 20
+	{
+		sensorPollingFunction();	
+	}
+
+	if (navProcessTimer.check() == 1) 
+	{
+		TM::process();
+	}
+
+	if (navDelayTimer.check() == 1) 
+	{
+		TM::interrupt(TIMER);
+		DEBUG("#");
+		DEBUG(main_lap);
+		DEBUG("# ");
+		DEBUG("Nav Timer tripped.");
+		DEBUG("\r\n");
+	}
+}
+
 void display()
 {
 	DEBUG("#");
@@ -568,14 +606,16 @@ void display()
 	DEBUG("# ");
 	DEBUG_IR("NS ");
 	DEBUG_IR(Driver.newSpeed);
-	DEBUG("\tMOT ");
+	DEBUG(" MOT ");
 	DEBUG(Navigator.getMotion());
 	DEBUG(" DRV ");
 	DEBUG(Driver.get_status());
-	//DEBUG(" HED ");
-	//DEBUG(Driver.current_heading);
-	//DEBUG(" OL ");
-	//DEBUG(checkOnLine());
+	DEBUG(" HED ");
+	DEBUG(Driver.current_heading);
+	DEBUG(" NL ");
+	DEBUG(Navigator.online);
+	DEBUG(" OL ");
+	DEBUG(checkOnLine());
 
 	// IR READINGS
 	DEBUG_IR("\tE ");
@@ -600,9 +640,9 @@ void display()
 	DEBUG_MOTO(starboard.get_status());
 
 	DEBUG_ENC("\tPE ");
-	DEBUG_ENC(Navigator.encPortCNT);
+	DEBUG_ENC(Navigator.encPortLOG);
 	DEBUG_ENC(" SE ");
-	DEBUG_ENC(Navigator.encStarboardCNT);
+	DEBUG_ENC(Navigator.encStarboardLOG);
 
 	// Hopper flags
 	DEBUG_HOP("\tHR ");
@@ -637,50 +677,4 @@ void display()
 	//lcd.clear();
 }
 
-void addEvents()
-{
-	// Button state declarations
-	static int btnCal_state = digitalRead(btnCalibrate);
 
-	// Display event
-	if (displayTimer.check() == 1) 
-		display();
-
-	if (encoderTimer.check() == 1)
-	{
-		Navigator.setOffGridPos(TM::calcOffGrid(Navigator.getOffGridPos()));
-	}
-
-	// Poll sensors
-	if (sensorPollTimer.check() == 1) // 20
-	{
-		sensorPollingFunction();	
-	}
-
-	if (navProcessTimer.check() == 1) 
-	{
-		TM::process();
-	}
-
-	if (navDelayTimer.check() == 1) 
-	{
-		TM::interrupt(TIMER);
-		DEBUG("#");
-		DEBUG(main_lap);
-		DEBUG("# ");
-		DEBUG("Nav Timer tripped.");
-		DEBUG("\r\n");
-	}
-
-
-	// Check for button press
-	int calRead = digitalRead(btnCalibrate);
-	if (btnCal_state == LOW && calRead == HIGH)
-	{
-		qtrline.calibrate();
-		qtrext.calibrate();
-		lcd.clear();
-		lcd.print("Calibrated");
-	}
-	btnCal_state = calRead;
-}

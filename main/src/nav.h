@@ -103,7 +103,8 @@ class Nav
 		// DEBUG
 		grid currentGrid;
 		grid destination;
-		int encPortCNT, encStarboardCNT;
+		volatile int encPortCNT, encStarboardCNT;
+		int encPortLOG, encStarboardLOG;
 		grid hopperEast;
 		grid hopperWest;
 		QueueArray <task> tasklist;
@@ -122,6 +123,7 @@ class Nav
 		int gameboardAlign();
 		int boardAndBack();
 		void lineAlign();
+		void rotateAlign();
 
 		void advance();
 
