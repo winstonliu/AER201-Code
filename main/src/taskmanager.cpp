@@ -121,11 +121,10 @@ drcoord TM::calcOffGrid(drcoord lastPos)
 			pcnt *= -1;
 			break;
 	}
-	//tkNav->turncoord += fmod((360 + turnnow), 360);
 	tkNav->turncoord = fmod((360 * RwD * (pcnt - scnt) / Tr), 360);
 
 	calcpos += 2 * M_PI * RwD * (pcnt - scnt) / Tr;
-	newPos.d += fmod((360 + 180 / M_PI * calcpos), 360); // convert to degrees
+	newPos.d += tkNav->turncoord; // convert to degrees
 	newPos.x += Rw * cos(calcpos) * (pcnt + scnt) * M_PI / Tr;
 	newPos.y += Rw * sin(calcpos) * (pcnt + scnt) * M_PI / Tr;
 	// Reset count
