@@ -112,6 +112,7 @@ class Nav
 		bool check_validity(grid new_position);
 		drcoord offgridpos;
 		double turncoord;
+		macromotion currentMM;
 
 		bool extLeft;
 		bool extRight;
@@ -119,13 +120,6 @@ class Nav
 
 		Nav(grid start_position);
 		int computeRectilinearPath(grid new_destination);
-		int hopperDocking();
-		int hopperUndocking();
-		int gameboardAlign();
-		int boardAndBack();
-		void lineAlign();
-		void rotateAlign();
-
 		void advance();
 
 		int reset(grid);
@@ -156,4 +150,12 @@ class Nav
 		int countRemaining();
 
 		long timeElapsed();
+
+		void processMM();
+		int hopperDocking();
+		int hopperUndocking();
+		int gameboardAlign();
+		int boardAndBack();
+		void lineAlign();
+		void rotateAlign();
 };

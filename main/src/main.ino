@@ -16,7 +16,7 @@
 #ifdef SERIALDEBUG
 #define DEBUG( x ) Serial.print( x )
 #define IRSEN_DEBUG
-//#define ENC_DEBUG
+#define ENC_DEBUG
 #define INT_DEBUG
 //#define MOTO_DEBUG
 #define NAV_DEBUG
@@ -68,7 +68,7 @@
 
 const int btnCalibrate = 10;
 const int numCyclesTrack = 2;
-const double bthresh = 0.70; // Percentage threshold for black line
+const double bthresh = 0.55; // Percentage threshold for black line
 
 int TM::board_now = LOW;
 
@@ -158,7 +158,6 @@ bool FLAG_CANSTART = false;
 
 rgb_lcd lcd;
 Nav Navigator(start_pos);
-macromotion currentMM;
 bool hasSpike = false;
 
 // Line sensing thresh = 200 out of 1000
@@ -209,7 +208,7 @@ void sensorPollingFunction()
 	// XXX Reconfig line sensor detection
 	bool driveStat = (Driver.get_status() != STOPPED);
 	// at least 300 ms between ISRs
-	bool minTime = (Navigator.currentTime - pollTime) > 250; 
+	bool minTime = (Navigator.currentTime - pollTime) > 300; 
 	bool lineTime = (TM::dirLineInc(1).x == 4) 
 		&& (Navigator.absEncDistance() >= TM::lineSep) 
 		&& (Navigator.getMotion() == MOG);
@@ -233,14 +232,14 @@ void sensorPollingFunction()
 	else if (Navigator.extLeft == true)
 	{
 		TM::interrupt(IRLEFT);
-		DEBUG_INT(">>> IRLEFT EX ");
+		DEBUG_INT(">>> IRL ");
 		display();
 
 	}
 	else if (Navigator.extRight == true)
 	{
 		TM::interrupt(IRRIGHT);
-		DEBUG_INT(">>> IRRIGHT EX ");
+		DEBUG_INT(">>> IRR ");
 		display();
 
 	}
@@ -258,8 +257,8 @@ bool checkOnLine()
 		online = online & (senPinVal[i]>(qtrline.calibratedMaximumOn[i]*bthresh));
 	}
 
-//	if ((Navigator.extLeft & Navigator.extLeft & online) == true)
-	if ((Navigator.extLeft & Navigator.extLeft) == true)
+	//if ((Navigator.extLeft & Navigator.extLeft) == true)
+	if ((Navigator.extLeft & Navigator.extLeft & online) == true)
 	{
 		return true;
 	}
@@ -389,22 +388,8 @@ void setup()
 	lineCalibrate();
 	Navigator.resetEncCNT();
 	Navigator.lineAlign();
-	Navigator.tasklist.push(task(PPP, 3000));
-	Navigator.tasklist.push(task(RFG, 270));
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.lineAlign();
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(MOG, 2));
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(RFG, 90));
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.lineAlign();
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(MOG, 2));
-	Navigator.lineAlign();
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(RFG, 0));
-	currentMM = mMTC;
+
+	Navigator.currentMM = mMTC;
 
 	/* 
 	// Check for navigation error
@@ -479,11 +464,26 @@ void loop()
 	wheel.left(TM::wheel_pwm);
 	Navigator.currentTime = millis();
 
+	//Navigator.processMM();
+
 	if (FLAG_NAVERR == true)
 		return;
 	else if (Navigator.getMotion() == MOI)
 	{
-		// TODO, put in code to wait for further instructions
+		/*
+		switch(Navigator.currentMM)
+		{
+			case mMTC:
+				Navigator.currentMM = mCBL;
+				break;
+			case mCBL:
+				Navigator.currentMM = mMTB;
+				break;
+			case mMTB:
+				Navigator.currentMM = mCBL;
+				break;
+		}	
+		*/
 		return;
 	}
 
@@ -627,9 +627,11 @@ void addEvents()
 void display()
 {
 	main_lap = millis() - main_lap;
+	/*
 	DEBUG("#");
 	DEBUG(main_lap);
 	DEBUG("# ");
+	*/
 	DEBUG_IR("NS ");
 	DEBUG_IR(Driver.newSpeed);
 	DEBUG(" MOT ");
@@ -638,7 +640,7 @@ void display()
 	DEBUG(Driver.get_status());
 	DEBUG(" HED ");
 	DEBUG(Driver.current_heading);
-	DEBUG("\tNL ");
+	DEBUG(" NL ");
 	DEBUG(Navigator.online);
 	DEBUG(" OL ");
 	DEBUG(checkOnLine());

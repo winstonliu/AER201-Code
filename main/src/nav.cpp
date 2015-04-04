@@ -95,98 +95,14 @@ int Nav::computeRectilinearPath(grid new_destination)
 	return 0;
 }
 
-int Nav::hopperDocking()
-{
-	//tasklist.push(task(RFG, 315)); // Move until interrupt
-	tasklist.push(task(HAL, 0)); // Align with hopper
-	tasklist.push(task(CRT, 0)); // Retract claw
-	tasklist.push(task(MIR, 0)); // Reverse
-	tasklist.push(task(CEX, 500)); // Extend claw
-}
-int Nav::hopperUndocking()
-{
-	// Using cosine law to calculate degrees of rotation
-	// It's a triangle
-	/*
-	int len_b = 10;
-	double len_c = sqrt(len_a*len_a + len_b*len_b 
-			- 2*len_a*len_b*cos(angleC));
-	int angleA = floor(acos((len_b*len_b + len_c*len_c - len_a*len_a)
-		/ (2*len_b*len_c)));
-	*/
-
-	tasklist.push(task(OGR, 0));
-	tasklist.push(task(RFG, currentGrid.d));
-}
-int Nav::gameboardAlign()
-{
-	// at 4,8,90/180
-	tasklist.push(task(ROG, 180)); // Rotate to face y
-	tasklist.push(task(GAL, 0));
-	tasklist.push(task(PPP, 1000));
-}
-int Nav::boardAndBack()
-{
-	tasklist.push(task(RFG, 135));
-	hopperDocking();
-	hopperUndocking();
-	tasklist.push(task(MOG, 1));
-	tasklist.push(task(PPP, 1000));
-	tasklist.push(task(ROG, 0));
-	tasklist.push(task(PPP, 1000));
-	tasklist.push(task(MOG, 6));
-	tasklist.push(task(PPP, 1000));
-	tasklist.push(task(ROG, 270));
-	tasklist.push(task(PPP, 1000));
-	tasklist.push(task(MOG, 3));
-	gameboardAlign();
-	// Return 
-	tasklist.push(task(MOG, 1));
-	tasklist.push(task(PPP, 1000));
-	tasklist.push(task(ROG, 90));
-	tasklist.push(task(PPP, 1000));
-	tasklist.push(task(MOG, 3));
-	tasklist.push(task(PPP, 1000));
-	tasklist.push(task(ROG, 180));
-	tasklist.push(task(PPP, 1000));
-	tasklist.push(task(MOG, 6));
-	tasklist.push(task(PPP, 1000));
-	tasklist.push(task(ROG, 270));
-	tasklist.push(task(PPP, 1000));
-	tasklist.push(task(MOG, 1));
-	tasklist.push(task(PPP, 1000));
-	tasklist.push(task(ROG, 180));
-}
-void Nav::lineAlign()
-{
-	tasklist.push(task(MTL, -4));
-	tasklist.push(task(PPP, 500));
-	tasklist.push(task(MTL, 7));
-	tasklist.push(task(PPP, 500));
-	tasklist.push(task(MTL, -3));
-	tasklist.push(task(PPP, 500));
-	tasklist.push(task(MTL, 6));
-	tasklist.push(task(PPP, 500));
-}
-void Nav::rotateAlign()
-{
-	tasklist.push(task(RTL, -10));
-	tasklist.push(task(PPP, 500));
-	tasklist.push(task(RTL, 10));
-	tasklist.push(task(PPP, 500));
-	tasklist.push(task(RTL, -20));
-	tasklist.push(task(PPP, 500));
-	tasklist.push(task(RTL, 20));
-
-}
 void Nav::incEncPortCNT() { ++encPortCNT; }
 void Nav::incEncStarboardCNT() { ++encStarboardCNT; }
 void Nav::resetEncCNT() 
 { 
 	encPortLOG += encPortCNT;
 	encStarboardLOG += encStarboardCNT;
-	lastpcnt = encPortCNT;
-	lastscnt = encStarboardCNT;
+	lastpcnt = encPortLOG;
+	lastscnt = encStarboardLOG;
 	encPortCNT = 0; 
 	encStarboardCNT = 0;
 }
@@ -194,8 +110,13 @@ int Nav::getEncPortCNT() { return encPortCNT; }
 int Nav::getEncStarboardCNT() { return encStarboardCNT; }
 bool Nav::spikeCheck()
 {
-	if ((abs(encPortCNT-lastpcnt) > 100)||(abs(encStarboardCNT-lastscnt) > 100))
+	if ((abs(encPortLOG - lastpcnt) > 100)
+		||(abs(encStarboardLOG - lastscnt) > 100))
+	{
+		lastpcnt = encPortLOG;
+		lastscnt = encStarboardLOG;
 		return true;
+	}
 	return false;
 }
 int Nav::absEncDistance()
@@ -250,3 +171,129 @@ drcoord Nav::getOffGridPos() { return offgridpos; }
 grid Nav::getDestination() { return destination; }
 bool Nav::doneTasks() { return tasklist.count() == 0; }
 int Nav::countRemaining() { return tasklist.count(); }
+
+void Nav::processMM()
+{
+	static int lastMM = mMTC;	
+	// Check for change
+	if (lastMM == currentMM)
+		return;
+
+	switch(currentMM)
+	{
+		case mMTC:
+			tasklist.push(task(PPP, 3000));		
+			tasklist.push(task(RFG, 90));		
+			tasklist.push(task(PPP, 500));		
+			tasklist.push(task(MOG, 2));		
+			tasklist.push(task(PPP, 500));		
+			lineAlign();
+			tasklist.push(task(PPP, 500));		
+			tasklist.push(task(RFG, 0));		
+			tasklist.push(task(PPP, 500));		
+			tasklist.push(task(MOG, 1));		
+			tasklist.push(task(PPP, 500));		
+			tasklist.push(task(RFG, 90));		
+			tasklist.push(task(PPP, 500));		
+			tasklist.push(task(RFG, 135));		
+			tasklist.push(task(PPP, 500));		
+			break;
+		case mCBL:
+			hopperDocking();
+			tasklist.push(task(PPP, 500));		
+			hopperUndocking();
+			break;
+		case mMTB:
+			boardAndBack();
+			break;
+	}		
+
+	lastMM = currentMM;
+}
+
+int Nav::hopperDocking()
+{
+	//tasklist.push(task(RFG, 315)); // Move until interrupt
+	tasklist.push(task(HAL, 0)); // Align with hopper
+	tasklist.push(task(CRT, 0)); // Retract claw
+}
+int Nav::hopperUndocking()
+{
+	// Using cosine law to calculate degrees of rotation
+	// It's a triangle
+	/*
+	int len_b = 10;
+	double len_c = sqrt(len_a*len_a + len_b*len_b 
+			- 2*len_a*len_b*cos(angleC));
+	int angleA = floor(acos((len_b*len_b + len_c*len_c - len_a*len_a)
+		/ (2*len_b*len_c)));
+	*/
+
+	tasklist.push(task(OGR, 0));
+	tasklist.push(task(CEX, 500)); // Extend claw
+	tasklist.push(task(RFG, currentGrid.d));
+}
+int Nav::gameboardAlign()
+{
+	// at 4,8,90/180
+	tasklist.push(task(ROG, 180)); // Rotate to face y
+	tasklist.push(task(GAL, 0));
+	tasklist.push(task(PPP, 1000));
+}
+int Nav::boardAndBack()
+{
+	tasklist.push(task(MOG, 1));
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(RFG, 0));
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(MOG, 6));
+	tasklist.push(task(PPP, 1000));
+	lineAlign();
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(RFG, 270));
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(MOG, 3));
+	gameboardAlign();
+	// Return 
+	tasklist.push(task(MOG, 1));
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(RFG, 90));
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(MOG, 3));
+	tasklist.push(task(PPP, 1000));
+	lineAlign();
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(RFG, 180));
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(MOG, 6));
+	tasklist.push(task(PPP, 1000));
+	lineAlign();
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(RFG, 270));
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(MOG, 1));
+	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(RFG, 135));
+}
+void Nav::lineAlign()
+{
+	tasklist.push(task(MTL, -5));
+	tasklist.push(task(PPP, 500));
+	tasklist.push(task(MTL, 5));
+	tasklist.push(task(PPP, 500));
+	tasklist.push(task(RTL, 25));
+	tasklist.push(task(PPP, 500));
+	tasklist.push(task(RTL, -50));
+}
+void Nav::rotateAlign()
+{
+	tasklist.push(task(RTL, -10));
+	tasklist.push(task(PPP, 500));
+	tasklist.push(task(RTL, 10));
+	tasklist.push(task(PPP, 500));
+	tasklist.push(task(RTL, -45));
+	tasklist.push(task(PPP, 500));
+	tasklist.push(task(RTL, 90));
+}
+
+
