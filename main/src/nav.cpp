@@ -4,6 +4,10 @@ Nav::Nav(grid sp) : currentGrid(sp), destination(sp)
 {
 	encPortCNT = 0;
 	encStarboardCNT = 0;
+	lastpcnt = 0;
+	lastscnt = 0;
+	encPortLOG = 0;
+	encStarboardLOG = 0;
 	hopperEast = grid(0,0,0);
 	hopperWest = grid(0,0,0);
 	offgridpos = drcoord(sp.x, sp.y, sp.d);
@@ -155,9 +159,13 @@ int Nav::boardAndBack()
 }
 void Nav::lineAlign()
 {
-	tasklist.push(task(MTL, -2));
+	tasklist.push(task(MTL, -4));
 	tasklist.push(task(PPP, 500));
-	tasklist.push(task(MTL, 2));
+	tasklist.push(task(MTL, 7));
+	tasklist.push(task(PPP, 500));
+	tasklist.push(task(MTL, -3));
+	tasklist.push(task(PPP, 500));
+	tasklist.push(task(MTL, 6));
 	tasklist.push(task(PPP, 500));
 }
 void Nav::rotateAlign()
@@ -177,11 +185,19 @@ void Nav::resetEncCNT()
 { 
 	encPortLOG += encPortCNT;
 	encStarboardLOG += encStarboardCNT;
+	lastpcnt = encPortCNT;
+	lastscnt = encStarboardCNT;
 	encPortCNT = 0; 
 	encStarboardCNT = 0;
 }
 int Nav::getEncPortCNT() { return encPortCNT; }
 int Nav::getEncStarboardCNT() { return encStarboardCNT; }
+bool Nav::spikeCheck()
+{
+	if ((abs(encPortCNT-lastpcnt) > 100)||(abs(encStarboardCNT-lastscnt) > 100))
+		return true;
+	return false;
+}
 int Nav::absEncDistance()
 {
 	// Return the absolute distance

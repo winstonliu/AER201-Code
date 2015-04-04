@@ -105,6 +105,7 @@ class Nav
 		grid destination;
 		volatile int encPortCNT, encStarboardCNT;
 		int encPortLOG, encStarboardLOG;
+		int lastpcnt, lastscnt;
 		grid hopperEast;
 		grid hopperWest;
 		QueueArray <task> tasklist;
@@ -139,6 +140,7 @@ class Nav
 		void resetEncCNT();
 		int getEncPortCNT();
 		int getEncStarboardCNT();
+		bool spikeCheck();
 
 		int absEncDistance();
 

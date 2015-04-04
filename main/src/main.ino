@@ -15,9 +15,9 @@
 
 #ifdef SERIALDEBUG
 #define DEBUG( x ) Serial.print( x )
-//#define IRSEN_DEBUG
-#define ENC_DEBUG
-//#define INT_DEBUG
+#define IRSEN_DEBUG
+//#define ENC_DEBUG
+#define INT_DEBUG
 //#define MOTO_DEBUG
 #define NAV_DEBUG
 //#define HOPPER_DEBUG
@@ -159,6 +159,7 @@ bool FLAG_CANSTART = false;
 rgb_lcd lcd;
 Nav Navigator(start_pos);
 macromotion currentMM;
+bool hasSpike = false;
 
 // Line sensing thresh = 200 out of 1000
 const int NUMPINS = 4; // Initialize irsensors
@@ -180,8 +181,8 @@ int nav_timer = 3600000;
 // ================================================================ //
 // Timers
 
-Metro encoderTimer = Metro(150);
-Metro displayTimer = Metro(1000);
+Metro encoderTimer = Metro(120);
+Metro displayTimer = Metro(500);
 Metro sensorPollTimer = Metro(30);
 Metro navProcessTimer = Metro(50);
 Metro navDelayTimer = Metro(3600000); // Set to 1 hour when unused
@@ -367,8 +368,10 @@ void setup()
 	myservo.attach(servoPin, 1000, 2000);
 	myservo.write(0);
 
+	/*
 	attachInterrupt(INTencPortPin, encLeftPin, RISING);
 	attachInterrupt(INTencStarboardPin, encRightPin, RISING);
+	*/
 	
 	// Pins
 	pinMode(clarmPin, INPUT);
@@ -385,20 +388,13 @@ void setup()
 	// Leaving home
 	lineCalibrate();
 	Navigator.resetEncCNT();
+	Navigator.lineAlign();
 	Navigator.tasklist.push(task(PPP, 3000));
 	Navigator.tasklist.push(task(RFG, 270));
 	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(RFG, 90));
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(RFG, 245));
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(RFG, 0));
-	/*
-	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.lineAlign();
 	Navigator.tasklist.push(task(PPP, 1000));
 	Navigator.tasklist.push(task(MOG, 2));
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.lineAlign();
 	Navigator.tasklist.push(task(PPP, 1000));
 	Navigator.tasklist.push(task(RFG, 90));
 	Navigator.tasklist.push(task(PPP, 1000));
@@ -408,7 +404,6 @@ void setup()
 	Navigator.lineAlign();
 	Navigator.tasklist.push(task(PPP, 1000));
 	Navigator.tasklist.push(task(RFG, 0));
-	*/
 	currentMM = mMTC;
 
 	/* 
@@ -492,7 +487,6 @@ void loop()
 		return;
 	}
 
-	/*
 	static int lastMotorStatus = STOPPED;
 	if (lastMotorStatus != Driver.get_status()) 
 	{
@@ -510,7 +504,6 @@ void loop()
 		}
 	}
 	lastMotorStatus = Driver.get_status();
-	*/
 
 	// Check for rising claw interrupt
 	static int clarm_last = LOW;
@@ -579,6 +572,8 @@ void loop()
 			Navigator.sketchyTimer = millis();
 
 			DEBUG(">>>Starting new task ");
+			DEBUG(Navigator.getMotion());
+			DEBUG(" ");
 			DEBUG(Navigator.offgridpos.d);
 			DEBUG("\r\n");
 		}
@@ -589,8 +584,6 @@ void loop()
 	}	
 	// Event manager processing
 	addEvents();
-	main_lap = millis() - main_lap;
-
 }
 
 
@@ -601,6 +594,7 @@ void addEvents()
 	if (encoderTimer.check() == 1)
 	{
 		Navigator.setOffGridPos(TM::calcOffGrid(Navigator.getOffGridPos()));
+		hasSpike = Navigator.spikeCheck();
 		Navigator.resetEncCNT();
 	}
 
@@ -632,6 +626,7 @@ void addEvents()
 
 void display()
 {
+	main_lap = millis() - main_lap;
 	DEBUG("#");
 	DEBUG(main_lap);
 	DEBUG("# ");
@@ -643,7 +638,7 @@ void display()
 	DEBUG(Driver.get_status());
 	DEBUG(" HED ");
 	DEBUG(Driver.current_heading);
-	DEBUG(" NL ");
+	DEBUG("\tNL ");
 	DEBUG(Navigator.online);
 	DEBUG(" OL ");
 	DEBUG(checkOnLine());
@@ -671,9 +666,15 @@ void display()
 	DEBUG_MOTO(starboard.get_status());
 
 	DEBUG_ENC("\tPE ");
-	DEBUG_ENC(Navigator.encPortLOG);
+	DEBUG_ENC(Navigator.encPortCNT);
 	DEBUG_ENC(" SE ");
+	DEBUG_ENC(Navigator.encStarboardCNT);
+	DEBUG_ENC(" PL ");
+	DEBUG_ENC(Navigator.encPortLOG);
+	DEBUG_ENC(" SL ");
 	DEBUG_ENC(Navigator.encStarboardLOG);
+	DEBUG_ENC(" KK ");
+	DEBUG_ENC(Navigator.spikeCheck());
 
 	// Hopper flags
 	DEBUG_HOP("\tHR ");

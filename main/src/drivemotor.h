@@ -26,8 +26,7 @@ class DriveMotor
 		motor *ptr_starboard;
 		int current_heading;
 		int newSpeed;
-		DriveMotor(motor& port, motor& starboard, 
-				int prop, int deriv);
+		DriveMotor(motor& port, motor& starboard, int prop, int deriv);
 		int mapLine(bool left, bool middle, bool right);
 		int lineMotorScaling(int baseSpeed = 255);
 

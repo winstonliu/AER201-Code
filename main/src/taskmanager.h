@@ -68,6 +68,7 @@ namespace TM	// TaskManager
 
 	double euclideanDist(int x, int y);
 	grid dirLineInc(int i);
+	double modAbsDiff(double a, double b);
 	drcoord calcOffGrid(drcoord lastPos);
 
 	void turnDirInit(int speed = 255);

@@ -89,6 +89,12 @@ grid TM::dirLineInc(int i)
 	return temp_grid;
 }
 
+double TM::modAbsDiff(double a, double b)
+{
+	double diff = abs(a - b);
+	return (a < 180) ? diff : 360 - diff;
+}
+
 drcoord TM::calcOffGrid(drcoord lastPos)
 {
 	int pcnt, scnt;
@@ -98,7 +104,9 @@ drcoord TM::calcOffGrid(drcoord lastPos)
 	drcoord newPos = lastPos;
 	double calcpos;
 
-	if (tkDriver->get_status() == STOPPED)
+	// Ignore encoder spikes
+	if ((tkDriver->get_status() == STOPPED) 
+		|| (tkNav->spikeCheck() == true))
 	{
 		return lastPos;
 	}
@@ -128,7 +136,6 @@ drcoord TM::calcOffGrid(drcoord lastPos)
 	newPos.x += Rw * cos(calcpos) * (pcnt + scnt) * M_PI / Tr;
 	newPos.y += Rw * sin(calcpos) * (pcnt + scnt) * M_PI / Tr;
 	// Reset count
-	tkNav->resetEncCNT();
 	return newPos;
 }
 void TM::turnDirInit(int speed)
@@ -264,8 +271,7 @@ bool TM::motionMTL::iscomplete()
 	}
 	else
 	{
-		int todiff = abs(tkNav->getOffGridPos().d - degElapsed);
-		farenuf = (((todiff < 180) ? todiff : 360 - todiff) > 10);
+		farenuf = modAbsDiff(tkNav->getOffGridPos().d, degElapsed) > 10;
 	}
 
 	if ((tkNav->absEncDistance() > abs(tkNav->getTaskValue()))
