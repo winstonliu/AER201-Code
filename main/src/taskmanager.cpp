@@ -129,13 +129,22 @@ drcoord TM::calcOffGrid(drcoord lastPos)
 			pcnt *= -1;
 			break;
 	}
-	tkNav->turncoord = fmod((360 * RwD * (pcnt - scnt) / Tr), 360);
+
+	if (tkNav->getMotion() == RFG)
+	{
+		tkNav->turncoord = fmod((360 * RwD * (pcnt - scnt) / Tr), 360);
+	}
+	else 
+	{
+		tkNav->turncoord = 0;
+	}
 
 	calcpos += 2 * M_PI * RwD * (pcnt - scnt) / Tr;
 	newPos.d += tkNav->turncoord; // convert to degrees
 	newPos.x += Rw * cos(calcpos) * (pcnt + scnt) * M_PI / Tr;
 	newPos.y += Rw * sin(calcpos) * (pcnt + scnt) * M_PI / Tr;
 	// Reset count
+	tkNav->resetEncCNT();
 	return newPos;
 }
 void TM::turnDirInit(int speed)
@@ -183,6 +192,17 @@ void TM::motionMOG::interrupt(sensors intsensor)
 	if ((intsensor == LINE_ISR) && (tkNav->absEncDistance() >= 5))
 	{
 		tkNav->setGrid(dirLineInc(1));
+	}
+	else if (dirLineInc(1) == tkdest)
+	{
+		if (intsensor == IRLEFT)
+		{
+			tkDriver->ptr_port->stop();
+		}
+		else if (intsensor == IRRIGHT)
+		{
+			tkDriver->ptr_starboard->stop();
+		}
 	}
 }
 bool TM::motionMOG::iscomplete()

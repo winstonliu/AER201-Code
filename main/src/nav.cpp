@@ -277,13 +277,15 @@ int Nav::boardAndBack()
 }
 void Nav::lineAlign()
 {
-	tasklist.push(task(MTL, -5));
+	tasklist.push(task(MTL, -8));
 	tasklist.push(task(PPP, 500));
-	tasklist.push(task(MTL, 5));
+	tasklist.push(task(MTL, 6));
 	tasklist.push(task(PPP, 500));
+	/*
 	tasklist.push(task(RTL, 25));
 	tasklist.push(task(PPP, 500));
 	tasklist.push(task(RTL, -50));
+	*/
 }
 void Nav::rotateAlign()
 {

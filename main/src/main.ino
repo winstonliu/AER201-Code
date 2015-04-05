@@ -19,7 +19,7 @@
 #define ENC_DEBUG
 #define INT_DEBUG
 //#define MOTO_DEBUG
-#define NAV_DEBUG
+//#define NAV_DEBUG
 //#define HOPPER_DEBUG
 #else
 #define DEBUG( x )
@@ -68,7 +68,7 @@
 
 const int btnCalibrate = 10;
 const int numCyclesTrack = 2;
-const double bthresh = 0.55; // Percentage threshold for black line
+const double bthresh = 0.65; // Percentage threshold for black line
 
 int TM::board_now = LOW;
 
@@ -147,7 +147,7 @@ motor wheel(7,50,TM::wheel_pwm);
 motor clarm(12,13,TM::clarm_pwm); // Claw arm
 
 // Port, starboard, P, D of proportional-derivative adjustment
-DriveMotor Driver(port, starboard, 0.7, 7);
+DriveMotor Driver(port, starboard, 0.3, 5);
 Servo myservo;
 // ================================================================ //
 // Important stuff
@@ -161,10 +161,10 @@ Nav Navigator(start_pos);
 bool hasSpike = false;
 
 // Line sensing thresh = 200 out of 1000
-const int NUMPINS = 4; // Initialize irsensors
+const int NUMPINS = 6; // Initialize irsensors
 const int NUMEXT = 2;
-unsigned char senPins[NUMPINS] = {15,13,12,11};
-unsigned char senExt[NUMEXT] = {14,10};
+unsigned char senPins[NUMPINS] = {A6,A15,A13,A12,A11,A7};
+unsigned char senExt[NUMEXT] = {A14,A10};
 unsigned int senPinVal[NUMPINS];
 unsigned int senExtVal[NUMEXT];
 QTRSensorsAnalog qtrline(senPins, NUMPINS);
@@ -213,12 +213,11 @@ void sensorPollingFunction()
 		&& (Navigator.absEncDistance() >= TM::lineSep) 
 		&& (Navigator.getMotion() == MOG);
 
-	if (checkOnLine() == true)
+	if ((minTime & driveStat) == true) 
 	{
-		Navigator.online = true;
-		if (((minTime & driveStat) == true) 
-			|| ((driveStat & lineTime) == true))
-		{ 
+		if ((checkOnLine() == true) || (lineTime == true))
+		{
+			Navigator.online = true;
 			TM::interrupt(LINE_ISR);
 
 			DEBUG_INT(">>> LINEINT ");
@@ -228,26 +227,25 @@ void sensorPollingFunction()
 
 			pollTime = millis();
 		}
-	}
-	else if (Navigator.extLeft == true)
-	{
-		TM::interrupt(IRLEFT);
-		DEBUG_INT(">>> IRL ");
-		display();
+		else if (Navigator.extLeft == true)
+		{
+			TM::interrupt(IRLEFT);
+			DEBUG_INT(">>> IRL ");
+			display();
 
-	}
-	else if (Navigator.extRight == true)
-	{
-		TM::interrupt(IRRIGHT);
-		DEBUG_INT(">>> IRR ");
-		display();
+		}
+		else if (Navigator.extRight == true)
+		{
+			TM::interrupt(IRRIGHT);
+			DEBUG_INT(">>> IRR ");
+			display();
 
+		}
+		else
+		{
+			Navigator.online = false;
+		}
 	}
-	else
-	{
-		Navigator.online = false;
-	}
-
 }
 bool checkOnLine()
 {
@@ -269,10 +267,9 @@ bool checkOnLine()
 }
 void lineCalibrate()
 {
-	// ~ 3 seconds for calibration
+	// ~ 2 seconds for calibration
 	DEBUG("Calibrating now...\r\n");
-	delay(100);
-	for (int i = 0; i < 300; ++i)
+	for (int i = 0; i < 200; ++i)
 	{
 		qtrline.calibrate();
 		qtrext.calibrate();
@@ -379,15 +376,36 @@ void setup()
 
 	DEBUG("Motor init...");
 	Driver.driveStraight();	
-	delay(3000);
-	Driver.stop();
 	delay(1000);
+	Driver.stop();
 
 	// DEBUG COMMANDS
 	// Leaving home
 	lineCalibrate();
 	Navigator.resetEncCNT();
+	Navigator.tasklist.push(task(PPP, 5000));
+	Navigator.tasklist.push(task(MOG, 1));
+	Navigator.tasklist.push(task(PPP, 1000));
 	Navigator.lineAlign();
+	/*
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(RFG, 270));
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(MOG, 1));
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.lineAlign();
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(RFG, 35));
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(RFG, 0));
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(MOG, 1));
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(RFG, 270));
+	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(MOG, 2));
+	Navigator.tasklist.push(task(PPP, 1000));
+	*/
 
 	Navigator.currentMM = mMTC;
 
@@ -594,8 +612,8 @@ void addEvents()
 	if (encoderTimer.check() == 1)
 	{
 		Navigator.setOffGridPos(TM::calcOffGrid(Navigator.getOffGridPos()));
-		hasSpike = Navigator.spikeCheck();
 		Navigator.resetEncCNT();
+		hasSpike = Navigator.spikeCheck();
 	}
 
 	// Display event
@@ -656,6 +674,10 @@ void display()
 	DEBUG_IR(senPinVal[2]);
 	DEBUG_IR(" ");
 	DEBUG_IR(senPinVal[3]);
+	DEBUG_IR(" ");
+	DEBUG_IR(senPinVal[4]);
+	DEBUG_IR(" ");
+	DEBUG_IR(senPinVal[5]);
 	DEBUG_IR(" E ");
 	DEBUG_IR(senExtVal[1]);
 	DEBUG_MOTO("\tPMS ");

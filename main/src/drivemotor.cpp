@@ -45,7 +45,7 @@ int DriveMotor::lineMotorScaling(int baseSpeed)
 	
 	// For four pins
 	static int lastError = 0;
-	int error = current_heading - 1500;
+	int error = current_heading - 2500;
 	newSpeed = prop * error + deriv * (error - lastError);
 	lastError = error;
 
