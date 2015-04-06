@@ -19,7 +19,7 @@
 #define ENC_DEBUG
 #define INT_DEBUG
 //#define MOTO_DEBUG
-//#define NAV_DEBUG
+#define NAV_DEBUG
 //#define HOPPER_DEBUG
 #else
 #define DEBUG( x )
@@ -68,7 +68,8 @@
 
 const int btnCalibrate = 10;
 const int numCyclesTrack = 2;
-const double bthresh = 0.65; // Percentage threshold for black line
+const double bthresh = 0.7; // Percentage threshold for black line
+//const double bthresh = 0.40; // Percentage threshold for black line
 
 int TM::board_now = LOW;
 
@@ -105,11 +106,6 @@ grid end_pos(6, 5, 90);
 
 int threshold_values[3] = {0, 800, 0};
 
-// Heading motor proportional scaling factor:
-const int dmotor_scaling = 50; 
-// Initial change
-const int dmotor_initial = 2;
-
 // ================================================================ //
 
 // Keypad
@@ -138,7 +134,7 @@ Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, rows, cols);
 // MOTOR initialization
 const int TM::wheel_norm = 50;
 int TM::wheel_pwm = 0;
-int TM::clarm_pwm = 225;
+int TM::clarm_pwm = 180;
 
 // Initialize motors (en, dir)
 motor starboard(8,9);
@@ -147,7 +143,7 @@ motor wheel(7,50,TM::wheel_pwm);
 motor clarm(12,13,TM::clarm_pwm); // Claw arm
 
 // Port, starboard, P, D of proportional-derivative adjustment
-DriveMotor Driver(port, starboard, 0.3, 5);
+DriveMotor Driver(port, starboard, 0.1, 2);
 Servo myservo;
 // ================================================================ //
 // Important stuff
@@ -161,19 +157,20 @@ Nav Navigator(start_pos);
 bool hasSpike = false;
 
 // Line sensing thresh = 200 out of 1000
-const int NUMPINS = 6; // Initialize irsensors
-const int NUMEXT = 2;
-unsigned char senPins[NUMPINS] = {A6,A15,A13,A12,A11,A7};
-unsigned char senExt[NUMEXT] = {A14,A10};
+const int NUMPINS = 8; // Initialize irsensors
+//const int NUMEXT = 2;
+unsigned char senPins[NUMPINS] = {A14,A6,A15,A13,A12,A11,A7,A10};
+//unsigned char senExt[NUMEXT] = {A14,A10};
 unsigned int senPinVal[NUMPINS];
-unsigned int senExtVal[NUMEXT];
+//unsigned int senExtVal[NUMEXT];
 QTRSensorsAnalog qtrline(senPins, NUMPINS);
-QTRSensorsAnalog qtrext(senExt, NUMEXT);
+//QTRSensorsAnalog qtrext(senExt, NUMEXT);
 
 DriveMotor* TM::tkDriver = &Driver;
 motor* TM::tkClarm = &clarm;
 motor* TM::tkWheel = &wheel;
 Nav* TM::tkNav = &Navigator;
+int TM::basespeed = 255;
 int nav_timer = 3600000;
 
 
@@ -197,66 +194,71 @@ void sensorPollingFunction()
 	static long pollTime = millis();
 	
 	Driver.current_heading = qtrline.readLine(senPinVal);
-	qtrext.readCalibrated(senExtVal);
+	//qtrext.readCalibrated(senExtVal);
 
+	/*
 	Navigator.extLeft = (senExtVal[0] > 
 			(qtrext.calibratedMaximumOn[0] * bthresh));
 	Navigator.extRight = (senExtVal[1] > 
 			(qtrext.calibratedMaximumOn[1] * bthresh));
-
+	*/
 	// Check the offset sensor for line pass detection, look for rising edge
 	// XXX Reconfig line sensor detection
 	bool driveStat = (Driver.get_status() != STOPPED);
+	bool onmyline = checkOnLine();
 	// at least 300 ms between ISRs
-	bool minTime = (Navigator.currentTime - pollTime) > 300; 
+	bool minTime = (Navigator.currentTime - pollTime) > 200; 
 	bool lineTime = (TM::dirLineInc(1).x == 4) 
 		&& (Navigator.absEncDistance() >= TM::lineSep) 
 		&& (Navigator.getMotion() == MOG);
+	
+	Navigator.online = onmyline;
 
 	if ((minTime & driveStat) == true) 
 	{
-		if ((checkOnLine() == true) || (lineTime == true))
+		if ((onmyline | lineTime) == true)
 		{
-			Navigator.online = true;
 			TM::interrupt(LINE_ISR);
 
-			DEBUG_INT(">>> LINEINT ");
+			DEBUG_INT(">>> LINEINT\r\n");
 			DEBUG_INT(Navigator.currentTime - pollTime);
 			display();
 			DEBUG_INT("\r\n");
-
 			pollTime = millis();
 		}
 		else if (Navigator.extLeft == true)
 		{
 			TM::interrupt(IRLEFT);
-			DEBUG_INT(">>> IRL ");
+			DEBUG_INT(">>> IRL\r\n");
+			DEBUG_INT(Navigator.currentTime - pollTime);
 			display();
-
 		}
 		else if (Navigator.extRight == true)
 		{
 			TM::interrupt(IRRIGHT);
-			DEBUG_INT(">>> IRR ");
+			DEBUG_INT(">>> IRR\r\n");
+			DEBUG_INT(Navigator.currentTime - pollTime);
 			display();
-
-		}
-		else
-		{
-			Navigator.online = false;
 		}
 	}
 }
 bool checkOnLine()
 {
 	bool online = true;
+
+	Navigator.extLeft = (senPinVal[0] > 
+			(qtrline.calibratedMaximumOn[0] * bthresh));
+	Navigator.extRight = (senPinVal[7] > 
+			(qtrline.calibratedMaximumOn[7] * bthresh));
+
 	for (int i = 0; i < NUMPINS; ++i)
 	{
-		online = online & (senPinVal[i]>(qtrline.calibratedMaximumOn[i]*bthresh));
+		online = online 
+				& (senPinVal[i]>(qtrline.calibratedMaximumOn[i]*bthresh));
 	}
 
-	//if ((Navigator.extLeft & Navigator.extLeft) == true)
-	if ((Navigator.extLeft & Navigator.extLeft & online) == true)
+	//if ((Navigator.extLeft & Navigator.extLeft & online) == true)
+	if ((Navigator.extLeft & Navigator.extLeft) == true)
 	{
 		return true;
 	}
@@ -272,7 +274,7 @@ void lineCalibrate()
 	for (int i = 0; i < 200; ++i)
 	{
 		qtrline.calibrate();
-		qtrext.calibrate();
+		//qtrext.calibrate();
 	}
 	DEBUG("Done calibration:\r\n");
 
@@ -286,6 +288,7 @@ void lineCalibrate()
 		DEBUG("\t");
 		DEBUG(qtrline.calibratedMaximumOn[i]);
 	}
+	/*
 	for (int i = 0; i < NUMEXT; ++i)
 	{
 		DEBUG("\tEXT");
@@ -295,6 +298,7 @@ void lineCalibrate()
 		DEBUG("\t");
 		DEBUG(qtrext.calibratedMaximumOn[i]);
 	}
+	*/
 	DEBUG("\r\n");
 }
 void encLeftPin()
@@ -376,35 +380,119 @@ void setup()
 
 	DEBUG("Motor init...");
 	Driver.driveStraight();	
-	delay(1000);
+	delay(2000);
 	Driver.stop();
+
+	int clawtime =  400;
 
 	// DEBUG COMMANDS
 	// Leaving home
 	lineCalibrate();
 	Navigator.resetEncCNT();
-	Navigator.tasklist.push(task(PPP, 5000));
-	Navigator.tasklist.push(task(MOG, 1));
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.lineAlign();
-	/*
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(RFG, 270));
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(MOG, 1));
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.lineAlign();
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(RFG, 35));
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(RFG, 0));
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(MOG, 1));
-	Navigator.tasklist.push(task(PPP, 1000));
-	Navigator.tasklist.push(task(RFG, 270));
-	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(PPP, 3000));
 	Navigator.tasklist.push(task(MOG, 2));
-	Navigator.tasklist.push(task(PPP, 1000));
+	Navigator.tasklist.push(task(PPP, 200));
+	Navigator.lineAlign();
+	Navigator.tasklist.push(task(MCC, -5));
+	Navigator.tasklist.push(task(PPP, 100));
+	Navigator.tasklist.push(task(PFG, 305));
+	Navigator.tasklist.push(task(PPP, 100));
+	Navigator.tasklist.push(task(MCC, 40));
+	Navigator.tasklist.push(task(PPP, 100));
+	Navigator.tasklist.push(task(RFG, 45));
+	Navigator.tasklist.push(task(PPP, 100));
+	Navigator.tasklist.push(task(CEX, clawtime));
+	// Hopper docking
+	Navigator.hopperDocking();
+	Navigator.tasklist.push(task(MCC, -100));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(RFG, 310));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(CEX, clawtime));
+	Navigator.tasklist.push(task(MCC, 55));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(PFG, 280));
+	Navigator.tasklist.push(task(PPP, 500));
+	// Line travel
+	Navigator.tasklist.push(task(MOG, 3));
+	Navigator.tasklist.push(task(CRT, 0));
+	Navigator.lineAlign();
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(PFG, 225));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(MCC, 60));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(PFG, 180));
+	// Dock with board
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(MOG, 1));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.lineAlign();
+	Navigator.tasklist.push(task(MCC, 200));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(RFG, 90)); // Rotate to face y
+	Navigator.tasklist.push(task(GAL, 0));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(OGR, 1));
+	/*
+	Navigator.tasklist.push(task(PPP, 5000));
+	Navigator.tasklist.push(task(CEX, 300));
+	Navigator.hopperDocking();
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(OGR, 0));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(RFG, 315));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(CEX, 300));
+	*/
+	/*
+	Navigator.tasklist.push(task(MOG, 1));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.lineAlign();
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(RFG, 35));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(RFG, 0));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(MOG, 1));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(RFG, 270));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(MOG, 2));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.lineAlign();
+	Navigator.tasklist.push(task(RFG, 180));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(MOG, 2));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.lineAlign();
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(MCC, 200));
+	// Going back
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(RFG, 0));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(MOG, 3));
+	Navigator.lineAlign();
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(RFG, 90));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(MOG, 2));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(RFG, 180));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(MOG, 1));
+	Navigator.lineAlign();
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(RFG, 90));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(MOG, 1));
+	Navigator.lineAlign();
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(RFG, 180));
+	Navigator.tasklist.push(task(PPP, 500));
+	Navigator.tasklist.push(task(MOG, 1));
+	Navigator.lineAlign();
 	*/
 
 	Navigator.currentMM = mMTC;
@@ -537,6 +625,8 @@ void loop()
 	TM::board_now = digitalRead(boardPin);
 	if (TM::board_now == HIGH)
 		myservo.write(180);
+	else
+		myservo.write(0);
 
 	// Check for rising hopper left interrupt
 	if(digitalRead(hopperlPin) == HIGH)
@@ -579,10 +669,10 @@ void loop()
 		display();
 		DEBUG("\r\n");
 
+		Navigator.resetEncCNT();
 		Navigator.advance();
 		if (Navigator.doneTasks() == false)
 		{
-			Navigator.resetEncCNT();
 			TM::start(nav_timer);
 			navDelayTimer.interval(nav_timer);
 			navDelayTimer.reset();
@@ -611,9 +701,9 @@ void addEvents()
 {
 	if (encoderTimer.check() == 1)
 	{
+		hasSpike = Navigator.spikeCheck();
 		Navigator.setOffGridPos(TM::calcOffGrid(Navigator.getOffGridPos()));
 		Navigator.resetEncCNT();
-		hasSpike = Navigator.spikeCheck();
 	}
 
 	// Display event
@@ -665,10 +755,8 @@ void display()
 
 	// IR READINGS
 	DEBUG_IR("\tE ");
-	DEBUG_IR(senExtVal[0]);
-	DEBUG_IR(" L ");
 	DEBUG_IR(senPinVal[0]);
-	DEBUG_IR(" ");
+	DEBUG_IR(" L ");
 	DEBUG_IR(senPinVal[1]);
 	DEBUG_IR(" ");
 	DEBUG_IR(senPinVal[2]);
@@ -678,8 +766,10 @@ void display()
 	DEBUG_IR(senPinVal[4]);
 	DEBUG_IR(" ");
 	DEBUG_IR(senPinVal[5]);
+	DEBUG_IR(" ");
+	DEBUG_IR(senPinVal[6]);
 	DEBUG_IR(" E ");
-	DEBUG_IR(senExtVal[1]);
+	DEBUG_IR(senPinVal[7]);
 	DEBUG_MOTO("\tPMS ");
 	DEBUG_MOTO(port.motorspeed);
 	DEBUG_MOTO(" SMS ");
@@ -698,7 +788,7 @@ void display()
 	DEBUG_ENC(" SL ");
 	DEBUG_ENC(Navigator.encStarboardLOG);
 	DEBUG_ENC(" KK ");
-	DEBUG_ENC(Navigator.spikeCheck());
+	DEBUG_ENC(hasSpike);
 
 	// Hopper flags
 	DEBUG_HOP("\tHR ");
@@ -732,5 +822,3 @@ void display()
 	// DEBUG
 	//lcd.clear();
 }
-
-

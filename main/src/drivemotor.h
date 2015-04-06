@@ -34,9 +34,9 @@ class DriveMotor
 		void driveReverse(int speed = 255);
 		void turnLeft(int speed = 255);
 		void turnRight(int speed = 255);
-		void pivotLeft();
+		void pivotLeft(int speed = 255);
 		void pivotLeftReverse();
-		void pivotRight();
+		void pivotRight(int speed = 255);
 		void pivotRightReverse();
 		void adjustSpeed(int speed);	
 		void doOpposite();

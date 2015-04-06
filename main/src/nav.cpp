@@ -17,6 +17,7 @@ long Nav::timeElapsed() { return currentTime - sketchyTimer; }
 
 bool Nav::check_validity(grid coordinates)
 {
+	/*
 	// Check the validity of grid coordinates
 	if (coordinates.x < 1 || coordinates.x > 7)
 		return false;
@@ -25,7 +26,8 @@ bool Nav::check_validity(grid coordinates)
 	else if (coordinates.d < 0 || coordinates.d > 359)
 		return false;
 	else
-		return true;
+	*/
+	return true;
 }
 
 int Nav::reset(grid new_position)
@@ -86,11 +88,11 @@ int Nav::computeRectilinearPath(grid new_destination)
 	}
 
 	tasklist.push(task(PPP, 2000));
-	tasklist.push(task(ROG, next_xd)); // Rotate to face x
+	tasklist.push(task(RFG, next_xd)); // Rotate to face x
 	tasklist.push(task(MOG, difference.x)); // Move x
-	tasklist.push(task(ROG, next_yd)); // Rotate to face y
+	tasklist.push(task(RFG, next_yd)); // Rotate to face y
 	tasklist.push(task(MOG, difference.y)); // Move y
-	tasklist.push(task(ROG, destination.d)); // Rotate to face final
+	tasklist.push(task(RFG, destination.d)); // Rotate to face final
 
 	return 0;
 }
@@ -98,11 +100,11 @@ int Nav::computeRectilinearPath(grid new_destination)
 void Nav::incEncPortCNT() { ++encPortCNT; }
 void Nav::incEncStarboardCNT() { ++encStarboardCNT; }
 void Nav::resetEncCNT() 
-{ 
-	encPortLOG += encPortCNT;
-	encStarboardLOG += encStarboardCNT;
+{ 	
 	lastpcnt = encPortLOG;
 	lastscnt = encStarboardLOG;
+	encPortLOG += encPortCNT;
+	encStarboardLOG += encStarboardCNT;
 	encPortCNT = 0; 
 	encStarboardCNT = 0;
 }
@@ -110,8 +112,9 @@ int Nav::getEncPortCNT() { return encPortCNT; }
 int Nav::getEncStarboardCNT() { return encStarboardCNT; }
 bool Nav::spikeCheck()
 {
-	if ((abs(encPortLOG - lastpcnt) > 100)
-		||(abs(encStarboardLOG - lastscnt) > 100))
+	int spikethresh = 20;
+	if ((abs(encPortLOG - lastpcnt) > spikethresh) 
+		||(abs(encStarboardLOG - lastscnt) > spikethresh))
 	{
 		lastpcnt = encPortLOG;
 		lastscnt = encStarboardLOG;
@@ -230,15 +233,15 @@ int Nav::hopperUndocking()
 	*/
 
 	tasklist.push(task(OGR, 0));
-	tasklist.push(task(CEX, 500)); // Extend claw
-	tasklist.push(task(RFG, currentGrid.d));
+	//tasklist.push(task(CEX, 500)); // Extend claw
+	//tasklist.push(task(RFG, currentGrid.d));
 }
 int Nav::gameboardAlign()
 {
 	// at 4,8,90/180
-	tasklist.push(task(ROG, 180)); // Rotate to face y
+	tasklist.push(task(RFG, 180)); // Rotate to face y
 	tasklist.push(task(GAL, 0));
-	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(PPP, 500));
 }
 int Nav::boardAndBack()
 {
@@ -278,9 +281,9 @@ int Nav::boardAndBack()
 void Nav::lineAlign()
 {
 	tasklist.push(task(MTL, -8));
-	tasklist.push(task(PPP, 500));
+	tasklist.push(task(PPP, 400));
 	tasklist.push(task(MTL, 6));
-	tasklist.push(task(PPP, 500));
+	tasklist.push(task(PPP, 400));
 	/*
 	tasklist.push(task(RTL, 25));
 	tasklist.push(task(PPP, 500));
@@ -289,6 +292,7 @@ void Nav::lineAlign()
 }
 void Nav::rotateAlign()
 {
+	/*
 	tasklist.push(task(RTL, -10));
 	tasklist.push(task(PPP, 500));
 	tasklist.push(task(RTL, 10));
@@ -296,6 +300,7 @@ void Nav::rotateAlign()
 	tasklist.push(task(RTL, -45));
 	tasklist.push(task(PPP, 500));
 	tasklist.push(task(RTL, 90));
+	*/
 }
 
 

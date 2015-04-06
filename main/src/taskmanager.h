@@ -33,6 +33,7 @@ namespace TM	// TaskManager
 	
 	extern int wheel_pwm;
 	extern int clarm_pwm;
+	extern int basespeed;
 
 	extern int board_now;
 	extern int timeforaline;
@@ -102,10 +103,10 @@ namespace TM	// TaskManager
 			void interrupt(sensors intsensor);
 			bool iscomplete();
 	};
-	class motionRTL : public Motion
+	class motionMCC : public Motion
 	{
 		public:
-			motionRTL(motions m);
+			motionMCC(motions m);
 			void start(int& timer);
 			void process();
 			void interrupt(sensors intsensor);
@@ -137,10 +138,10 @@ namespace TM	// TaskManager
 			void interrupt(sensors intsensor);
 			bool iscomplete();
 	};
-	class motionROG : public Motion
+	class motionPFG : public Motion
 	{
 		public:
-			motionROG(motions m);
+			motionPFG(motions m);
 			void start(int& timer);
 			void process();
 			void interrupt(sensors intsensor);
@@ -167,6 +168,7 @@ namespace TM	// TaskManager
 	{
 		public:
 			motionGAL(motions m);
+			void process();
 			void start(int& timer);
 			bool iscomplete();
 	};

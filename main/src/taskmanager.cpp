@@ -6,9 +6,9 @@ using namespace TM;
 motionMOG myMOG = motionMOG(MOG); // Move on grid
 motionMIR myMIR = motionMIR(MIR); // Move in reverse
 motionMTL myMTL = motionMTL(MTL); // Go off grid
-motionRTL myRTL = motionRTL(RTL); // Off grid outbound
+motionMCC myMCC = motionMCC(MCC); // Off grid outbound
 motionOGR myOGR = motionOGR(OGR); // Off grid return
-motionROG myROG = motionROG(ROG); // Rotate on grid
+motionPFG myPFG = motionPFG(PFG); // Rotate on grid
 motionRFG myRFG = motionRFG(RFG); // Rotate off grid
 motionHAL myHAL = motionHAL(HAL); // Hopper alignment
 motionGAL myGAL = motionGAL(GAL); // Gameboard alignment
@@ -24,9 +24,9 @@ TM::Motion *TM::listofmotions[MOTIONSCOUNT] =
 	&myMOG,
 	&myMIR,
 	&myMTL,
-	&myRTL,
+	&myMCC,
 	&myOGR,
-	&myROG,
+	&myPFG,
 	&myRFG,
 	&myHAL,
 	&myGAL,
@@ -37,7 +37,7 @@ TM::Motion *TM::listofmotions[MOTIONSCOUNT] =
 };
 
 bool TM::FLAG_pause = false;
-bool TM::FLAG_clawextended = true;
+bool TM::FLAG_clawextended = false;
 bool TM::FLAG_dockedboard = false;
 bool TM::FLAG_hopperleft = false;
 bool TM::FLAG_hopperright = false;
@@ -101,6 +101,7 @@ drcoord TM::calcOffGrid(drcoord lastPos)
 	double turnnow;
 	pcnt = tkNav->getEncPortCNT();
 	scnt = tkNav->getEncStarboardCNT();
+	tkNav->turncoord = 0;
 	drcoord newPos = lastPos;
 	double calcpos;
 
@@ -130,11 +131,12 @@ drcoord TM::calcOffGrid(drcoord lastPos)
 			break;
 	}
 
-	if (tkNav->getMotion() == RFG)
+	if ((tkNav->getMotion() == RFG) || (tkNav->getMotion() == PFG))
 	{
 		tkNav->turncoord = fmod((360 * RwD * (pcnt - scnt) / Tr), 360);
 	}
-	else 
+
+	if (abs(tkNav->turncoord) > 15)
 	{
 		tkNav->turncoord = 0;
 	}
@@ -143,18 +145,10 @@ drcoord TM::calcOffGrid(drcoord lastPos)
 	newPos.d += tkNav->turncoord; // convert to degrees
 	newPos.x += Rw * cos(calcpos) * (pcnt + scnt) * M_PI / Tr;
 	newPos.y += Rw * sin(calcpos) * (pcnt + scnt) * M_PI / Tr;
-	// Reset count
-	tkNav->resetEncCNT();
 	return newPos;
 }
 void TM::turnDirInit(int speed)
 {
-	int turndir = (int)(tkNav->getTaskValue()
-		   - tkNav->getOffGridPos().d) % 360;
-	if ((turndir >= 180) || ((-180 < turndir) && (turndir < 0)))
-		tkDriver->turnLeft(speed);
-	else if ((turndir < -180) || ((0 <= turndir) && (turndir < 180)))
-		tkDriver->turnRight(speed);
 }
 
 // ================================================================ //
@@ -179,36 +173,49 @@ void TM::motionMOG::start(int& timer)
 }
 void TM::motionMOG::process()
 {
-	int basespeed = 255;
 	// Slow down on line approach
 	/*
 	if (tkNav->absEncDistance() >= floor(lineSepTicks * 0.75))
 		basespeed = 125;
 	*/
 	tkDriver->lineMotorScaling(basespeed);
+
+	/*
+	if (tkNav->absEncDistance() >= 22)
+	{
+		tkNav->zeroOGXY();
+		tkNav->setGrid(dirLineInc(1));
+	}
+	*/
+
 }
 void TM::motionMOG::interrupt(sensors intsensor)
 {
-	if ((intsensor == LINE_ISR) && (tkNav->absEncDistance() >= 5))
-	{
-		tkNav->setGrid(dirLineInc(1));
-	}
-	else if (dirLineInc(1) == tkdest)
-	{
-		if (intsensor == IRLEFT)
+	if (tkNav->absEncDistance() > 10)
+	{	
+		if (intsensor == LINE_ISR)
 		{
-			tkDriver->ptr_port->stop();
+			tkNav->zeroOGXY();
+			tkNav->setGrid(dirLineInc(1));
 		}
-		else if (intsensor == IRRIGHT)
+		else if (dirLineInc(1) == tkdest)
 		{
-			tkDriver->ptr_starboard->stop();
+			if (intsensor == IRLEFT)
+			{
+				tkDriver->ptr_port->stop();
+			}
+			else if (intsensor == IRRIGHT)
+			{
+				tkDriver->ptr_starboard->stop();
+			}
 		}
 	}
 }
 bool TM::motionMOG::iscomplete()
 {
-	if ((tkNav->currentGrid == tkdest)) //|| (tkNav->absEncDistance() >= 25))
+	if (tkNav->currentGrid == tkdest)
 	{
+		tkNav->zeroOGXY();
 		tkDriver->stop();
 		return true;
 	}
@@ -254,17 +261,16 @@ void TM::motionMTL::start(int& timer)
 	tkNav->zeroOGXY();
 	tkDriver->stop();
 	this->FLAG_done = false;
-	//if (tkNav->online == true)
-//		this->FLAG_done = true;
-	if (tkNav->getTaskValue() < 0)
-		tkDriver->driveReverse(180);
+	if (tkNav->online == true)
+		this->FLAG_done = true;
+	else if (tkNav->getTaskValue() < 0)
+		tkDriver->driveReverse(basespeed - 20);
 	else
-		tkDriver->driveStraight(180);
+		tkDriver->driveStraight(basespeed - 20);
 }
 void TM::motionMTL::process() {}
 void TM::motionMTL::interrupt(sensors intsensor) 
 {
-	int gospeed = 160;
 	if ((intsensor == LINE_ISR) 
 			|| ((tkNav->extLeft & tkNav->extRight) == true))
 	{
@@ -276,13 +282,13 @@ void TM::motionMTL::interrupt(sensors intsensor)
 	{
 		if (intsensor == IRLEFT)
 		{
-			tkDriver->ptr_starboard->adjustSpeed(gospeed);
+			tkDriver->ptr_starboard->adjustSpeed(basespeed - 20);
 			tkDriver->ptr_port->adjustSpeed(0);
 		}
 		else if (intsensor == IRRIGHT)
 		{
 			tkDriver->ptr_starboard->adjustSpeed(0);
-			tkDriver->ptr_port->adjustSpeed(gospeed);
+			tkDriver->ptr_port->adjustSpeed(basespeed - 20);
 		}
 	}
 }
@@ -297,7 +303,7 @@ bool TM::motionMTL::iscomplete()
 	else
 	{
 		farenuf = modAbsDiff(tkNav->getOffGridPos().d, degElapsed) 
-			> abs(tkNav->getTaskValue() / 2);
+			> abs(tkNav->getTaskValue() * 2);
 	}
 
 	if ((tkNav->absEncDistance() > abs(tkNav->getTaskValue()))
@@ -311,97 +317,54 @@ bool TM::motionMTL::iscomplete()
 }
 
 // ================================================================ //
-// RTL
+// MCC
 
-TM::motionRTL::motionRTL(motions m) : Motion(m) {}
-void TM::motionRTL::start(int& timer) 
+TM::motionMCC::motionMCC(motions m) : Motion(m) {}
+void TM::motionMCC::start(int& timer) 
 {
-	this->FLAG_done = false;
 	tkNav->zeroOGXY();
-	if (tkNav->online == true)
-	{
-		this->FLAG_done = true;
-		tkDriver->stop();
-		return;
-	}
-	else if (tkNav->getTaskValue() < 0)
-		tkDriver->turnLeft();
+	if (tkNav->getTaskValue() < 0)
+		tkDriver->driveReverse();
 	else
-		tkDriver->turnRight();
+		tkDriver->driveStraight();
 }
-void TM::motionRTL::process() {}
-void TM::motionRTL::interrupt(sensors intsensor)
+void TM::motionMCC::process() {}
+void TM::motionMCC::interrupt(sensors intsensor) {}
+bool TM::motionMCC::iscomplete() 
 {
-	int gospeed = 255;
-	if (intsensor == LINE_ISR)
+	if (tkNav->absEncDistance() >= abs((double)tkNav->getTaskValue()/10.0))
 	{
 		tkDriver->stop();
-		this->FLAG_done = true;
-	}
-}
-bool TM::motionRTL::iscomplete() 
-{
-	static double degElapsed = -1;
-	double farenuf = 0;
-	if (degElapsed < 0)
-	{
-		degElapsed = tkNav->offgridpos.d;
-	}
-	else
-	{
-		int todiff = abs(tkNav->getOffGridPos().d - degElapsed);
-		farenuf = ((todiff < 180) ? todiff : 360 - todiff);
-	}
-
-	if ((farenuf > abs(tkNav->getTaskValue())) || (this->FLAG_done == true))
-	{
-		tkDriver->stop();
-		degElapsed = -1;
 		return true;
 	}
 	return false;
 }
 
 // ================================================================ //
-// ROG - Rotate on grid to position
-TM::motionROG::motionROG(motions m) : Motion(m) {}
-void TM::motionROG::start(int& timer)
+// PFG - Rotate on grid to position
+TM::motionPFG::motionPFG(motions m) : Motion(m) {}
+void TM::motionPFG::start(int& timer)
 {
 	// Normalize current heading 
-	//tkNav->zeroOGXY();
-	turnDirInit();
-}
-void TM::motionROG::process()
-{
-	//double linediff = fmod(tkNav->getOffGridPos().d/90, 1);
-	//bool islineclose = (((linediff < 0.5) ? linediff : 1 - linediff) < 0.3);
+	tkNav->zeroOGXY();
+	int turndir = (int)(tkNav->getTaskValue()
+		   - tkNav->getOffGridPos().d) % 360;
+	if ((turndir >= 180) || ((-180 < turndir) && (turndir < 0)))
+		tkDriver->pivotLeft(basespeed);
+	else if ((turndir < -180) || ((0 <= turndir) && (turndir < 180)))
+		tkDriver->pivotRight(basespeed);
 
-	/*
-	if (islineclose == true)
-		tkDriver->adjustSpeed(200);
-	else
-		tkDriver->adjustSpeed(255);
-	*/
 }
-void TM::motionROG::interrupt(sensors intsensor)
-{
-	// Calculating 
-	if (intsensor == LINE_ISR)
-	{
-		grid newgrid = tkNav->getGrid();
-		// Round to nearest cardinal direction 
-		newgrid.d =(int)(floor(tkNav->getOffGridPos().d/90 + 0.3) * 90) % 360;
-		tkNav->setGrid(newgrid);
-	}
-}
-bool TM::motionROG::iscomplete()
+void TM::motionPFG::process() {}
+void TM::motionPFG::interrupt(sensors intsensor) {}
+bool TM::motionPFG::iscomplete()
 {
 	int todiff = abs(tkNav->getOffGridPos().d - tkNav->getTaskValue());
-	bool islineclose = (((todiff < 180) ? todiff : 360 - todiff) < 10);
-	if ((tkNav->getGrid().d == tkNav->getTaskValue()))// && islineclose)
+	if (((todiff < 180) ? todiff : 360 - todiff) < 8)
 	{
-		//tkNav->setOGPtoGrid();
-		tkDriver->stop();
+		grid newgrid = tkNav->getGrid();
+		newgrid.d =(int)(floor(tkNav->getOffGridPos().d/90 + 0.3) * 90) % 360;
+		tkNav->setGrid(newgrid);
 		return true;
 	}
 	return false;
@@ -412,7 +375,15 @@ bool TM::motionROG::iscomplete()
 TM::motionRFG::motionRFG(motions m) : Motion(m) {}
 void TM::motionRFG::start(int& timer)
 {
-	turnDirInit();
+	tkNav->resetEncCNT();
+	tkNav->zeroOGXY();
+	int turndir = (int)(tkNav->getTaskValue()
+		   - tkNav->getOffGridPos().d) % 360;
+	if ((turndir >= 180) || ((-180 < turndir) && (turndir < 0)))
+		tkDriver->turnLeft(basespeed);
+	else if ((turndir < -180) || ((0 <= turndir) && (turndir < 180)))
+		tkDriver->turnRight(basespeed);
+
 	// Calculate turning direction
 		/*
 	if (tkNav->getTaskValue() > 180)
@@ -469,7 +440,7 @@ bool TM::motionCEX::iscomplete()
 TM::motionCRT::motionCRT(motions m) : Motion(m) {}
 void TM::motionCRT::start(int& timer)
 {
-	tkClarm->left(clarm_pwm);
+	tkClarm->left();
 	wheel_pwm = 0;
 }
 void TM::motionCRT::interrupt(sensors intsensor)
@@ -496,6 +467,7 @@ TM::motionHAL::motionHAL(motions m) : Motion(m) {}
 void TM::motionHAL::start(int& timer)
 {
 	tkDriver->driveStraight();
+	internalcount = 0.0;
 }
 void TM::motionHAL::process()
 {
@@ -545,7 +517,10 @@ TM::motionOGR::motionOGR(motions m) : Motion(m) {}
 void TM::motionOGR::start(int& timer) 
 {
 	tkDriver->stop();
-	tkDriver->driveReverse();
+	if (tkNav->getTaskValue() > 0)
+		tkDriver->driveStraight();
+	else
+		tkDriver->driveReverse();
 }
 void TM::motionOGR::interrupt(sensors intsensor) {}
 void TM::motionOGR::process() 
@@ -557,6 +532,7 @@ bool TM::motionOGR::iscomplete()
 {
 	if (internalcount <= 0)
 	{
+		tkDriver->stop();
 		return true;
 	}
 	return false;
@@ -578,12 +554,19 @@ void TM::motionGAL::start(int& timer)
 		tkDriver->turnLeft();
 	}
 	*/
+	internalcount = 0.0;
 	tkDriver->driveReverse();
+}
+void TM::motionGAL::process()
+{
+	internalcount += euclideanDist(tkNav->encStarboardCNT, tkNav->encPortCNT);
 }
 bool TM::motionGAL::iscomplete() 
 {
 	if ((board_now == HIGH))
 	{
+		// CHANGE TO 180
+		tkNav->offgridpos.d = 90;
 		return true;
 	}	
 	return false;

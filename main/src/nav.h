@@ -20,9 +20,9 @@ enum motions
 	MOG, // Move on grid
 	MIR, // Move in reverse
 	MTL, // 
-	RTL, // 
+	MCC, // 
 	OGR, // Off grid return
-	ROG, // Rotate on grid
+	PFG, // Pivot off grid
 	RFG, // Rotate off grid
 	HAL, // Hopper alignment
 	GAL, // Gameboard alignment

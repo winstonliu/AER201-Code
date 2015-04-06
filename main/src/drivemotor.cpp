@@ -45,7 +45,7 @@ int DriveMotor::lineMotorScaling(int baseSpeed)
 	
 	// For four pins
 	static int lastError = 0;
-	int error = current_heading - 2500;
+	int error = current_heading - 3500;
 	newSpeed = prop * error + deriv * (error - lastError);
 	lastError = error;
 
@@ -82,8 +82,8 @@ void DriveMotor::driveStraight(int speed)
 
 void DriveMotor::driveReverse(int speed)
 {
-	ptr_starboard->left(255);
-	ptr_port->right(255);
+	ptr_starboard->left(speed);
+	ptr_port->right(speed);
 	currentStatus = DRIVINGREVERSE;
 }
 
@@ -103,9 +103,9 @@ void DriveMotor::turnRight(int speed)
 	currentStatus = TURNINGRIGHT;
 }
 
-void DriveMotor::pivotLeft()
+void DriveMotor::pivotLeft(int speed)
 {
-	ptr_starboard->right(200);
+	ptr_starboard->right(speed);
 	ptr_port->stop();
 	currentStatus = PIVOTLEFT;
 }
@@ -117,10 +117,10 @@ void DriveMotor::pivotLeftReverse()
 	currentStatus = PIVOTLEFTBACK;
 }
 
-void DriveMotor::pivotRight()
+void DriveMotor::pivotRight(int speed)
 {
 	ptr_starboard->stop();
-	ptr_port->left(200);
+	ptr_port->left(speed);
 	currentStatus = PIVOTRIGHT;
 }
 
