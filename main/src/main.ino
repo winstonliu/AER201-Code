@@ -144,7 +144,7 @@ motor clarm(12,13,TM::clarm_pwm); // Claw arm
 
 // Port, starboard, P, D of proportional-derivative adjustment
 //DriveMotor Driver(port, starboard, 0.1, 2);
-DriveMotor Driver(port, starboard, 0.02, 4);
+DriveMotor Driver(port, starboard, 0.05, 3);
 Servo myservo;
 // ================================================================ //
 // Important stuff

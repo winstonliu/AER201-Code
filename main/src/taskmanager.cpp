@@ -98,6 +98,7 @@ double TM::modAbsDiff(double a, double b)
 drcoord TM::calcOffGrid(drcoord lastPos)
 {
 	int pcnt, scnt;
+	int spikethresh = 15;
 	double turnnow;
 	pcnt = tkNav->getEncPortCNT();
 	scnt = tkNav->getEncStarboardCNT();
@@ -107,7 +108,7 @@ drcoord TM::calcOffGrid(drcoord lastPos)
 
 	// Ignore encoder spikes
 	if ((tkDriver->get_status() == STOPPED) 
-		|| (tkNav->spikeCheck() == true))
+		|| (pcnt > spikethresh) || (scnt > spikethresh))
 	{
 		return lastPos;
 	}
@@ -284,13 +285,11 @@ void TM::motionMTL::interrupt(sensors intsensor)
 	{
 		if (intsensor == IRLEFT || tkNav->extRight != true)
 		{
-			tkDriver->ptr_starboard->adjustSpeed(basespeed - 20);
-			tkDriver->ptr_port->adjustSpeed(0);
+			tkDriver->ptr_port->stop();
 		}
 		else if (intsensor == IRRIGHT || tkNav->extLeft != true)
 		{
-			tkDriver->ptr_starboard->adjustSpeed(0);
-			tkDriver->ptr_port->adjustSpeed(basespeed - 20);
+			tkDriver->ptr_starboard->stop();
 		}
 	}
 }

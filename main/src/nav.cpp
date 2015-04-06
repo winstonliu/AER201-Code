@@ -108,18 +108,6 @@ void Nav::resetEncCNT()
 }
 int Nav::getEncPortCNT() { return encPortCNT; }
 int Nav::getEncStarboardCNT() { return encStarboardCNT; }
-bool Nav::spikeCheck()
-{
-	int spikethresh = 15;
-	if ((abs(encPortLOG - lastpcnt) > spikethresh) 
-		||(abs(encStarboardLOG - lastscnt) > spikethresh))
-	{
-		lastpcnt = encPortLOG;
-		lastscnt = encStarboardLOG;
-		return true;
-	}
-	return false;
-}
 int Nav::absEncDistance()
 {
 	// Return the absolute distance
@@ -183,7 +171,7 @@ void Nav::startMM()
 			tasklist.push(task(MOG, 2));
 			tasklist.push(task(PPP, 200));
 			lineAlign();
-			tasklist.push(task(MCC, -5));
+			tasklist.push(task(MCC, -30));
 			tasklist.push(task(PPP, pt));
 			tasklist.push(task(PFG, 35));
 			tasklist.push(task(PPP, pt));
