@@ -200,16 +200,18 @@ void TM::motionMOG::interrupt(sensors intsensor)
 			tkNav->setGrid(dirLineInc(1));
 			tkDriver->driveStraight();
 		}
-		//else if (dirLineInc(1) == tkdest)
-		else if (intsensor == IRLEFT)
+		else if (dirLineInc(1) == tkdest)
 		{
-			tkDriver->ptr_port->stop();
-			tkDriver->ptr_starboard->adjustSpeed(basespeed - 20);
-		}
-		else if (intsensor == IRRIGHT)
-		{
-			tkDriver->ptr_starboard->stop();
-			tkDriver->ptr_starboard->adjustSpeed(basespeed - 20);
+			if (intsensor == IRLEFT)
+			{
+				tkDriver->ptr_port->stop();
+				tkDriver->ptr_starboard->adjustSpeed(basespeed - 20);
+			}
+			else if (intsensor == IRRIGHT)
+			{
+				tkDriver->ptr_port->adjustSpeed(basespeed - 20);
+				tkDriver->ptr_starboard->stop();
+			}
 		}
 	}
 }
@@ -283,11 +285,12 @@ void TM::motionMTL::interrupt(sensors intsensor)
 	// For small values of correction, don't bother with angle corrections
 	else if (abs(tkNav->getTaskValue()) > 5) 
 	{
-		if (intsensor == IRLEFT || tkNav->extRight != true)
+		if (intsensor == IRLEFT || tkNav->extRight == false)
 		{
 			tkDriver->ptr_port->stop();
 		}
-		else if (intsensor == IRRIGHT || tkNav->extLeft != true)
+
+		if (intsensor == IRRIGHT || tkNav->extLeft == false)
 		{
 			tkDriver->ptr_starboard->stop();
 		}

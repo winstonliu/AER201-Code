@@ -144,7 +144,7 @@ motor clarm(12,13,TM::clarm_pwm); // Claw arm
 
 // Port, starboard, P, D of proportional-derivative adjustment
 //DriveMotor Driver(port, starboard, 0.1, 2);
-DriveMotor Driver(port, starboard, 0.05, 3);
+DriveMotor Driver(port, starboard, 0.03, 4);
 Servo myservo;
 // ================================================================ //
 // Important stuff
@@ -179,7 +179,7 @@ int nav_timer = 3600000;
 
 Metro encoderTimer = Metro(120);
 Metro displayTimer = Metro(500);
-Metro sensorPollTimer = Metro(30);
+Metro sensorPollTimer = Metro(20);
 Metro navProcessTimer = Metro(50);
 Metro navDelayTimer = Metro(3600000); // Set to 1 hour when unused
 
@@ -423,12 +423,13 @@ void setup()
 	// Leaving home
 	lineCalibrate();
 	Navigator.resetEncCNT();
-	/*
 	// Initial stage
+	/*
 	Navigator.tasklist.push(task(PPP, 3000));
-	Navigator.tasklist.push(task(MOG, 2));
+	Navigator.tasklist.push(task(MOG, 1));
 	Navigator.tasklist.push(task(PPP, 200));
 	Navigator.lineAlign();
+	Navigator.tasklist.push(task(PPP, 10000));
 	Navigator.tasklist.push(task(MCC, -5));
 	Navigator.tasklist.push(task(PPP, Navigator.pt));
 	Navigator.tasklist.push(task(PFG, 35));
@@ -524,7 +525,10 @@ void loop()
 				Navigator.currentMM = mMTB;
 				break;
 			case mMTB:
-				Navigator.currentMM = mSSS;
+				Navigator.currentMM = mMTR;
+				break;
+			case mMTR:
+				Navigator.currentMM = mCBL;
 				break;
 			default:
 				Navigator.currentMM = mSSS;

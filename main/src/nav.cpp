@@ -168,10 +168,10 @@ void Nav::startMM()
 	{
 		case mMTC:
 			tasklist.push(task(PPP, 3000));
-			tasklist.push(task(MOG, 2));
+			tasklist.push(task(MCC, 420));
 			tasklist.push(task(PPP, 200));
 			lineAlign();
-			tasklist.push(task(MCC, -30));
+			tasklist.push(task(MCC, -40));
 			tasklist.push(task(PPP, pt));
 			tasklist.push(task(PFG, 35));
 			tasklist.push(task(PPP, pt));
@@ -188,6 +188,10 @@ void Nav::startMM()
 		case mMTB:
 			toBoard();
 			gameboardAlign();
+			break;
+		case mMTR:
+			tasklist.push(task(RFG, 90));
+			fromBoard();
 			break;
 		case mSSS:
 			break;
@@ -226,7 +230,7 @@ void Nav::hopperUndocking()
 void Nav::gameboardAlign()
 {
 	// at 4,8,90/180
-	tasklist.push(task(RFG, 180)); // Rotate to face y
+	tasklist.push(task(RFG, 200)); // Rotate to face y
 	tasklist.push(task(GAL, 0));
 	tasklist.push(task(PPP, pt));
 	tasklist.push(task(OGR, 1));
@@ -243,7 +247,7 @@ void Nav::toBoard()
 	{
 		tasklist.push(task(PFG, 45));
 		tasklist.push(task(PPP, pt));
-		tasklist.push(task(MCC, 60));
+		tasklist.push(task(MCC, 50));
 		tasklist.push(task(PPP, pt));
 		tasklist.push(task(PFG, 90));
 	}
@@ -251,7 +255,7 @@ void Nav::toBoard()
 	{
 		tasklist.push(task(PFG, 325));
 		tasklist.push(task(PPP, pt));
-		tasklist.push(task(MCC, 60));
+		tasklist.push(task(MCC, 50));
 		tasklist.push(task(PPP, pt));
 		tasklist.push(task(PFG, 290));
 	}
