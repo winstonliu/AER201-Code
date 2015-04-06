@@ -181,7 +181,7 @@ void TM::motionMOG::process()
 	tkDriver->lineMotorScaling(basespeed);
 
 	/*
-	if (tkNav->absEncDistance() >= 22)
+	if (tkNav->absEncDistance() >= 25)
 	{
 		tkNav->zeroOGXY();
 		tkNav->setGrid(dirLineInc(1));
@@ -191,31 +191,34 @@ void TM::motionMOG::process()
 }
 void TM::motionMOG::interrupt(sensors intsensor)
 {
-	if (tkNav->absEncDistance() > 10)
+	if (tkNav->absEncDistance() > 15)
 	{	
 		if (intsensor == LINE_ISR)
 		{
 			tkNav->zeroOGXY();
 			tkNav->setGrid(dirLineInc(1));
+			tkDriver->driveStraight();
 		}
-		else if (dirLineInc(1) == tkdest)
+		//else if (dirLineInc(1) == tkdest)
+		else if (intsensor == IRLEFT)
 		{
-			if (intsensor == IRLEFT)
-			{
-				tkDriver->ptr_port->stop();
-			}
-			else if (intsensor == IRRIGHT)
-			{
-				tkDriver->ptr_starboard->stop();
-			}
+			tkDriver->ptr_port->stop();
+			tkDriver->ptr_starboard->adjustSpeed(basespeed - 20);
+		}
+		else if (intsensor == IRRIGHT)
+		{
+			tkDriver->ptr_starboard->stop();
+			tkDriver->ptr_starboard->adjustSpeed(basespeed - 20);
 		}
 	}
 }
 bool TM::motionMOG::iscomplete()
 {
-	if (tkNav->currentGrid == tkdest)
+		//|| (tkNav->absEncDistance() > (tkNav->getTaskValue() * 20)))
+	if (tkNav->currentGrid == tkdest) 
 	{
 		tkNav->zeroOGXY();
+		tkNav->currentGrid = tkdest;
 		tkDriver->stop();
 		return true;
 	}
@@ -271,21 +274,20 @@ void TM::motionMTL::start(int& timer)
 void TM::motionMTL::process() {}
 void TM::motionMTL::interrupt(sensors intsensor) 
 {
-	if ((intsensor == LINE_ISR) 
-			|| ((tkNav->extLeft & tkNav->extRight) == true))
+	if (intsensor == LINE_ISR) 
 	{
 		tkDriver->stop();
 		this->FLAG_done = true;
 	}
 	// For small values of correction, don't bother with angle corrections
-	else if (abs(tkNav->getTaskValue()) > 4) 
+	else if (abs(tkNav->getTaskValue()) > 5) 
 	{
-		if (intsensor == IRLEFT)
+		if (intsensor == IRLEFT || tkNav->extRight != true)
 		{
 			tkDriver->ptr_starboard->adjustSpeed(basespeed - 20);
 			tkDriver->ptr_port->adjustSpeed(0);
 		}
-		else if (intsensor == IRRIGHT)
+		else if (intsensor == IRRIGHT || tkNav->extLeft != true)
 		{
 			tkDriver->ptr_starboard->adjustSpeed(0);
 			tkDriver->ptr_port->adjustSpeed(basespeed - 20);
@@ -303,7 +305,7 @@ bool TM::motionMTL::iscomplete()
 	else
 	{
 		farenuf = modAbsDiff(tkNav->getOffGridPos().d, degElapsed) 
-			> abs(tkNav->getTaskValue() * 2);
+			> abs(tkNav->getTaskValue() * 1.5);
 	}
 
 	if ((tkNav->absEncDistance() > abs(tkNav->getTaskValue()))
@@ -503,9 +505,19 @@ void TM::motionHAL::interrupt(sensors intsensor)
 }
 bool TM::motionHAL::iscomplete()
 {
+	grid myPos = tkNav->getGrid();
 	if ((FLAG_hopperleft & FLAG_hopperright) == true) 
 	{
 		tkDriver->stop();
+		if (myPos == grid(6,1,90) || myPos == grid(7,2,180))
+		{
+			tkNav->offgridpos.d = 135;
+		}
+		else if (myPos == grid(2,1,270) || myPos == grid(1,2,180))
+		{
+			tkNav->offgridpos.d = 215;
+		}
+
 		return true;
 	}
 	return false;
@@ -566,7 +578,7 @@ bool TM::motionGAL::iscomplete()
 	if ((board_now == HIGH))
 	{
 		// CHANGE TO 180
-		tkNav->offgridpos.d = 90;
+		tkNav->offgridpos.d = 180;
 		return true;
 	}	
 	return false;

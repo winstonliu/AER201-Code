@@ -1,6 +1,6 @@
 #include "drivemotor.h"
 
-DriveMotor::DriveMotor(motor& p, motor& s, int kp, int kd) :
+DriveMotor::DriveMotor(motor& p, motor& s, double kp, double kd) :
 	prop(kp), deriv(kd)
 {
 	ptr_port = &p;

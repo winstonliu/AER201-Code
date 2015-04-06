@@ -101,8 +101,6 @@ void Nav::incEncPortCNT() { ++encPortCNT; }
 void Nav::incEncStarboardCNT() { ++encStarboardCNT; }
 void Nav::resetEncCNT() 
 { 	
-	lastpcnt = encPortLOG;
-	lastscnt = encStarboardLOG;
 	encPortLOG += encPortCNT;
 	encStarboardLOG += encStarboardCNT;
 	encPortCNT = 0; 
@@ -112,7 +110,7 @@ int Nav::getEncPortCNT() { return encPortCNT; }
 int Nav::getEncStarboardCNT() { return encStarboardCNT; }
 bool Nav::spikeCheck()
 {
-	int spikethresh = 20;
+	int spikethresh = 15;
 	if ((abs(encPortLOG - lastpcnt) > spikethresh) 
 		||(abs(encStarboardLOG - lastscnt) > spikethresh))
 	{
@@ -175,52 +173,47 @@ grid Nav::getDestination() { return destination; }
 bool Nav::doneTasks() { return tasklist.count() == 0; }
 int Nav::countRemaining() { return tasklist.count(); }
 
-void Nav::processMM()
+void Nav::startMM()
 {
-	static int lastMM = mMTC;	
 	// Check for change
-	if (lastMM == currentMM)
-		return;
-
 	switch(currentMM)
 	{
 		case mMTC:
-			tasklist.push(task(PPP, 3000));		
-			tasklist.push(task(RFG, 90));		
-			tasklist.push(task(PPP, 500));		
-			tasklist.push(task(MOG, 2));		
-			tasklist.push(task(PPP, 500));		
+			tasklist.push(task(PPP, 3000));
+			tasklist.push(task(MOG, 2));
+			tasklist.push(task(PPP, 200));
 			lineAlign();
-			tasklist.push(task(PPP, 500));		
-			tasklist.push(task(RFG, 0));		
-			tasklist.push(task(PPP, 500));		
-			tasklist.push(task(MOG, 1));		
-			tasklist.push(task(PPP, 500));		
-			tasklist.push(task(RFG, 90));		
-			tasklist.push(task(PPP, 500));		
-			tasklist.push(task(RFG, 135));		
-			tasklist.push(task(PPP, 500));		
+			tasklist.push(task(MCC, -5));
+			tasklist.push(task(PPP, pt));
+			tasklist.push(task(PFG, 35));
+			tasklist.push(task(PPP, pt));
+			tasklist.push(task(MCC, 40));
+			tasklist.push(task(PPP, pt));
+			tasklist.push(task(RFG, 135));
+			tasklist.push(task(PPP, pt));
 			break;
 		case mCBL:
 			hopperDocking();
-			tasklist.push(task(PPP, 500));		
+			tasklist.push(task(PPP, pt));
 			hopperUndocking();
 			break;
 		case mMTB:
-			boardAndBack();
+			toBoard();
+			gameboardAlign();
+			break;
+		case mSSS:
 			break;
 	}		
-
-	lastMM = currentMM;
 }
 
-int Nav::hopperDocking()
+void Nav::hopperDocking()
 {
-	//tasklist.push(task(RFG, 315)); // Move until interrupt
+	tasklist.push(task(CEX, clawtime));
+	tasklist.push(task(PPP, pt));
 	tasklist.push(task(HAL, 0)); // Align with hopper
 	tasklist.push(task(CRT, 0)); // Retract claw
 }
-int Nav::hopperUndocking()
+void Nav::hopperUndocking()
 {
 	// Using cosine law to calculate degrees of rotation
 	// It's a triangle
@@ -232,51 +225,74 @@ int Nav::hopperUndocking()
 		/ (2*len_b*len_c)));
 	*/
 
-	tasklist.push(task(OGR, 0));
-	//tasklist.push(task(CEX, 500)); // Extend claw
-	//tasklist.push(task(RFG, currentGrid.d));
+	tasklist.push(task(MCC, -100));
+	tasklist.push(task(PPP, pt));
+	tasklist.push(task(RFG, 40));
+	tasklist.push(task(PPP, pt));
+	tasklist.push(task(CEX, clawtime));
+	tasklist.push(task(MCC, 90));
+	tasklist.push(task(PPP, pt));
+	tasklist.push(task(PFG, 10));
+	tasklist.push(task(PPP, pt));
 }
-int Nav::gameboardAlign()
+void Nav::gameboardAlign()
 {
 	// at 4,8,90/180
 	tasklist.push(task(RFG, 180)); // Rotate to face y
 	tasklist.push(task(GAL, 0));
-	tasklist.push(task(PPP, 500));
+	tasklist.push(task(PPP, pt));
+	tasklist.push(task(OGR, 1));
 }
-int Nav::boardAndBack()
+void Nav::toBoard()
 {
-	tasklist.push(task(MOG, 1));
-	tasklist.push(task(PPP, 1000));
-	tasklist.push(task(RFG, 0));
-	tasklist.push(task(PPP, 1000));
-	tasklist.push(task(MOG, 6));
-	tasklist.push(task(PPP, 1000));
-	lineAlign();
-	tasklist.push(task(PPP, 1000));
-	tasklist.push(task(RFG, 270));
-	tasklist.push(task(PPP, 1000));
+	grid myPos = this->getGrid();
+	bool onLeft = (myPos.x == 1);
 	tasklist.push(task(MOG, 3));
-	gameboardAlign();
-	// Return 
-	tasklist.push(task(MOG, 1));
-	tasklist.push(task(PPP, 1000));
-	tasklist.push(task(RFG, 90));
-	tasklist.push(task(PPP, 1000));
-	tasklist.push(task(MOG, 3));
-	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(CRT, 0));
 	lineAlign();
-	tasklist.push(task(PPP, 1000));
-	tasklist.push(task(RFG, 180));
-	tasklist.push(task(PPP, 1000));
-	tasklist.push(task(MOG, 6));
-	tasklist.push(task(PPP, 1000));
-	lineAlign();
-	tasklist.push(task(PPP, 1000));
-	tasklist.push(task(RFG, 270));
-	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(PPP, pt));
+	if (onLeft == true)
+	{
+		tasklist.push(task(PFG, 45));
+		tasklist.push(task(PPP, pt));
+		tasklist.push(task(MCC, 60));
+		tasklist.push(task(PPP, pt));
+		tasklist.push(task(PFG, 90));
+	}
+	else
+	{
+		tasklist.push(task(PFG, 325));
+		tasklist.push(task(PPP, pt));
+		tasklist.push(task(MCC, 60));
+		tasklist.push(task(PPP, pt));
+		tasklist.push(task(PFG, 290));
+	}
+	// Dock with board
+	tasklist.push(task(PPP, pt));
 	tasklist.push(task(MOG, 1));
-	tasklist.push(task(PPP, 1000));
+	tasklist.push(task(PPP, pt));
+	lineAlign();
+	tasklist.push(task(MCC, 200));
+	tasklist.push(task(PPP, pt));
+}
+void Nav::fromBoard()
+{
+	tasklist.push(task(MOG, 2));
+	tasklist.push(task(PPP, pt));
+	tasklist.push(task(PFG, 135));
+	tasklist.push(task(PPP, pt));
+	tasklist.push(task(MCC, 60));
+	tasklist.push(task(PPP, pt));
+	tasklist.push(task(PFG, 180));
+	tasklist.push(task(PPP, pt));
+	tasklist.push(task(MOG, 4));
+	tasklist.push(task(PPP, pt));
+	tasklist.push(task(PFG, 225));
+	tasklist.push(task(PPP, pt));
+	tasklist.push(task(MCC, 40));
+	tasklist.push(task(PPP, pt));
 	tasklist.push(task(RFG, 135));
+	tasklist.push(task(PPP, pt));
 }
 void Nav::lineAlign()
 {
@@ -284,21 +300,16 @@ void Nav::lineAlign()
 	tasklist.push(task(PPP, 400));
 	tasklist.push(task(MTL, 6));
 	tasklist.push(task(PPP, 400));
-	/*
-	tasklist.push(task(RTL, 25));
-	tasklist.push(task(PPP, 500));
-	tasklist.push(task(RTL, -50));
-	*/
 }
 void Nav::rotateAlign()
 {
 	/*
 	tasklist.push(task(RTL, -10));
-	tasklist.push(task(PPP, 500));
+	tasklist.push(task(PPP, pt));
 	tasklist.push(task(RTL, 10));
-	tasklist.push(task(PPP, 500));
+	tasklist.push(task(PPP, pt));
 	tasklist.push(task(RTL, -45));
-	tasklist.push(task(PPP, 500));
+	tasklist.push(task(PPP, pt));
 	tasklist.push(task(RTL, 90));
 	*/
 }

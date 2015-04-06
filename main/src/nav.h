@@ -39,7 +39,9 @@ enum macromotion
 	mMTC, // move to corner hopper
 	mCBL, // collect ball
 	mMTB, // move to gameboard
+	mMTR, // return from gameboard
 	mMTH, // move to closest hopper
+	mSSS, // sleep
 	mMOTIONSCOUNT
 };
 
@@ -112,6 +114,8 @@ class Nav
 		bool check_validity(grid new_position);
 		drcoord offgridpos;
 		double turncoord;
+		int pt;
+		int clawtime;
 		macromotion currentMM;
 
 		bool extLeft;
@@ -151,11 +155,12 @@ class Nav
 
 		long timeElapsed();
 
-		void processMM();
-		int hopperDocking();
-		int hopperUndocking();
-		int gameboardAlign();
-		int boardAndBack();
+		void startMM();
+		void hopperDocking();
+		void hopperUndocking();
+		void gameboardAlign();
+		void toBoard();
+		void fromBoard();
 		void lineAlign();
 		void rotateAlign();
 };
