@@ -11,7 +11,7 @@
 #include "drivemotor.h"
 
 // Enable debug messages through serial
-#define SERIALDEBUG
+//#define SERIALDEBUG
 
 #ifdef SERIALDEBUG
 #define DEBUG( x ) Serial.print( x )
@@ -144,7 +144,9 @@ motor clarm(12,13,TM::clarm_pwm); // Claw arm
 
 // Port, starboard, P, D of proportional-derivative adjustment
 //DriveMotor Driver(port, starboard, 0.1, 2);
-DriveMotor Driver(port, starboard, 0.03, 4);
+//DriveMotor Driver(port, starboard, 0.01, 3);
+DriveMotor Driver(port, starboard, 0.01, 2);
+//DriveMotor Driver(port, starboard, 0, 4);
 Servo myservo;
 // ================================================================ //
 // Important stuff
@@ -179,7 +181,7 @@ int nav_timer = 3600000;
 
 Metro encoderTimer = Metro(120);
 Metro displayTimer = Metro(500);
-Metro sensorPollTimer = Metro(20);
+Metro sensorPollTimer = Metro(15);
 Metro navProcessTimer = Metro(50);
 Metro navDelayTimer = Metro(3600000); // Set to 1 hour when unused
 
@@ -398,10 +400,12 @@ void setup()
 
 	// Initialize values
 	Navigator.pt = 500; // pause time
-	Navigator.clawtime = 400;
+	Navigator.clawtime = 370;
 
 	myservo.attach(servoPin, 0, 1000);
 	myservo.write(0);
+	
+	Navigator.onLeft = false;
 
 	/*
 	attachInterrupt(INTencPortPin, encLeftPin, RISING);
@@ -573,25 +577,28 @@ void loop()
 	else
 		myservo.write(0);
 
-	// Check for rising hopper left interrupt
-	if(digitalRead(hopperlPin) == HIGH)
+	if (Navigator.getMotion() == HAL)
 	{
-		TM::FLAG_hopperleft = true;
-		TM::interrupt(HOPPER_TOUCH_LEFT);	
-	}
-	else
-	{
-		TM::FLAG_hopperleft = false;
-	}
+		// Check for rising hopper left interrupt
+		if(digitalRead(hopperlPin) == HIGH)
+		{
+			TM::FLAG_hopperleft = true;
+			TM::interrupt(HOPPER_TOUCH_LEFT);	
+		}
+		else
+		{
+			TM::FLAG_hopperleft = false;
+		}
 
-	if(digitalRead(hopperrPin) == HIGH)
-	{
-		TM::FLAG_hopperright = true;
-		TM::interrupt(HOPPER_TOUCH_RIGHT);	
-	}
-	else
-	{
-		TM::FLAG_hopperright = false;
+		if(digitalRead(hopperrPin) == HIGH)
+		{
+			TM::FLAG_hopperright = true;
+			TM::interrupt(HOPPER_TOUCH_RIGHT);	
+		}
+		else
+		{
+			TM::FLAG_hopperright = false;
+		}
 	}
 
 	// Check if current task is done

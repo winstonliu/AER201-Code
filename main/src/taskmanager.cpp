@@ -194,11 +194,12 @@ void TM::motionMOG::interrupt(sensors intsensor)
 {
 	if (tkNav->absEncDistance() > 15)
 	{	
-		if (intsensor == LINE_ISR)
+		if (intsensor == LINE_ISR || intsensor == IRRIGHT)
 		{
 			tkNav->zeroOGXY();
 			tkNav->setGrid(dirLineInc(1));
 			tkDriver->driveStraight();
+			//tkDriver->ptr_port->adjustSpeed(basespeed - 10);
 		}
 		else if (dirLineInc(1) == tkdest)
 		{
@@ -314,6 +315,7 @@ bool TM::motionMTL::iscomplete()
 			|| farenuf
 			|| (this->FLAG_done == true))
 	{
+		tkNav->offgridpos.d = tkNav->getGrid().d;
 		degElapsed = -1;
 		return true;
 	}
@@ -330,7 +332,10 @@ void TM::motionMCC::start(int& timer)
 	if (tkNav->getTaskValue() < 0)
 		tkDriver->driveReverse();
 	else
+	{
 		tkDriver->driveStraight();
+		tkDriver->ptr_port->adjustSpeed(basespeed - 10);
+	}
 }
 void TM::motionMCC::process() {}
 void TM::motionMCC::interrupt(sensors intsensor) {}

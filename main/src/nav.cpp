@@ -168,17 +168,30 @@ void Nav::startMM()
 	{
 		case mMTC:
 			tasklist.push(task(PPP, 3000));
-			tasklist.push(task(MCC, 420));
+			tasklist.push(task(MCC, 380));
 			tasklist.push(task(PPP, 200));
 			lineAlign();
 			tasklist.push(task(MCC, -40));
 			tasklist.push(task(PPP, pt));
-			tasklist.push(task(PFG, 35));
-			tasklist.push(task(PPP, pt));
-			tasklist.push(task(MCC, 40));
-			tasklist.push(task(PPP, pt));
-			tasklist.push(task(RFG, 135));
-			tasklist.push(task(PPP, pt));
+
+			if (onLeft == true)
+			{
+				tasklist.push(task(PFG, 325));
+				tasklist.push(task(PPP, pt));
+				tasklist.push(task(MCC, 40));
+				tasklist.push(task(PPP, pt));
+				tasklist.push(task(RFG, 225));
+				tasklist.push(task(PPP, pt));
+			}
+			else
+			{
+				tasklist.push(task(PFG, 35));
+				tasklist.push(task(PPP, pt));
+				tasklist.push(task(MCC, 40));
+				tasklist.push(task(PPP, pt));
+				tasklist.push(task(RFG, 135));
+				tasklist.push(task(PPP, pt));
+			}
 			break;
 		case mCBL:
 			hopperDocking();
@@ -221,8 +234,8 @@ void Nav::hopperUndocking()
 	tasklist.push(task(PPP, pt));
 	tasklist.push(task(RFG, 40));
 	tasklist.push(task(PPP, pt));
-	tasklist.push(task(CEX, clawtime));
-	tasklist.push(task(MCC, 90));
+	tasklist.push(task(CEX, clawtime - 100));
+	tasklist.push(task(MCC, 80));
 	tasklist.push(task(PPP, pt));
 	tasklist.push(task(PFG, 10));
 	tasklist.push(task(PPP, pt));
@@ -230,24 +243,33 @@ void Nav::hopperUndocking()
 void Nav::gameboardAlign()
 {
 	// at 4,8,90/180
-	tasklist.push(task(RFG, 200)); // Rotate to face y
+	tasklist.push(task(RFG, 180)); // Rotate to face y
 	tasklist.push(task(GAL, 0));
 	tasklist.push(task(PPP, pt));
-	tasklist.push(task(OGR, 1));
+	//tasklist.push(task(OGR, 1));
 }
 void Nav::toBoard()
 {
 	grid myPos = this->getGrid();
-	bool onLeft = (myPos.x == 1);
-	tasklist.push(task(MOG, 3));
-	tasklist.push(task(CRT, 0));
 	lineAlign();
+	tasklist.push(task(PPP, pt));
+	tasklist.push(task(PFG, 350));
+	tasklist.push(task(PPP, pt));
+	tasklist.push(task(MOG, 3));
+	lineAlign();
+	tasklist.push(task(PPP, pt));
+	tasklist.push(task(PFG, 350));
+	tasklist.push(task(MOG, 3));
+	//tasklist.push(task(MCC, 10050));
+	//tasklist.push(task(CRT, 0));
+	lineAlign();
+	tasklist.push(task(MTL, -10));
 	tasklist.push(task(PPP, pt));
 	if (onLeft == true)
 	{
 		tasklist.push(task(PFG, 45));
 		tasklist.push(task(PPP, pt));
-		tasklist.push(task(MCC, 50));
+		tasklist.push(task(MCC, 40));
 		tasklist.push(task(PPP, pt));
 		tasklist.push(task(PFG, 90));
 	}
@@ -255,33 +277,40 @@ void Nav::toBoard()
 	{
 		tasklist.push(task(PFG, 325));
 		tasklist.push(task(PPP, pt));
-		tasklist.push(task(MCC, 50));
+		tasklist.push(task(MCC, 60));
 		tasklist.push(task(PPP, pt));
-		tasklist.push(task(PFG, 290));
+		tasklist.push(task(PFG, 270));
 	}
 	// Dock with board
 	tasklist.push(task(PPP, pt));
-	tasklist.push(task(MOG, 1));
+	tasklist.push(task(MCC, 200));
 	tasklist.push(task(PPP, pt));
 	lineAlign();
-	tasklist.push(task(MCC, 200));
+	tasklist.push(task(PPP, pt));
+	tasklist.push(task(MCC, 300));
 	tasklist.push(task(PPP, pt));
 }
 void Nav::fromBoard()
 {
-	tasklist.push(task(MOG, 2));
+	tasklist.push(task(MCC, 400));
+	tasklist.push(task(PPP, pt));
+	lineAlign();
 	tasklist.push(task(PPP, pt));
 	tasklist.push(task(PFG, 135));
 	tasklist.push(task(PPP, pt));
-	tasklist.push(task(MCC, 60));
+	tasklist.push(task(MCC, 50));
 	tasklist.push(task(PPP, pt));
 	tasklist.push(task(PFG, 180));
 	tasklist.push(task(PPP, pt));
-	tasklist.push(task(MOG, 4));
+	tasklist.push(task(MOG, 1));
+	tasklist.push(task(PPP, pt));
+	lineAlign();
+	tasklist.push(task(PPP, pt));
+	tasklist.push(task(MOG, 3));
 	tasklist.push(task(PPP, pt));
 	tasklist.push(task(PFG, 225));
 	tasklist.push(task(PPP, pt));
-	tasklist.push(task(MCC, 40));
+	tasklist.push(task(MCC, 20));
 	tasklist.push(task(PPP, pt));
 	tasklist.push(task(RFG, 135));
 	tasklist.push(task(PPP, pt));
@@ -290,20 +319,8 @@ void Nav::lineAlign()
 {
 	tasklist.push(task(MTL, -8));
 	tasklist.push(task(PPP, 400));
+	/*
 	tasklist.push(task(MTL, 6));
 	tasklist.push(task(PPP, 400));
-}
-void Nav::rotateAlign()
-{
-	/*
-	tasklist.push(task(RTL, -10));
-	tasklist.push(task(PPP, pt));
-	tasklist.push(task(RTL, 10));
-	tasklist.push(task(PPP, pt));
-	tasklist.push(task(RTL, -45));
-	tasklist.push(task(PPP, pt));
-	tasklist.push(task(RTL, 90));
 	*/
 }
-
-

@@ -118,6 +118,8 @@ class Nav
 		int clawtime;
 		macromotion currentMM;
 
+		bool onLeft;
+
 		bool extLeft;
 		bool extRight;
 		bool online;
